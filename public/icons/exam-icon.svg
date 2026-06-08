@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">國營資訊職員考試講義</title>
+  <desc id="desc">A study booklet icon with circuit lines for the exam handout PWA.</desc>
+  <rect width="512" height="512" rx="96" fill="#2f766d" />
+  <path d="M144 112h176c26.5 0 48 21.5 48 48v240H168c-26.5 0-48-21.5-48-48V136c0-13.3 10.7-24 24-24Z" fill="#f7f4ee" />
+  <path d="M168 112h184c22.1 0 40 17.9 40 40v248h-24V160c0-13.3-10.7-24-24-24H168v-24Z" fill="#b78a36" />
+  <path d="M184 208h144M184 256h112M184 304h144" stroke="#24302f" stroke-width="24" stroke-linecap="round" />
+  <circle cx="352" cy="208" r="18" fill="#c95d4f" />
+  <path d="M352 208h48M328 256h64M352 304h48" stroke="#c95d4f" stroke-width="16" stroke-linecap="round" />
+</svg>

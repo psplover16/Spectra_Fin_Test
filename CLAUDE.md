@@ -1,31 +1,32 @@
 <!-- SPECTRA:START v1.0.2 -->
 
-# Spectra 指引
+# Spectra Instructions
 
-本專案使用 Spectra 進行規格驅動開發（Spec-Driven Development，SDD）。規格位於 `openspec/specs/`，變更提案位於 `openspec/changes/`。
+This project uses Spectra for Spec-Driven Development(SDD). Specs live in `openspec/specs/`, change proposals in `openspec/changes/`.
 
-## 何時使用 `/spectra-*` 技能：
+## Use `/spectra-*` skills when:
 
-- 動工前需要有結構的討論 → `/spectra-discuss`
-- 使用者想規劃、提案或設計變更 → `/spectra-propose`
-- 任務已可實作 → `/spectra-apply`
-- 有進行中的變更要繼續推進 → `/spectra-ingest`
-- 使用者詢問規格或某項功能如何運作 → `/spectra-ask`
-- 實作完成 → `/spectra-archive`
-- 只提交與特定變更相關的檔案 → `/spectra-commit`
+- A discussion needs structure before coding → `/spectra-discuss`
+- User wants to plan, propose, or design a change → `/spectra-propose`
+- Tasks are ready to implement → `/spectra-apply`
+- There's an in-progress change to continue → `/spectra-ingest`
+- User asks about specs or how something works → `/spectra-ask`
+- Implementation is done → `/spectra-archive`
+- Commit only files related to a specific change → `/spectra-commit`
 
-## 工作流程
+## Workflow
 
 discuss? → propose → apply ⇄ ingest → archive
 
-- `discuss` 為選用 — 若需求已明確可略過
-- 工作中途需求變更？切到規劃模式（Plan mode）→ `ingest` → 回到 `apply` 繼續
+- `discuss` is optional — skip if requirements are clear
+- Requirements change mid-work? Plan mode → `ingest` → resume `apply`
 
-## 暫存的變更（Parked Changes）
+## Parked Changes
 
-變更可以被暫存（park）— 暫時從 `openspec/changes/` 中移出。暫存的變更不會出現在 `spectra list` 中，但可用 `spectra list --parked` 找到。若要還原：`spectra unpark <name>`。`/spectra-apply` 與 `/spectra-ingest` 技能會自動處理暫存的變更。
+Changes can be parked（暫存）— temporarily moved out of `openspec/changes/`. Parked changes won't appear in `spectra list` but can be found with `spectra list --parked`. To restore: `spectra unpark <name>`. The `/spectra-apply` and `/spectra-ingest` skills handle parked changes automatically.
 
 <!-- SPECTRA:END -->
+
 
 ## 一般行為準則
 - 變更前一律先說明計畫。

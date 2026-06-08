@@ -1,0 +1,18 @@
+{
+  "name": "國營資訊職員考試講義",
+  "short_name": "國營職員講義",
+  "description": "國營事業新進職員資訊人員考試用的手機版 PWA 講義入口。",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#f7f4ee",
+  "theme_color": "#2f766d",
+  "icons": [
+    {
+      "src": "icons/exam-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
