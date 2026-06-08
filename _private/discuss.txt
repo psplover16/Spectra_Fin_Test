@@ -1,0 +1,11 @@
+本專案的樣式及功能 可以參考 C:\Users\Gary\Documents\Spectra-Learning-Japanese 的 子路由-N5文法的樣式來製作
+
+要做5個路由，分別是 計算機原理、網路概論、資訊管理、程式設計、語言
+要有CICD
+
+
+
+@/_private/計算機原理、網路概論/*
+@/_private/資訊管理、程式設計/*
+@/_private/國文、英文/*
+上述 三個資料夾內的 各md檔是參考來源，本次先做樣式就好
