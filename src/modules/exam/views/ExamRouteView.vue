@@ -6,15 +6,32 @@ import {
   getExamRouteByPath
 } from '@/modules/exam/data/examRoutes';
 import { getSubjectContentBySlug } from '@/modules/exam/data/subjectContent';
-import type { QuestionMapping, SourceReference } from '@/modules/exam/types/content';
+import type { QuestionMapping, SourceReference, SubjectSlug } from '@/modules/exam/types/content';
 
 const currentRoute = useRoute();
 const optionLabels = ['A', 'B', 'C', 'D'] as const;
+const subjectSlugs = new Set<string>([
+  'computer-principles',
+  'networking',
+  'information-management',
+  'programming',
+  'language'
+]);
 
 const routeItem = computed(() => getExamRouteByPath(currentRoute.path));
-const categoryLabel = computed(() => (routeItem.value?.category === 'common' ? '共同科目' : '專業科目'));
+const categoryLabel = computed(() => {
+  if (routeItem.value?.category === 'common') {
+    return '共同科目';
+  }
+
+  if (routeItem.value?.category === 'learning') {
+    return '學習';
+  }
+
+  return '專業科目';
+});
 const subjectContent = computed(() =>
-  routeItem.value ? getSubjectContentBySlug(routeItem.value.slug) : undefined
+  routeItem.value && isSubjectSlug(routeItem.value.slug) ? getSubjectContentBySlug(routeItem.value.slug) : undefined
 );
 const routeIndex = computed(() =>
   routeItem.value ? examRoutes.findIndex((candidate) => candidate.slug === routeItem.value?.slug) : -1
@@ -25,28 +42,28 @@ const nextRoute = computed(() => {
 });
 const visualTone = computed(() => {
   switch (routeItem.value?.slug) {
-    case 'computer-principles':
+    case 'a-group':
       return {
         accent: 'bg-teal',
         soft: 'bg-teal/10',
         text: 'text-teal',
         border: 'border-teal/30'
       };
-    case 'networking':
+    case 'b-group':
       return {
         accent: 'bg-coral',
         soft: 'bg-coral/10',
         text: 'text-coral',
         border: 'border-coral/30'
       };
-    case 'information-management':
+    case 'language':
       return {
         accent: 'bg-brass',
         soft: 'bg-brass/10',
         text: 'text-brass',
         border: 'border-brass/30'
       };
-    case 'programming':
+    case 'learning':
       return {
         accent: 'bg-ink',
         soft: 'bg-ink/10',
@@ -62,6 +79,10 @@ const visualTone = computed(() => {
       };
   }
 });
+
+function isSubjectSlug(slug: string): slug is SubjectSlug {
+  return subjectSlugs.has(slug);
+}
 
 function verificationLabel(status: SourceReference['verificationStatus']): string {
   return status === 'verified' ? '已校對' : '待校對';
@@ -98,7 +119,7 @@ function correctOption(mapping: QuestionMapping): string {
             class="shrink-0 rounded-md border px-2 py-1 text-xs font-semibold"
             :class="[visualTone.soft, visualTone.text, visualTone.border]"
           >
-            {{ routeIndex + 1 }}/5
+            {{ routeIndex + 1 }}/{{ examRoutes.length }}
           </span>
         </div>
         <p class="mt-3 text-sm leading-6 text-slate">{{ routeItem.description }}</p>

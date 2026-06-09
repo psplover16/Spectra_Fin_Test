@@ -1,4 +1,11 @@
-export type RoutePreloadKey = 'aGroup' | 'aGroupYear' | 'bGroup' | 'language';
+export type RoutePreloadKey =
+  | 'aGroup'
+  | 'aGroupYear'
+  | 'bGroup'
+  | 'bGroupYear'
+  | 'language'
+  | 'languageYear'
+  | 'learning';
 
 export type RouteComponentLoader = () => Promise<unknown>;
 
@@ -8,7 +15,10 @@ export const routeComponentLoaders: RoutePreloadLoaders = {
   aGroup: () => import('@/modules/examGroups/aGroup/views/AGroupView.vue'),
   aGroupYear: () => import('@/modules/examGroups/aGroup/views/AGroupYearView.vue'),
   bGroup: () => import('@/modules/examGroups/bGroup/views/BGroupView.vue'),
-  language: () => import('@/modules/examGroups/language/views/LanguageGroupView.vue')
+  bGroupYear: () => import('@/modules/examGroups/bGroup/views/BGroupYearView.vue'),
+  language: () => import('@/modules/examGroups/language/views/LanguageGroupView.vue'),
+  languageYear: () => import('@/modules/examGroups/language/views/LanguageYearView.vue'),
+  learning: () => import('@/modules/learning/views/LearningView.vue')
 };
 
 function normalizePath(path: string): string {
@@ -34,8 +44,20 @@ export function getRoutePreloadKey(path: string): RoutePreloadKey | null {
     return 'bGroup';
   }
 
+  if (/^\/b-group\/(?:10[7-9]|11[0-4])$/.test(normalizedPath)) {
+    return 'bGroupYear';
+  }
+
   if (normalizedPath === '/language') {
     return 'language';
+  }
+
+  if (/^\/language\/(?:10[7-9]|11[0-2])$/.test(normalizedPath)) {
+    return 'languageYear';
+  }
+
+  if (normalizedPath === '/learning') {
+    return 'learning';
   }
 
   return null;

@@ -1,514 +1,565 @@
-# 提案草稿：國營事業考古題學習 PWA 大翻新
+# 提案草稿：完成 B 組、語言逐題解析與新增學習路由
 
 ## Conclusion
 
-**Decision**: 本專案要從目前「按科目呈現講義」的架構，改版成「A 組、B 組、語言」三個主路由。A 組第一批只完成 114 年年度解析與版型驗證；等版型確認後，再一次完成 107 至 113 年。視覺、互動與 CI/CD 以 `C:\Users\user1\Documents\Spectra-Learning-Japanese` 的 `/n5-grammar` 路由與 GitHub Pages 發布流程為實作參照。
+**Decision**: 下一個 Spectra change 應聚焦在三件事：完成 B 組年度清單與年度逐題解析、完成語言年度清單與年度逐題解析、並新增一個目前無內容的「學習」主路由。B 組與語言都沿用 A 組已建立的年度清單、書籤、完成狀態、年度導頁與逐題解析頁模式，但資料來源、題型與解析模板要各自獨立。
 
-**Rationale**: 實際讀取後確認，參考專案的 N5 文法頁不是單純配色，而是一套完整的 Vue/Tailwind 元件模式：sticky header、左側書籤、右側完成 checkbox、localStorage 狀態、lazy-loaded 分檔資料、手機 375px 版面測試與 GitHub Pages staging/production CD。A 組 PDF 已確認為 107 至 114 共 8 份、每份 4 頁、單選 50 題，總計 400 題；先做 114 年可讓版型、資料結構、PWA 與解析模板先穩定，避免 400 題內容一次展開後才發現整體方向要改。
+**Rationale**: 目前程式已有 `/a-group`、`/b-group`、`/language` 主路由；A 組已具備年度清單、localStorage 進度、lazy-loaded 年度資料與逐題解析 UI。B 組與語言目前仍是 placeholder，正好可以用 A 組作為穩定範本擴充，而不是再做一套新的互動模式。B 組與語言的來源 PDF 量大、題型偏申論與語文解析，必須把「PDF 轉 Markdown 記憶檔」、「廣告/水印排除」、「逐題多副代理解析」、「主任務整併與校稿」寫成正式流程，避免內容品質失控。
 
-**Capture to**: 後續應轉成 Spectra change 的 `proposal.md`、`design.md`、`tasks.md`，並新增或更新 capability spec，定義「年度清單」、「年度解析頁」、「逐題解析資料結構」、「書籤/完成狀態」與「PDF 擷取校對」的可驗收行為。
+**Capture to**: 後續應用 `$spectra-propose` 建立正式 change，建議 change 名稱為 `complete-b-group-language-learning-routes`。正式 artifacts 至少包含 `proposal.md`、`design.md`、`tasks.md`，並新增或更新 specs 來定義 B 組、語言、學習路由、PDF 轉換、廣告排除與逐題解析品質要求。
 
 ## 已讀取脈絡
 
-### 參考專案程式碼
+### 使用者指定需求來源
 
-已讀取「日語學習PWA」的關鍵檔案：
+已讀取 `@/_private/discuss.txt`，主要需求如下：
 
-1. `package.json`
-2. `vite.config.ts`
-3. `.github/workflows/ci.yml`
-4. `.github/workflows/cd.yml`
-5. `scripts/publishPages.mjs`
-6. `src/app/router.ts`
-7. `src/app/routePreload.ts`
-8. `src/app/AppShell.vue`
-9. `src/shared/components/RouteTabs.vue`
-10. `src/modules/grammar/components/GrammarLevelSwitcher.vue`
-11. `src/modules/n5Grammar/views/N5GrammarView.vue`
-12. `src/modules/n5Grammar/components/N5GrammarSectionCard.vue`
-13. `src/modules/n5Grammar/composables/useN5GrammarSections.ts`
-14. `src/modules/n5Grammar/storage/n5GrammarCompletionStorage.ts`
-15. `src/modules/n5Grammar/types/grammarNotes.ts`
-16. `src/modules/n5Grammar/components/N5GrammarInfoBlock.vue`
-17. `src/modules/n5Grammar/components/N5GrammarBulletBlock.vue`
-18. `src/modules/n5Grammar/components/N5GrammarCompareTable.vue`
-19. `src/styles/main.css`
-20. `tailwind.config.ts`
-21. N5 文法相關 unit/component/e2e 測試
+1. 開始實作 B 組與語言。
+2. B 組來源為 `@/_private/資訊管理、程式設計/` 內過去 8 年 PDF。
+3. B 組每題都是申論題。
+4. B 組 PDF 非官方，可能含補習班廣告水印、廣告圖片、廣告網址；這些內容必須排除、無視，不能寫入本專案。
+5. `/b-group` 要與 `/a-group` 樣式、功能一致：年度清單、書籤功能、點選年度進入年度考題內容。
+6. B 組每題需包含「問題、問題講解、擬答、擬答詳細說明」四步。
+7. 有些 B 組回答可能需要作圖，有些使用純文字。
+8. 主任務應從 114 年開始，先讓副代理讀 PDF、排除廣告與水印，轉成同名 Markdown 記憶檔，放入 `@/_private/資訊管理、程式設計/`。
+9. 逐題處理採批次生產線，不一次開完全部題目；每批建議 2 至 3 題。
+10. 每題固定最小流程為主解析副代理與審稿副代理；需要作圖才另開圖解副代理，高風險題才加開第二解析副代理交叉驗證。
+11. 校稿後每題 Markdown 放入 `@/_private/資訊管理、程式設計/<年份>/`，檔案名稱為第幾題。
+12. 每批完成校稿、寫入資料模型、測試或人工抽查後，才進入下一批。
+13. 語言路由與 B 組高度雷同，來源改為 `@/_private/國文、英文/`。
+14. 語言的英文題目應賦予副代理「英文老師」身分，受眾設定為國二程度英文學生。
+15. 任務數量不設上限，重點是解析正確、精準、不能有錯、具備學習用途；可接受並行執行任務。
+16. 新增一個路由名稱叫「學習」，目前沒有內容。
 
 ### 本專案現況
 
-已讀取本專案關鍵檔案：
+已讀取相關程式：
 
-1. `package.json`
-2. `.github/workflows/ci.yml`
-3. `.github/workflows/cd.yml`
-4. `vite.config.ts`
-5. `src/app/router.ts`
-6. `src/app/AppShell.vue`
-7. `src/app/pwa.ts`
-8. `src/styles/main.css`
-9. `src/modules/exam/data/examRoutes.ts`
-10. `src/modules/exam/data/subjectContent.ts`
-11. `src/modules/exam/views/ExamRouteView.vue`
+1. `src/app/router.ts`
+2. `src/app/routePreload.ts`
+3. `src/app/AppShell.vue`
+4. `src/modules/examGroups/aGroup/views/AGroupView.vue`
+5. `src/modules/examGroups/aGroup/views/AGroupYearView.vue`
+6. `src/modules/examGroups/aGroup/storage/aGroupProgressStorage.ts`
+7. `src/modules/examGroups/aGroup/types/questionAnalysis.ts`
+8. `src/modules/examGroups/aGroup/data/yearSummaries.ts`
+9. `src/modules/examGroups/aGroup/composables/useAGroupYearQuestions.ts`
+10. `src/modules/examGroups/bGroup/views/BGroupView.vue`
+11. `src/modules/examGroups/language/views/LanguageGroupView.vue`
 
 現況判斷：
 
-1. 本專案目前已有 Vue/Vite/Tailwind 基礎。
-2. 目前路由是 `/computer-principles`、`/networking`、`/information-management`、`/programming`、`/language`，屬於按科目拆分。
-3. 新需求是 `/a-group`、`/b-group`、`/language`，並由 A 組年度列導向 `/a-group/:year`，因此不是小幅補內容，而是路由與資料模型都要改版。
-4. `subjectContent.ts` 目前引用的是長檔名 PDF，例如 `107國營事業新進職員-計算機原理、網路概論.pdf`；但實際 A 組資料夾目前是 `107.pdf` 至 `114.pdf`，需要更新來源檔案對應。
-5. 本專案已有 CI/CD workflow 與 `scripts/publishPages.mjs`，但 package scripts 缺少 `lint` 與 `test:ci`，Vite 也尚未使用參考專案的 `vite-plugin-pwa`、Icons、compression、app version 注入等設定。
-6. PWA 後續決策是完整改用 `vite-plugin-pwa`；現有 `src/app/pwa.ts` 要改成只包裝 plugin 提供的更新提示流程，不得自行註冊 service worker，也不保留兩套 service worker 註冊機制。
+1. 目前 router 已有 `/a-group`、`/a-group/:year`、`/b-group`、`/language`。
+2. 根路由目前 redirect 到 `/a-group`。
+3. 舊路由 `/information-management` 與 `/programming` 已 redirect 到 `/b-group`。
+4. A 組年度資料已支援 107 至 114，且都是 complete 狀態。
+5. A 組已有年度清單 UI、書籤、完成 checkbox、localStorage snapshot、年度導頁與年度資料 lazy import。
+6. B 組目前只有 placeholder 入口文案，尚無年度清單、年度路由與逐題解析。
+7. 語言目前只有 placeholder 入口文案，尚無年度清單、年度路由與逐題解析。
+8. 主要導覽目前只有 A 組、B 組、語言，尚無「學習」。
+9. route preloader 目前只認得 `aGroup`、`aGroupYear`、`bGroup`、`language`，尚無 B 組年度、語言年度與學習路由。
 
-### A 組 PDF
+### 來源檔案現況
 
-已讀取 `_private/計算機原理、網路概論/` 內 PDF：
+已檢視來源資料夾檔名清單，未讀取 PDF 內容：
 
-| 年度 | 檔案 | 頁數 | 文字擷取量 | 觀察 |
-| --- | --- | ---: | ---: | --- |
-| 114 | `114.pdf` | 4 | 6162 chars | 答案多為 `[C]` 換行後接 `1.` |
-| 113 | `113.pdf` | 4 | 5797 chars | 答案與題號有換行，需正規化 |
-| 112 | `112.pdf` | 4 | 7324 chars | 部分題幹跨行，需保留換行語意 |
-| 111 | `111.pdf` | 4 | 7137 chars | 可擷取 50 題答案與選項 |
-| 110 | `110.pdf` | 4 | 6309 chars | 題號與答案格式不完全一致 |
-| 109 | `109.pdf` | 4 | 6963 chars | 可擷取 50 題答案與選項 |
-| 108 | `108.pdf` | 4 | 6055 chars | 題目前可能有額外數字 |
-| 107 | `107.pdf` | 4 | 7154 chars | 會出現 `3 [D] 1.`、`6 [D] 2.` 這類格式 |
+`@/_private/資訊管理、程式設計/`：
 
-PDF 共同特徵：
+1. `107.pdf`
+2. `108.pdf`
+3. `109.pdf`
+4. `110.pdf`
+5. `111.pdf`
+6. `112.pdf`
+7. `113.pdf`
+8. `114.pdf`
 
-1. 每份試題為 A3 紙 1 張、共 4 頁。
-2. 每份為單選題 50 題，每題 2 分，共 100 分。
-3. 題目前方已有答案標記，格式不完全一致。
-4. 題幹與選項可能跨行。
-5. 會出現程式碼題、計算題、概念題、資料結構題、作業系統題、資料庫題與網路題。
-6. PDF 文字可用 PyMuPDF 擷取，但仍需正規化與人工/副代理校對。
+`@/_private/國文、英文/`：
 
-## 參考專案可移植設計
+1. `107.pdf`
+2. `108.pdf`
+3. `109.pdf`
+4. `110.pdf`
+5. `111.pdf`
+6. `112.pdf`
 
-### 路由與載入
+討論結論：
 
-參考專案使用 `vue-router` 與 `createWebHistory(import.meta.env.BASE_URL)`。
+1. B 組明確是 107 至 114 共 8 年。
+2. B 組 114 年目前確認總共 6 題，但每年題目數量不固定；PDF 轉 Markdown 時不能假設固定題數，必須先建立題目索引並逐題核對。
+3. 語言來源只做 107 至 112，其他年度暫時不補。
+4. B 組與語言的完成狀態粒度第一階段與 A 組一致，採年度層級完成狀態即可。
+5. 作圖題第一階段只需要文字圖解與 alt text，不建立正式圖像資產；但這部分必須另開圖解副代理處理，不能由主任務或一般解析副代理順手帶過。
+6. 逐題解析採批次節奏：年度 PDF → 題目索引 → 第 1 批 2 至 3 題解析 → 校稿與寫入資料模型 → 跑測試或人工抽查 → 下一批。
+7. `@/_private/.../*.md` 記憶檔是否納入 git 由使用者看完後自行決定，不列為本 change 需要解決的問題。
+8. 「學習」路由只先開 placeholder，未來可能放使用者筆記，但詳細功能尚未決定。
 
-可移植要點：
+## 建議產品方向
 
-1. 以 route loader 延遲載入主要頁面。
-2. 使用 `primaryRoutePaths` 註冊主要路由。
-3. 在 `AppShell` mounted 後 idle preload 其他主要路由。
-4. `RouterView` 包在 `KeepAlive` 中，保留頁面狀態。
+### 主路由
 
-本專案建議改成：
+| 顯示名稱 | 路由 | 狀態 | 說明 |
+| --- | --- | --- | --- |
+| A 組 | `/a-group` | 已存在 | 保留現有年度清單與逐題解析 |
+| B 組 | `/b-group` | 待擴充 | 改成年度清單，點年度進入 B 組年度申論解析 |
+| 語言 | `/language` | 待擴充 | 改成年度清單，點年度進入國文/英文年度解析 |
+| 學習 | `/learning` | 新增 placeholder | 目前只有空白路由或無內容狀態 |
 
-| 顯示名稱 | 路由 | 說明 |
+主導覽應新增「學習」，並確認 375px mobile 下四個主導覽項目不水平溢出。若四欄太擠，建議改成可換行 grid 或 compact tab，而不是縮小到不可讀。
+
+### 年度路由
+
+建議新增：
+
+| 功能 | 路由 | 說明 |
 | --- | --- | --- |
-| A 組 | `/a-group` | 年度清單，第一批完整支援 114 年 |
-| B 組 | `/b-group` | 保留路由與樣式，內容延後 |
-| 語言 | `/language` | 保留路由與樣式，內容延後或沿用後續資料 |
-| A 組年度解析 | `/a-group/:year` | 顯示該年度 50 題解析 |
+| B 組年度解析 | `/b-group/:year` | 年度範圍 107 至 114 |
+| 語言年度解析 | `/language/:year` | 年度範圍 107 至 112，其他年度暫時不補 |
 
-根路由建議 redirect 到 `/a-group`，而不是維持目前 landing page。
+B 組與語言的 invalid year 應比照 A 組進入 NotFound，例如 `/b-group/999`、`/language/abc`。
 
-舊路由遷移建議：
+B 組題目數量不得寫死。114 年目前確認 6 題，但其他年度題數不固定；年度 summary 的題數應由 PDF 轉 Markdown 後的題目索引或資料檔實際內容推導。
 
-| 舊路由 | 新行為 |
-| --- | --- |
-| `/computer-principles` | redirect 到 `/a-group` |
-| `/networking` | redirect 到 `/a-group` |
-| `/information-management` | redirect 到 `/b-group` |
-| `/programming` | redirect 到 `/b-group` |
-| `/language` | 保留為語言主路由 |
+## B 組設計決策
 
-年度路由行為：
+### UI 與互動
 
-1. `/a-group/114` 第一批完整呈現 50 題解析。
-2. `/a-group/107` 至 `/a-group/113` 第一批可進入待製作頁，標示「版型確認後製作」，不得顯示成完整解析。
-3. `/a-group/999`、`/a-group/abc`、`/a-group/115` 等不在 107 至 114 範圍內的年度，一律進入 NotFound 頁。
+B 組年度清單應與 A 組一致：
 
-### N5 文法視覺模式
+1. 使用同樣的 surface card 視覺。
+2. 每個年度列有中央可點擊導頁區。
+3. 左側或固定區域提供書籤操作。
+4. 右側提供完成 checkbox。
+5. 點書籤與 checkbox 時不可觸發導頁。
+6. 書籤與完成狀態 reload 後保留。
+7. 完成某年度時，若該年度是目前書籤，應清除或依明確規則處理；建議沿用 A 組「完成後清除同年度書籤」。
 
-參考專案的 `/n5-grammar` 主要由以下元素組成：
+### B 組資料模型
 
-1. `.n5-grammar-view`
-2. `.n5-grammar-section-card`
-3. `.n5-grammar-section-header`
-4. `.n5-grammar-section-bookmark-hit-area`
-5. `.n5-grammar-section-completion-hit-area`
-6. `.n5-grammar-section-toggle`
-7. `.n5-grammar-section-body`
-8. `.n5-grammar-topic-card`
-9. `.n5-grammar-example-card`
-10. `.n5-grammar-table-shell`
-11. `.n5-grammar-table`
-
-本專案應採用同一套視覺語彙，但互動要依需求調整：
-
-1. A 組年度清單列使用 N5 section header 的視覺。
-2. 年度列中左側保留書籤、右側保留完成 checkbox。
-3. 點選年度列中央區域時導向 `/a-group/:year`。
-4. 點擊書籤或 checkbox 時必須 `preventDefault` 與 `stopPropagation`，不可導頁。
-5. 年度清單不採用展開/收納；它是導頁清單。
-6. 年度解析頁可使用同樣的 sticky 題目 header 與 topic card 樣式，但預設應直接呈現題目與解析，避免把主要內容藏在收納中。
-
-### 狀態儲存
-
-參考專案的狀態模式：
-
-1. 完成狀態寫入 localStorage snapshot。
-2. 書籤只保留目前閱讀位置。
-3. 完成某 section 時會清掉該 section 書籤。
-4. 完成 section 會移到 finished zone，且 finished zone 不顯示書籤按鈕。
-5. reload 與離線時狀態仍要保留。
-
-本專案建議建立獨立 storage key：
-
-1. `finpub.exam.aGroup.completedYears`
-2. `finpub.exam.aGroup.bookmark`
-3. 後續若支援題目層級進度，再新增 `finpub.exam.aGroup.completedQuestions`
-
-年度清單第一階段只需要年度層級完成與書籤即可；題目層級完成狀態可列為後續擴充，避免第一階段爆量。
-
-### 資料分檔
-
-參考專案 N5 文法資料型別包含：
-
-1. section id/title/description
-2. presentationMode
-3. order/category
-4. topics/sharedNotes
-5. compare table 與 table examples
-6. sourceRefs
-
-A 組建議建立類似但更貼近考題的型別：
+B 組是申論題，不應沿用 A 組四選一選項型別。建議建立獨立型別：
 
 ```ts
-export interface ExamYearSummary {
-  year: '114' | '113' | '112' | '111' | '110' | '109' | '108' | '107';
-  title: string;
-  sourceFile: string;
-  questionCount: 50;
-  subjects: ['計算機原理', '網路概論'];
-}
-
-export interface ExamQuestionAnalysis {
-  year: string;
+export interface BGroupEssayQuestionAnalysis {
+  year: BGroupYear;
   number: number;
-  acceptedAnswers: ('A' | 'B' | 'C' | 'D')[];
-  answerNote: string | null;
-  answerVerification: 'verified' | 'suspected-error' | 'needs-review';
-  originalStem: string;
-  options: Record<'A' | 'B' | 'C' | 'D', string>;
-  coreTerms: string[];
-  beginnerExplanation: string;
-  solvingSteps: string[];
-  optionExplanations: Record<'A' | 'B' | 'C' | 'D', string>;
-  keyTakeaways: string[];
-  tags: string[];
+  originalQuestion: string;
+  questionExplanation: string;
+  modelAnswer: string;
+  modelAnswerDetails: string;
+  diagramInstructions: string[];
+  diagramAltText: string | null;
+  keyTerms: string[];
+  scoringPoints: string[];
+  commonMistakes: string[];
   sourceRef: {
-    file: string;
-    page: number | null;
-    extractionStatus: 'extracted' | 'needs-review';
+    fileName: string;
+    pageNumber?: number;
+    originalExcerpt: string;
+    extractionStatus: 'verified' | 'needs-review';
+    adContentRemoved: boolean;
   };
+  reviewStatus: 'draft' | 'reviewed' | 'needs-review';
 }
 ```
 
-建議資料分檔：
+資料分檔建議：
 
-1. `src/modules/examGroups/aGroup/data/yearSummaries.ts`
-2. `src/modules/examGroups/aGroup/data/years/114.ts`
-3. `src/modules/examGroups/aGroup/data/years/113.ts`
-4. `src/modules/examGroups/aGroup/data/years/112.ts`
-5. `src/modules/examGroups/aGroup/data/years/111.ts`
-6. `src/modules/examGroups/aGroup/data/years/110.ts`
-7. `src/modules/examGroups/aGroup/data/years/109.ts`
-8. `src/modules/examGroups/aGroup/data/years/108.ts`
-9. `src/modules/examGroups/aGroup/data/years/107.ts`
-10. `src/modules/examGroups/aGroup/composables/useAGroupYearQuestions.ts`
+1. `src/modules/examGroups/bGroup/data/yearSummaries.ts`
+2. `src/modules/examGroups/bGroup/data/years/114.ts`
+3. `src/modules/examGroups/bGroup/data/years/113.ts`
+4. 依此到 `107.ts`
+5. `src/modules/examGroups/bGroup/composables/useBGroupYearQuestions.ts`
+6. `src/modules/examGroups/bGroup/storage/bGroupProgressStorage.ts`
+7. `src/modules/examGroups/bGroup/types/essayQuestionAnalysis.ts`
 
-`useAGroupYearQuestions` 應依 route year lazy import 對應年度檔，不應在 A 組清單頁一次載入 400 題解析。
+B 組年度資料必須 lazy import，不可在 `/b-group` 清單頁一次載入所有年度申論解析。`/b-group` 只載入年度 summary；`/b-group/:year` 才載入該年度資料。
 
-## PDF 擷取與解析規格
+### B 組內容模板
 
-PDF 不能直接用單一 regex 切題，需先做正規化。
+每題至少包含：
 
-### 正規化規則
+1. 問題。
+2. 問題講解。
+3. 擬答。
+4. 擬答詳細說明。
+5. 評分重點。
+6. 常見錯誤。
+7. 關鍵名詞。
+8. 若需要作圖，提供精準的文字圖解與替代文字，不直接用廣告或來源圖浮水印。
+9. 來源 PDF、頁碼、擷取狀態與廣告排除標記。
 
-1. 將 `[C]\n1.` 合併成 `[C] 1.`。
-2. 將 `3 [D] 1.` 正規化為答案 `[D]`、題號 `1`，前置數字只保留為 extraction note。
-3. 保留題幹中的程式碼換行，例如 C 語言 `#include <stdio.h>` 與函式區塊。
-4. 保留跨行題幹，但輸出到資料檔時要整理成可讀文字。
-5. 選項必須完整對應 A/B/C/D。
-6. 每題都要標示 `extractionStatus`，未人工確認前不得標成 fully verified。
+文字圖解與 alt text 規則：
 
-### 逐題解析模板
+1. 需要作圖的題目必須另開圖解副代理。
+2. 圖解副代理負責把圖的節點、箭頭、方向、層級、標籤與流程關係寫成可審查的文字。
+3. alt text 必須能讓未看圖的人理解圖中所有關鍵元素與關係。
+4. 圖解副代理不得沿用 PDF 中的廣告圖、水印圖、補習班樣板圖或含廣告的截圖描述。
+5. 校稿副代理需檢查文字圖解與 alt text 是否和題目要求、擬答內容一致。
 
-每題都應包含：
+題數規則：
 
-1. 官方答案檢查。
-2. 原始題目與選項。
-3. 初學者背景說明。
-4. 題目問法拆解。
-5. 解題流程或判斷流程。
-6. A/B/C/D 每個選項解析。
-7. 重點統整。
-8. 常見陷阱。
-9. 題目標籤。
-10. 來源 PDF 與頁碼。
+1. 不預設每年固定題數。
+2. 每年 PDF 轉 Markdown 後先產生題目索引，列出題號、頁碼、題型、是否需作圖、擷取狀態。
+3. 114 年目前以 6 題作為第一個垂直切片的預期範圍，但仍必須由題目索引校對副代理重新確認，不可直接寫死。
+4. 其他年度依實際 PDF 題目數建立資料，不補空題、不硬湊固定數量。
 
-### 114 年範例題型確認
+### B 組批次節奏與副代理流程
 
-已從 `114.pdf` 抽樣確認，前段包含：
+主任務每一年從 114 年開始，逐年往前處理。每個年度都採以下節奏：
 
-1. 6 位元 2 的補數加法。
-2. 馮紐曼架構基本組成。
-3. Python list 與 tuple 差異。
-4. CRC 錯誤偵測。
-5. Hamming Code。
-6. Transaction 的 ACID。
-7. 優先權排程與 Aging。
-8. 二元樹前序/中序推後序。
-9. Bucket Sort 時間複雜度。
-10. 穩定排序定義。
-11. Memory Hierarchy。
-12. Java 介面與多重繼承。
-13. 強型別與動態型別。
-14. C 語言函式呼叫與輸出追蹤。
+```text
+年度 PDF
+  ↓
+題目索引
+  ↓
+第 1 批 2 至 3 題解析
+  ↓
+校稿 + 寫入資料模型
+  ↓
+跑測試/人工抽查
+  ↓
+下一批
+```
 
-因此 A 組解析不應只分成「計算機原理」與「網路概論」兩大段，還需要更細的 tags，例如：
+批次規則：
 
-1. 資料表示與補數
-2. 錯誤偵測與編碼
-3. 作業系統
-4. 資料結構
-5. 演算法
-6. 程式語言
-7. 資料庫
-8. 計算機組織
-9. 網路分層
-10. 網路安全
+1. 沒有完成該年度題目索引前，不開始逐題解析。
+2. 每批建議 2 至 3 題，避免一次開太多副代理導致整併與校稿失控。
+3. 同一批內可並行處理不同題目。
+4. 每批必須完成校稿、資料寫入、內容完整性測試或人工抽查後，才進入下一批。
+5. 若某題被標為高風險，該題必須暫停進批次完成條件，先加開第二解析副代理交叉驗證。
 
-## 副代理分工建議
+副代理角色：
 
-每個年度 50 題，A 組共 400 題。第一批只處理 114 年，等使用者確認版型後，再以同樣任務模式一次完成 107 至 113 年。
+1. **PDF 轉 Markdown 副代理**
+   - 讀取該年度 PDF。
+   - 排除廣告水印、廣告圖片、廣告網址與無關補習班資訊。
+   - 先建立題目索引，確認該年度實際題數，避免把頁首、頁尾、廣告或水印誤切成題目。
+   - 產出同名 Markdown 記憶檔到 `@/_private/資訊管理、程式設計/`。
+   - 檔名與 PDF 對應，例如 `114.md`。
 
-每題分工：
+2. **題目索引校對副代理**
+   - 依 PDF 轉 Markdown 結果建立題目索引。
+   - 核對題號、頁碼、題型、是否需作圖、擷取信心與廣告排除狀態。
+   - 114 年雖目前預期為 6 題，仍需重新確認題目索引，避免把頁尾、附註、廣告或跨頁內容誤判成題目。
+   - 對題數不固定的年度，這一步是逐題解析的前置門檻。
 
-1. **PDF 擷取者**
-   - 從 PDF 擷取答案、題號、題幹、選項與頁碼。
+3. **主解析副代理**
+   - 每題固定開一個主解析副代理。
+   - 一次產出完整初稿，包含問題、問題講解、擬答、擬答詳細說明、評分重點、常見錯誤與關鍵名詞。
+   - 輸出要標明依據、假設與不確定處。
 
-2. **格式校對者**
-   - 檢查題幹跨行、選項斷行、程式碼與特殊符號是否正確。
+4. **圖解副代理**
+   - 若題目需要作圖、流程圖、架構圖、資料流程圖、ERD、樹狀圖或網路拓樸，主任務需另開圖解副代理。
+   - 圖解副代理只產出文字圖解與 alt text，不產出正式 PNG/SVG 圖像資產。
+   - 圖解內容必須精準描述節點、箭頭、方向、關係、層級與必要標籤。
+   - 若題目不需要作圖，需明確標示「不需圖解」。
 
-3. **官方答案驗證者**
-   - 判斷官方答案是否合理；若有疑慮標示 `suspected-error`。
+5. **第二解析副代理**
+   - 只在高風險題開啟，不是每題固定開。
+   - 高風險條件包含 PDF 擷取不清、題意模糊、答案可能有爭議、題目涉及制度/標準/年份、需要嚴格計算、需圖解但圖形關係複雜、或主解析副代理標記不確定。
+   - 只要符合任一高風險條件，就必須開第二解析副代理，不能由主任務自行略過。
+   - 第二解析副代理負責交叉驗證，不直接覆蓋主解析。
 
-4. **初學者教學者**
-   - 解釋核心名詞與背景概念。
+6. **逐題審稿副代理**
+   - 檢查答案正確性、術語、邏輯、格式、繁體中文、是否誤收廣告。
+   - 若題目有文字圖解與 alt text，需檢查圖解是否精準、是否漏節點、箭頭方向是否正確、alt text 是否足以替代圖像。
+   - 若主解析與第二解析副代理有衝突，審稿副代理需列出差異與建議採用版本。
+   - 有疑慮時標記 `needs-review`，不能硬寫成 verified。
 
-5. **解題推導者**
-   - 針對計算題、程式題、資料結構題逐步推導。
+7. **主任務整併與寫入專案**
+   - 主任務負責決策、整併與寫入，不再為每題固定加開整併副代理。
+   - 若題目同時有主解析、圖解、第二解析與審稿輸出，主任務依審稿意見整合成最終版本。
+   - 產出每題 Markdown 到 `@/_private/資訊管理、程式設計/<年份>/`，檔名建議 `Q01.md`、`Q02.md`。
+   - 只把校稿後內容轉入 `src/` 的 TypeScript 資料檔。
+   - 不把廣告、水印、補習班網址或無關行銷文字寫入本專案。
 
-6. **選項解析者**
-   - 逐一解析 A/B/C/D。
+## 語言設計決策
 
-7. **考點歸類者**
-   - 產生 tags、常見陷阱與複習重點。
+### UI 與互動
 
-8. **整合審稿者**
-   - 統一語氣、繁體中文、資料結構與格式。
+語言路由沿用 B 組模式：
 
-## CI/CD 調整
+1. `/language` 顯示年度清單。
+2. `/language/:year` 顯示該年度國文與英文解析。
+3. 年度列有書籤、完成 checkbox、中央導頁。
+4. 進度 storage 與 B 組/A 組分開，避免互相污染。
 
-參考專案 CI：
+### 語言資料模型
 
-1. `pull_request` 與 push 時執行。
-2. 忽略 `gh-pages` push。
-3. 使用 Node.js 22。
-4. `npm ci`
-5. `npm run lint`
-6. `npm run typecheck`
-7. `npm run test:unit`
-8. `npm run build`
-9. 安裝 Playwright Chromium。
-10. `npm run test:e2e`
-11. 失敗時上傳 Playwright diagnostics。
+語言題型可能包含國文閱讀、作文、英文文法、字彙、克漏字與閱讀理解。建議建立比 B 組更彈性的 union：
 
-參考專案 CD：
+```ts
+export type LanguageQuestionKind =
+  | 'chinese-reading'
+  | 'chinese-composition'
+  | 'english-grammar'
+  | 'english-vocabulary'
+  | 'english-cloze'
+  | 'english-reading'
+  | 'mixed';
 
-1. `dev` 發 staging。
-2. `main` 發 production。
-3. production base path 為 `/Spectra-Learning-Japanese/`。
-4. staging base path 為 `/Spectra-Learning-Japanese/staging/`。
-5. 使用 `scripts/publishPages.mjs` 同步 `dist` 到 `gh-pages`。
-6. staging 發布到 `gh-pages/staging`。
-7. production 發布到 `gh-pages` 根目錄。
+export interface LanguageQuestionAnalysis {
+  year: LanguageYear;
+  number: number;
+  kind: LanguageQuestionKind;
+  originalQuestion: string;
+  questionExplanation: string;
+  modelAnswer: string;
+  modelAnswerDetails: string;
+  teacherNotes: string[];
+  beginnerLevelNotes: string[];
+  vocabularyNotes: string[];
+  grammarNotes: string[];
+  sourceRef: {
+    fileName: string;
+    pageNumber?: number;
+    originalExcerpt: string;
+    extractionStatus: 'verified' | 'needs-review';
+    adContentRemoved: boolean;
+  };
+  reviewStatus: 'draft' | 'reviewed' | 'needs-review';
+}
+```
 
-本專案現況已有相似 CD，base path 是 `/finPubTest/` 與 `/finPubTest/staging/`。PWA 決策是完整改用 `vite-plugin-pwa`，使 build 產物、manifest、service worker 與快取策略由 Vite plugin 統一管理。
+### 英文題教學身分
 
-需要補齊：
+英文題的副代理應明確使用以下教學設定：
 
-1. `package.json` 增加 `lint` 與 `test:ci`。
-2. 視需要加入 ESLint 設定。
-3. `package.json` 增加 `vite-plugin-pwa`、`workbox-window`、`vite-plugin-compression`，以及 app version 或 icon 需要的套件。
-4. Vite 補上 `VitePWA`、manifest、workbox runtime caching、compression 與 app version。
-5. 移除手寫 `service-worker.js` 註冊路徑，並把 `src/app/pwa.ts` 改成只處理 `vite-plugin-pwa` 的更新提示，不再自行註冊 service worker。
-6. CI/CD 保留本專案目前額外的 PWA output 驗證，並補上參考專案已有的 lint。
-7. 發布 repository slug 仍暫定為 `finPubTest`，除非正式部署前另行更名。
+1. 身分：英文老師。
+2. 受眾：國二程度英文學生。
+3. 教學語氣：繁體中文說明為主，英文例句可保留英文。
+4. 解釋重點：先用學生能懂的詞彙講概念，再補正式文法名稱。
+5. 禁止只翻譯答案；必須說明為什麼其他選項不適合。
+
+### 語言批次節奏與副代理流程
+
+語言也採與 B 組相同的批次生產線，不能一次處理全部年度或全部題目：
+
+```text
+年度 PDF
+  ↓
+題目索引
+  ↓
+第 1 批 2 至 3 題解析
+  ↓
+校稿 + 寫入資料模型
+  ↓
+跑測試/人工抽查
+  ↓
+下一批
+```
+
+語言批次規則：
+
+1. 沒有完成該年度題目索引前，不開始逐題解析。
+2. 每批建議 2 至 3 題，同一批內可並行處理不同題目。
+3. 題目索引階段必須先分類 `LanguageQuestionKind`，再分派副代理；不可先解析後補分類。
+4. 每題固定開主解析副代理與審稿副代理。
+5. 英文題的主解析副代理必須使用英文老師身分與國二程度受眾設定。
+6. 國文作文、國文閱讀、英文文法、字彙、克漏字與閱讀理解應使用不同解析重點，避免套錯模板。
+7. 若語言題涉及圖表、流程、文章結構圖或作文架構圖，另開圖解副代理產出文字圖解與 alt text。
+8. 高風險題必須開第二解析副代理交叉驗證。
+9. 每批必須完成校稿、資料寫入、內容完整性測試或人工抽查後，才進入下一批。
+
+### 語言來源決策
+
+目前 `@/_private/國文、英文/` 可見 107 至 112 PDF。使用者已確認語言來源只做 107 至 112，其他年度暫時不補。
+
+1. 語言年度清單只顯示 107 至 112。
+2. `/language/:year` 只接受 107 至 112。
+3. `/language/113`、`/language/114` 與其他不支援年度應進 NotFound。
+4. 語言年度資料必須 lazy import，不可在 `/language` 清單頁一次載入所有年度解析。
+
+## 廣告與水印排除規則
+
+B 組與語言來源 PDF 可能包含非官方補習班素材。正式規格應明確要求：
+
+1. 不得把廣告水印寫入 `src/`。
+2. 不得把廣告圖片轉成內容。
+3. 不得把廣告網址、補習班行銷文案、聯絡資訊寫入本專案。
+4. PDF 轉 Markdown 記憶檔也應排除廣告，或若為校稿需要暫存，必須標記為排除項且不得進入正式資料。
+5. 每題資料應有 `adContentRemoved: true` 或等價欄位，表示已做廣告排除檢查。
+6. 校稿副代理需把「是否誤收廣告」列為必查項。
+
+## 新增「學習」路由
+
+需求是新增路由名稱「學習」，目前沒有內容。建議：
+
+1. 路由使用 `/learning`。
+2. AppShell 主導覽新增「學習」。
+3. 建立 `LearningView.vue` placeholder。
+4. placeholder 僅顯示目前沒有內容，不建立假資料。
+5. route preload 支援 `learning`。
+6. e2e 驗證 `/learning` 可到達且不顯示 NotFound。
+7. 未來可能承載使用者筆記，但本 change 不設計筆記功能、資料模型或編輯流程。
+
+## Interface Depth Check
+
+本次會引入新模組與新路由，屬於需要界面深度檢查的變更。
+
+1. **Seam location**
+   - B 組合約放在 `src/modules/examGroups/bGroup/`。
+   - 語言合約放在 `src/modules/examGroups/language/`。
+   - 學習 placeholder 放在新的 `src/modules/learning/` 或 `src/modules/examGroups/learning/`，建議若未來會獨立於考題組別，使用 `src/modules/learning/`。
+
+2. **Adapter count**
+   - 每個群組只需要一層 route loader 加一層年度資料 loader。
+   - 不建議為 B 組/語言再疊一層空的 generic adapter，否則只會轉呼叫。
+
+3. **Depth**
+   - B 組與語言 loader 不只是 forward calls，應負責年度合法性、lazy import、資料 shape 驗證或錯誤狀態。
+   - storage module 應負責 snapshot parse、版本、無效資料 fallback、完成年度清除書籤等行為。
+
+4. **Deletion test**
+   - 刪掉 B 組模組會使 `/b-group`、`/b-group/:year`、B 組 storage 與逐題資料全部失效。
+   - 刪掉語言模組會使 `/language`、`/language/:year` 與英文/國文解析資料失效。
+   - 刪掉學習模組只會讓 `/learning` placeholder 失效；因此學習模組第一階段應保持很薄，不要過早建立複雜抽象。
 
 ## 建議任務拆分
 
-正式 `tasks.md` 可以破百個任務，不需要壓成大型工作項。建議採取「架構任務小步化、內容任務逐題化」的方式。
+### 1. 路由與導覽
 
-### 架構與路由任務
+1. 新增 `/b-group/:year` 路由。
+2. 新增 `/language/:year` 路由。
+3. 新增 `/learning` 路由。
+4. AppShell 導覽新增「學習」。
+5. route preload 新增 `bGroupYear`、`languageYear`、`learning`。
+6. invalid B 組年度進 NotFound。
+7. invalid 語言年度進 NotFound。
+8. 補 e2e 驗證四個主路由與年度路由。
 
-1. 建立正式 Spectra change。
-2. 建立 `/a-group`、`/b-group`、`/language` 三個主路由。
-3. 建立 `/a-group/:year` 年度解析路由。
-4. 將根路由 redirect 到 `/a-group`。
-5. 將 `/computer-principles` redirect 到 `/a-group`。
-6. 將 `/networking` redirect 到 `/a-group`。
-7. 將 `/information-management` redirect 到 `/b-group`。
-8. 將 `/programming` redirect 到 `/b-group`。
-9. 保留 `/language` 作為語言主路由。
-10. 建立 invalid year guard，限制 A 組年度只接受 107 至 114。
-11. 建立 `/a-group/107` 至 `/a-group/113` 待製作狀態頁。
-12. 建立 invalid year 一律進入 NotFound 的錯誤處理。
-13. 移植參考專案 route preload。
-14. 移植 RouteTabs 或建立對應的組別導覽元件。
-15. 調整 AppShell 框架與 `KeepAlive` 行為。
+### 2. B 組年度清單與狀態
 
-### 視覺與互動任務
+1. 建立 B 組年度 summary，範圍 114 至 107。
+2. 年度題數由實際資料推導或由 PDF 轉 Markdown 題目索引填入，不寫死固定題數。
+3. 改寫 `BGroupView.vue` 為年度清單。
+4. 建立 B 組 progress storage。
+5. B 組書籤 reload 後保留。
+6. B 組完成狀態 reload 後保留。
+7. B 組完成年度後清除同年度書籤。
+8. 補 unit 與 e2e。
 
-1. 移植或改寫 `.n5-grammar-view` 樣式。
-2. 移植或改寫 `.n5-grammar-section-card` 樣式。
-3. 移植或改寫 `.n5-grammar-section-header` 樣式。
-4. 移植或改寫左側書籤 hit area。
-5. 移植或改寫右側完成 checkbox hit area。
-6. 建立 A 組年度列元件。
-7. 建立年度列中央導頁行為。
-8. 確認書籤點擊不導頁。
-9. 確認 checkbox 點擊不導頁。
-10. 建立年度解析頁題目 header 樣式。
-11. 建立題目解析 topic card 樣式。
-12. 建立 375px mobile 版型測試。
+### 3. B 組資料與年度頁
 
-### 狀態與資料任務
+1. 建立 B 組申論題型別。
+2. 建立 B 組年度資料 lazy loader。
+3. 建立 B 組年度解析頁。
+4. 建立 B 組申論題卡元件。
+5. 建立 B 組資料 shape validation。
+6. 先完成 114 年垂直切片。
+7. 依序完成 113 至 107。
 
-1. 建立 `ExamYearSummary` 型別。
-2. 建立 `ExamQuestionAnalysis` 型別。
-3. 建立 `yearSummaries.ts`，列出 114 至 107。
-4. 建立 `114.ts` 年度資料檔。
-5. 建立 107 至 113 年 placeholder 資料檔。
-6. 建立 `useAGroupYearQuestions` lazy loader。
-7. 建立 `finpub.exam.aGroup.completedYears` storage。
-8. 建立 `finpub.exam.aGroup.bookmark` storage。
-9. 建立完成年度後清除同年度書籤的規則。
-10. 建立 storage snapshot schema 驗證。
+### 4. B 組 PDF 轉 Markdown 與逐題解析
 
-### PWA 與 CI/CD 任務
+每一年都先執行年度前置流程，再依批次處理題目：
 
-1. 安裝 `vite-plugin-pwa`。
-2. 安裝 `workbox-window`。
-3. 安裝 `vite-plugin-compression`。
-4. 在 `vite.config.ts` 加入 `VitePWA`。
-5. 設定 PWA manifest。
-6. 設定 workbox navigation cache。
-7. 設定 staging 與 production start URL。
-8. 移除手寫 service worker 註冊。
-9. 將 `src/app/pwa.ts` 改成 plugin 更新提示 wrapper。
-10. 補上 app version 注入。
-11. 補上 gzip 與 brotli compression。
-12. 補上 `lint` script。
-13. 補上 `test:ci` script。
-14. CI 加入 lint。
-15. CI 保留 PWA output 驗證。
-16. CD 保留 `dev` staging 與 `main` production。
+1. PDF 轉 Markdown 記憶檔。
+2. 建立題目索引並確認實際題數。
+3. 廣告/水印/網址排除檢查。
+4. 題目切分與頁碼標記。
+5. 將題目切成每批 2 至 3 題。
+6. 每題固定開主解析副代理，產出完整初稿。
+7. 需要作圖的題目另開圖解副代理，產出精準文字圖解與 alt text。
+8. 高風險題另開第二解析副代理交叉驗證。
+9. 每題固定開審稿副代理，含圖解精準性檢查。
+10. 主任務整併並寫入資料模型。
+11. 對該批跑內容完整性測試或人工抽查。
+12. 該批通過後才進入下一批。
 
-### PDF 擷取任務
+### 5. 語言年度清單與狀態
 
-1. 建立 PDF 擷取工具或腳本。
-2. 建立題號與答案正規化規則。
-3. 建立跨行題幹正規化規則。
-4. 建立選項 A/B/C/D 完整性檢查。
-5. 建立程式碼題保留換行規則。
-6. 建立頁碼來源標記。
-7. 擷取 `114.pdf` 第 1 頁。
-8. 擷取 `114.pdf` 第 2 頁。
-9. 擷取 `114.pdf` 第 3 頁。
-10. 擷取 `114.pdf` 第 4 頁。
-11. 校對 114 年 50 題題號。
-12. 校對 114 年 50 題答案。
-13. 校對 114 年 50 題選項。
+1. 建立語言年度 summary。
+2. 年度範圍固定為 107 至 112，其他年度暫時不補。
+3. 改寫 `LanguageGroupView.vue` 為年度清單。
+4. 建立語言 progress storage。
+5. 語言書籤 reload 後保留。
+6. 語言完成狀態 reload 後保留。
+7. 補 unit 與 e2e。
 
-### 114 年逐題任務拆法
+### 6. 語言資料與年度頁
 
-114 年每一題至少拆成三個任務：
+1. 建立語言題型 union。
+2. 建立語言年度資料 lazy loader。
+3. 建立語言年度解析頁。
+4. 建立語言題卡元件。
+5. 語言也採每批 2 至 3 題處理。
+6. 英文題加入國二程度教學 notes。
+7. 國文題加入閱讀/作文/文意解析 notes。
+8. 高風險語言題必須開第二解析副代理交叉驗證。
+9. 先完成 112 年垂直切片。
+10. 依序完成其他年度。
 
-1. `114-Qxx` PDF 擷取與格式校對。
-2. `114-Qxx` 官方答案驗證與教學解析。
-3. `114-Qxx` 選項解析、tags 與審稿。
+### 7. 學習路由
 
-以 50 題計算，逐題任務至少是 150 個。正式 `tasks.md` 可以展開成：
+1. 建立 `LearningView.vue`。
+2. 新增 `/learning` route。
+3. AppShell 顯示「學習」。
+4. route preload 支援 learning。
+5. e2e 驗證 `/learning` 可到達。
+6. placeholder 不建立假內容。
 
-1. `114-Q01` 擷取與校對。
-2. `114-Q01` 答案驗證與教學解析。
-3. `114-Q01` 選項解析與審稿。
-4. `114-Q02` 擷取與校對。
-5. `114-Q02` 答案驗證與教學解析。
-6. `114-Q02` 選項解析與審稿。
-7. 依此模式持續到 `114-Q50`。
+### 8. 驗證與品質門檻
 
-完成 114 年後，等待使用者確認版型；確認後再用同樣模式一次展開 107 至 113 年。
+1. `npm run lint`
+2. `npm run typecheck`
+3. `npm run test:unit`
+4. `npm run build`
+5. `npm run check:pwa-output`
+6. `npm run test:e2e`
+7. 每個年度資料檔都有內容完整性測試。
+8. 每個 PDF 轉 Markdown 檔都有廣告排除檢查紀錄。
+9. 中文內容需 UTF-8 正確保存，不能有亂碼、問號替代字元或可見 BOM。
 
 ## 驗收標準
 
-1. 根路由進入後可到達 `/a-group`。
-2. `/a-group`、`/b-group`、`/language` 三個主路由存在。
-3. `/a-group` 顯示 114、113、112、111、110、109、108、107 共 8 個年度列。
-4. 年度列視覺與參考專案 N5 section header 一致。
-5. 年度列中央點擊會導向 `/a-group/:year`。
-6. 年度列左側書籤點擊不導頁，且 reload 後保留。
-7. 年度列右側 checkbox 點擊不導頁，且 reload 後保留。
-8. 完成年度後，若該年度是書籤，書籤應被清除或依明確規則處理。
-9. 第一批 `/a-group/114` 完整呈現 50 題原始題目、答案、選項與 AI 教學解析。
-10. 第一批 `/a-group/107` 至 `/a-group/113` 可導覽，但必須顯示待製作狀態，不得顯示成完整解析。
-11. 題目解析包含官方答案檢查、初學者背景、解題流程、逐選項解析、重點統整與 tags。
-12. PDF 題目資料來源指向實際存在的 `107.pdf` 至 `114.pdf`。
-13. 舊路由 `/computer-principles` 與 `/networking` redirect 到 `/a-group`。
-14. 舊路由 `/information-management` 與 `/programming` redirect 到 `/b-group`。
-15. `/a-group/999`、`/a-group/abc`、`/a-group/115` 等 invalid year 一律進入 NotFound。
-16. 375px mobile viewport 不得水平溢出。
-17. sticky header、書籤、checkbox、年度導頁、舊路由 redirect、invalid year 需有 unit/component/e2e 測試。
-18. 完整改用 `vite-plugin-pwa`，不得同時保留手寫 service worker 註冊與 plugin service worker 註冊。
-19. CI 在 PR/push 跑 lint、typecheck、unit、build、e2e 與 PWA output 驗證。
-20. CD 在 `dev` 發 staging，在 `main` 發 production，且 base path 指向本專案 repository slug。
-21. 所有新增或修改的中文內容以 UTF-8 正確保存，無 BOM、無亂碼、無問號替代字元、無替代字元。
+1. `/b-group` 顯示 114 至 107 年度清單。
+2. `/b-group/:year` 可顯示該年度 B 組申論題解析。
+3. B 組每題包含問題、問題講解、擬答、擬答詳細說明。
+4. B 組不假設固定題數；114 年雖預期 6 題，仍需由題目索引校對副代理重新確認，其他年度依 PDF 實際題數建立。
+5. B 組需要作圖的題目必須由圖解副代理產出精準文字圖解與替代文字。
+6. 文字圖解需描述節點、箭頭、方向、層級、標籤與流程關係；alt text 需足以替代圖像理解。
+7. B 組內容不得包含補習班廣告、水印文字、廣告圖片描述或廣告網址。
+8. `/language` 顯示 107 至 112 年度清單。
+9. `/language/:year` 可顯示該年度國文與英文解析。
+10. `/language/113`、`/language/114` 進 NotFound。
+11. 英文題解析符合英文老師、國二程度學生的教學設定。
+12. 語言題目索引階段必須先分類題型，避免英文老師副代理或國文解析模板套錯題目。
+13. 語言內容不得包含補習班廣告、水印文字、廣告圖片描述或廣告網址。
+14. B 組與語言都有獨立書籤與年度完成狀態，不與 A 組互相污染。
+15. `/learning` 可到達，顯示目前沒有內容，不進 NotFound。
+16. 主導覽包含 A 組、B 組、語言、學習。
+17. 375px mobile viewport 不水平溢出。
+18. invalid B 組與語言年度進 NotFound。
+19. 所有逐題資料都有來源 PDF、頁碼或待確認頁碼、原題摘錄、擷取狀態、廣告排除狀態與校稿狀態。
+20. 每批 2 至 3 題需完成校稿、資料寫入、內容完整性測試或人工抽查後，才進入下一批。
+21. 內容完整性測試能擋下缺少問題講解、擬答或擬答詳細說明的題目。
+22. B 組與語言年度資料都必須 lazy import，清單頁不得一次載入所有年度逐題解析。
+23. 符合高風險條件的題目必須有第二解析副代理交叉驗證紀錄。
+24. CI/CD 原有驗證維持通過。
 
-## 後續批次規劃
+## 已確認決策
 
-1. 第一批 change 驗收完成後，使用者確認 114 年版型。
-2. 使用者確認版型後，第二批再一次完成 107 至 113 年逐題解析。
-3. 第二批沿用第一批的資料型別、PDF 擷取規則、逐題任務拆法與版型，不重新討論架構。
-
-## 風險與待確認
-
-1. 400 題逐題解析內容量很大；第一批只做 114 年，107 至 113 年放入後續批次規劃。
-2. PDF 答案與題號格式不一致，擷取流程需要正規化與人工/副代理校對。
-3. 目前本專案資料模型是主題式講義，不是逐題解析；沿用會造成需求落差，建議建立新資料模型。
-4. 目前本專案 route 是按科目，不符合 A/B/語言分組，需要明確替換或遷移。
-5. 參考專案 N5 頁面原本是展開/收納 section，本專案年度清單需求是導頁，因此只能移植視覺與狀態控制，不應照搬展開 body 行為。
-6. 完整改用 `vite-plugin-pwa` 時，`src/app/pwa.ts` 只能作為 plugin 更新提示 wrapper，避免 service worker 註冊衝突。
-7. B 組與語言目前只明確指定路由與題科；若也要逐題解析，需要另讀對應 PDF 並另開資料處理流程。
+1. 語言來源只做 107 至 112，其他年度暫時不補。
+2. B 組 114 年目前預期總共 6 題，但仍需由題目索引校對副代理重新確認；每年題目數量不固定，PDF 轉 Markdown 時要特別小心題目切分。
+3. B 組與語言的完成狀態第一階段與 A 組一致，採年度層級完成即可。
+4. 作圖題第一階段用文字圖解與 alt text 即可，但必須另開圖解副代理，並把圖解精準性納入校稿。
+5. 副代理流程採批次生產線：年度 PDF → 題目索引 → 每批 2 至 3 題解析 → 校稿與寫入資料模型 → 跑測試或人工抽查 → 下一批。
+6. 每題固定開主解析副代理與審稿副代理；圖解副代理與第二解析副代理採條件式加開。
+7. 高風險題只要符合 PDF 擷取不清、題意模糊、答案爭議、制度/標準/年份、嚴格計算、複雜圖解或主解析不確定任一條件，就必須開第二解析副代理。
+8. B 組與語言年度資料都必須 lazy import，避免清單頁 bundle 膨脹。
+9. 每題都要保留來源 PDF、頁碼或待確認頁碼、原題摘錄、擷取狀態、廣告排除狀態與校稿狀態。
+10. 語言題目索引階段必須先分類題型，避免副代理身分與解析模板用錯。
+11. 「正式圖像資產」指另外製作並納入專案的 PNG、SVG 或其他圖片檔；本 change 不需要製作這類圖像資產。
+12. `@/_private/.../*.md` 記憶檔是否納入 git 由使用者看完後自行決定，本 change 不替使用者決策。
+13. 「學習」路由未來可能放使用者筆記，但目前只先開路由與 placeholder，不設計詳細功能。
 
 ## 下一步建議
 
-下一步使用 `$spectra-propose` 建立正式 change，建議 change 名稱：
+使用 `$spectra-propose complete-b-group-language-learning-routes` 建立正式 change。建議正式 proposal 採垂直切片：
 
-`rebuild-exam-pwa-group-year-analysis`
-
-正式 change 至少要包含：
-
-1. `proposal.md`：說明從科目講義改為組別/年度解析 PWA 的原因、範圍與非目標。
-2. `design.md`：明確定義路由、元件、storage、資料分檔、PDF 擷取流程、CI/CD 對齊方式。
-3. `tasks.md`：以 114 年垂直切片為第一批，避免一次承諾 400 題全部完成。
-4. `spec.md`：用 SHALL/MUST 定義年度清單、年度解析頁、書籤、checkbox、PDF 題目資料與解析內容品質。
+1. 第一階段：B 組 114 年完整流程，包含 PDF 轉 Markdown、題目索引、預期 6 題的重新確認、分批逐題解析、校稿、寫入專案、路由與測試。
+2. 第二階段：B 組 113 至 107。
+3. 第三階段：語言 112 年垂直切片，採同樣批次流程與來源追蹤要求。
+4. 第四階段：語言剩餘年度。
+5. 學習路由可在第一階段一起新增，因為目前只是 placeholder，風險低。

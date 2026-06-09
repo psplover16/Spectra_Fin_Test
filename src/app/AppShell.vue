@@ -3,12 +3,7 @@ import { computed, inject } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
 import { defaultOfflineReadinessState, offlineReadinessKey } from '@/app/pwa';
 import { preloadRoute } from '@/app/routePreload';
-
-const primaryNavItems = [
-  { label: 'A 組', to: '/a-group' },
-  { label: 'B 組', to: '/b-group' },
-  { label: '語言', to: '/language' }
-] as const;
+import { examRoutes } from '@/modules/exam/data/examRoutes';
 
 const offlineReadiness = inject(offlineReadinessKey, undefined);
 const offlineReadinessMessage = computed(() => offlineReadiness?.value.message ?? defaultOfflineReadinessState.message);
@@ -38,12 +33,12 @@ function preloadNavigationTarget(path: string): void {
             {{ offlineReadinessMessage }}
           </p>
         </div>
-        <nav aria-label="主要組別導覽" data-testid="primary-nav" class="mt-3 grid grid-cols-3 gap-2">
+        <nav aria-label="主要組別導覽" data-testid="primary-nav" class="mt-3 grid grid-cols-4 gap-2">
           <RouterLink
-            v-for="item in primaryNavItems"
-            :key="item.to"
+            v-for="item in examRoutes"
+            :key="item.path"
             v-slot="{ href, navigate, isActive }"
-            :to="item.to"
+            :to="item.path"
             custom
           >
             <a
@@ -58,10 +53,10 @@ function preloadNavigationTarget(path: string): void {
                   : 'border-slate/20 bg-white text-slate hover:border-teal/40 hover:text-teal'
               "
               @click="navigate"
-              @focus="preloadNavigationTarget(item.to)"
-              @pointerenter="preloadNavigationTarget(item.to)"
+              @focus="preloadNavigationTarget(item.path)"
+              @pointerenter="preloadNavigationTarget(item.path)"
             >
-              {{ item.label }}
+              {{ item.displayName }}
             </a>
           </RouterLink>
         </nav>

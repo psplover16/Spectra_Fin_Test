@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { examRoutes } from '@/modules/exam/data/examRoutes';
-import { getSubjectContentBySlug } from '@/modules/exam/data/subjectContent';
 </script>
 
 <template>
@@ -22,11 +21,11 @@ import { getSubjectContentBySlug } from '@/modules/exam/data/subjectContent';
         <span class="min-w-0">
           <span class="block">{{ route.displayName }}</span>
           <span class="mt-1 block text-xs font-medium leading-5 text-slate">
-            Stage {{ getSubjectContentBySlug(route.slug)?.stage }}｜{{ route.statusLabel }}
+            {{ route.sourceGroup }}｜{{ route.statusLabel }}
           </span>
         </span>
         <span class="shrink-0 text-xs font-medium text-slate">
-          {{ route.category === 'professional' ? '專業科目' : '共同科目' }}
+          {{ route.category === 'professional' ? '專業科目' : route.category === 'common' ? '共同科目' : '學習' }}
         </span>
       </RouterLink>
     </nav>

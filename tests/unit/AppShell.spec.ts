@@ -29,8 +29,8 @@ describe('AppShell primary navigation', () => {
     const wrapper = await mountShellAt('/a-group');
     const links = wrapper.findAll('[data-testid="primary-nav-link"]');
 
-    expect(links.map((link) => link.text())).toEqual(['A 組', 'B 組', '語言']);
-    expect(links.map((link) => link.attributes('href'))).toEqual(['/a-group', '/b-group', '/language']);
+    expect(links.map((link) => link.text())).toEqual(['A 組', 'B 組', '語言', '學習']);
+    expect(links.map((link) => link.attributes('href'))).toEqual(['/a-group', '/b-group', '/language', '/learning']);
   });
 
   it('marks the active group route', async () => {
@@ -39,6 +39,15 @@ describe('AppShell primary navigation', () => {
 
     expect(activeLink.exists()).toBe(true);
     expect(activeLink.text()).toBe('B 組');
+    expect(activeLink.attributes('data-active')).toBe('true');
+  });
+
+  it('marks the active learning route', async () => {
+    const wrapper = await mountShellAt('/learning');
+    const activeLink = wrapper.find('[data-testid="primary-nav-link"][aria-current="page"]');
+
+    expect(activeLink.exists()).toBe(true);
+    expect(activeLink.text()).toBe('學習');
     expect(activeLink.attributes('data-active')).toBe('true');
   });
 

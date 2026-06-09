@@ -3,7 +3,8 @@ import { expect, test } from '@playwright/test';
 const primaryRoutes = [
   { path: '/a-group', heading: 'A 組' },
   { path: '/b-group', heading: 'B 組' },
-  { path: '/language', heading: '語言' }
+  { path: '/language', heading: '語言' },
+  { path: '/learning', heading: '個人學習入口' }
 ] as const;
 
 const legacyRedirects = [
@@ -123,6 +124,42 @@ test.describe('group learning route smoke', () => {
     await context.setOffline(false);
   });
 
+  test('serves the cached learning placeholder while offline in a 375px viewport', async ({
+    context,
+    page
+  }, testInfo) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(appPath('/learning'));
+
+    await expect(page.getByRole('heading', { name: '國營資訊職員考試講義' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '個人學習入口' })).toBeVisible();
+    await expect(page.getByRole('link', { name: '學習' })).toHaveAttribute('aria-current', 'page');
+    await expect(page.getByTestId('offline-readiness')).toContainText('離線閱讀已就緒', { timeout: 15000 });
+
+    await context.setOffline(true);
+    const offlinePage = await context.newPage();
+    await offlinePage.setViewportSize({ width: 375, height: 812 });
+    await offlinePage.goto(appPath('/learning'), { waitUntil: 'domcontentloaded' });
+
+    await expect(offlinePage.getByRole('heading', { name: '國營資訊職員考試講義' })).toBeVisible();
+    await expect(offlinePage.getByRole('heading', { name: '個人學習入口' })).toBeVisible();
+    await expect(offlinePage.getByTestId('not-found-view')).toHaveCount(0);
+
+    const screenshot = await offlinePage.screenshot({ fullPage: true });
+    await testInfo.attach('learning-375px-offline', {
+      body: screenshot,
+      contentType: 'image/png'
+    });
+
+    const fitsViewport = await offlinePage.evaluate(
+      () => document.documentElement.scrollWidth <= document.documentElement.clientWidth
+    );
+    expect(fitsViewport).toBe(true);
+
+    await offlinePage.close();
+    await context.setOffline(false);
+  });
+
   test('serves complete historical A group year routes while offline', async ({ context, page }) => {
     await page.goto(appPath('/a-group'));
 
@@ -163,6 +200,36 @@ test.describe('group learning route smoke', () => {
     });
   }
 
+  test('opens a valid B group year analysis route', async ({ page }) => {
+    await page.goto(appPath('/b-group/114'));
+
+    await expect(page.getByRole('heading', { name: '114 年 B 組申論解析' })).toBeVisible();
+    await expect(page.getByTestId('not-found-view')).toHaveCount(0);
+  });
+
+  for (const path of ['/b-group/115', '/b-group/999', '/b-group/abc'] as const) {
+    test(`renders NotFound for invalid B group year ${path}`, async ({ page }) => {
+      await page.goto(appPath(path));
+
+      await expect(page.getByTestId('not-found-view')).toBeVisible();
+    });
+  }
+
+  test('opens a valid language year analysis route', async ({ page }) => {
+    await page.goto(appPath('/language/112'));
+
+    await expect(page.getByRole('heading', { name: '112 年語言逐題解析' })).toBeVisible();
+    await expect(page.getByTestId('not-found-view')).toHaveCount(0);
+  });
+
+  for (const path of ['/language/113', '/language/114', '/language/115', '/language/999', '/language/abc'] as const) {
+    test(`renders NotFound for invalid language year ${path}`, async ({ page }) => {
+      await page.goto(appPath(path));
+
+      await expect(page.getByTestId('not-found-view')).toBeVisible();
+    });
+  }
+
   test('keeps primary group navigation within a 375px mobile viewport', async ({ page }, testInfo) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto(appPath('/b-group'));
@@ -170,6 +237,7 @@ test.describe('group learning route smoke', () => {
     await expect(page.getByRole('link', { name: 'A 組' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'B 組' })).toHaveAttribute('aria-current', 'page');
     await expect(page.getByRole('link', { name: '語言' })).toBeVisible();
+    await expect(page.getByRole('link', { name: '學習' })).toBeVisible();
 
     const screenshot = await page.screenshot({ fullPage: true });
     await testInfo.attach('primary-nav-375px', {

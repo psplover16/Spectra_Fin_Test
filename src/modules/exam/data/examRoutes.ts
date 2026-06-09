@@ -1,10 +1,9 @@
-import type { SubjectSlug } from '@/modules/exam/types/content';
-
-export type ExamRouteCategory = 'professional' | 'common';
+export type ExamRouteSlug = 'a-group' | 'b-group' | 'language' | 'learning';
+export type ExamRouteCategory = 'professional' | 'common' | 'learning';
 
 export interface ExamRouteItem {
-  slug: SubjectSlug;
-  path: string;
+  slug: ExamRouteSlug;
+  path: `/${ExamRouteSlug}`;
   displayName: string;
   category: ExamRouteCategory;
   description: string;
@@ -14,49 +13,40 @@ export interface ExamRouteItem {
 
 export const examRoutes: ExamRouteItem[] = [
   {
-    slug: 'computer-principles',
-    path: '/computer-principles',
-    displayName: '計算機原理',
+    slug: 'a-group',
+    path: '/a-group',
+    displayName: 'A 組',
     category: 'professional',
-    description: '聚焦資料表示、數位邏輯、作業系統與硬體結構的核心觀念。',
-    statusLabel: '完整講義已匯入',
-    sourceGroup: '專業科目考古題'
+    description: '計算機原理與網路概論年度選擇題解析。',
+    statusLabel: '107 至 114 年逐題解析',
+    sourceGroup: '計算機原理、網路概論'
   },
   {
-    slug: 'networking',
-    path: '/networking',
-    displayName: '網路概論',
+    slug: 'b-group',
+    path: '/b-group',
+    displayName: 'B 組',
     category: 'professional',
-    description: '整理 OSI/TCP-IP、位址規劃、協定、安全與常見網路設備考點。',
-    statusLabel: '完整講義已匯入',
-    sourceGroup: '專業科目考古題'
-  },
-  {
-    slug: 'information-management',
-    path: '/information-management',
-    displayName: '資訊管理',
-    category: 'professional',
-    description: '對齊資訊系統、資料治理、專案管理、資安管理與組織應用題型。',
-    statusLabel: '完整講義已匯入',
-    sourceGroup: '專業科目考古題'
-  },
-  {
-    slug: 'programming',
-    path: '/programming',
-    displayName: '程式設計',
-    category: 'professional',
-    description: '建立資料結構、演算法、流程控制、物件導向與程式閱讀的解題基礎。',
-    statusLabel: '完整講義已匯入',
-    sourceGroup: '專業科目考古題'
+    description: '資訊管理與程式設計年度申論解析。',
+    statusLabel: '年度解析建置中',
+    sourceGroup: '資訊管理、程式設計'
   },
   {
     slug: 'language',
     path: '/language',
     displayName: '語言',
     category: 'common',
-    description: '以國文與英文共同科目為主，保留較輕量但可複習的閱讀與考點提示。',
-    statusLabel: '完整講義已匯入',
-    sourceGroup: '共同科目考古題'
+    description: '國文與英文共同科目年度解析。',
+    statusLabel: '107 至 112 年解析建置中',
+    sourceGroup: '國文、英文'
+  },
+  {
+    slug: 'learning',
+    path: '/learning',
+    displayName: '學習',
+    category: 'learning',
+    description: '未來個人學習筆記與複習節奏入口。',
+    statusLabel: 'placeholder',
+    sourceGroup: '個人學習入口'
   }
 ];
 

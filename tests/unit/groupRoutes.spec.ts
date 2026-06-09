@@ -15,7 +15,8 @@ describe('group learning routes', () => {
   it.each([
     ['/a-group', 'a-group'],
     ['/b-group', 'b-group'],
-    ['/language', 'language']
+    ['/language', 'language'],
+    ['/learning', 'learning']
   ])('resolves %s without NotFound', (path, name) => {
     const router = createAppRouter(createMemoryHistory());
     const resolved = router.resolve(path);
@@ -53,6 +54,52 @@ describe('group learning routes', () => {
 
   it.each(['/a-group/115', '/a-group/999', '/a-group/abc'])(
     'routes invalid A group year %s to NotFound',
+    (path) => {
+      const router = createAppRouter(createMemoryHistory());
+      const resolved = router.resolve(path);
+
+      expect(resolved.name).toBe('not-found');
+      expect(resolved.matched.at(-1)?.name).toBe('not-found');
+    }
+  );
+
+  it.each(['107', '108', '109', '110', '111', '112', '113', '114'])(
+    'resolves valid B group year route %s',
+    (year) => {
+      const router = createAppRouter(createMemoryHistory());
+      const resolved = router.resolve(`/b-group/${year}`);
+
+      expect(resolved.name).toBe('b-group-year');
+      expect(resolved.params.year).toBe(year);
+      expect(resolved.matched.at(-1)?.name).not.toBe('not-found');
+    }
+  );
+
+  it.each(['/b-group/115', '/b-group/999', '/b-group/abc'])(
+    'routes invalid B group year %s to NotFound',
+    (path) => {
+      const router = createAppRouter(createMemoryHistory());
+      const resolved = router.resolve(path);
+
+      expect(resolved.name).toBe('not-found');
+      expect(resolved.matched.at(-1)?.name).toBe('not-found');
+    }
+  );
+
+  it.each(['107', '108', '109', '110', '111', '112'])(
+    'resolves valid language year route %s',
+    (year) => {
+      const router = createAppRouter(createMemoryHistory());
+      const resolved = router.resolve(`/language/${year}`);
+
+      expect(resolved.name).toBe('language-year');
+      expect(resolved.params.year).toBe(year);
+      expect(resolved.matched.at(-1)?.name).not.toBe('not-found');
+    }
+  );
+
+  it.each(['/language/113', '/language/114', '/language/115', '/language/999', '/language/abc'])(
+    'routes invalid language year %s to NotFound',
     (path) => {
       const router = createAppRouter(createMemoryHistory());
       const resolved = router.resolve(path);

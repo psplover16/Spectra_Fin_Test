@@ -5,35 +5,18 @@ import {
   getExamRouteByPath,
   type ExamRouteItem
 } from '@/modules/exam/data/examRoutes';
-import {
-  getSubjectContentBySlug,
-  subjectContents
-} from '@/modules/exam/data/subjectContent';
-import type { SubjectSlug } from '@/modules/exam/types/content';
 
 const requiredRoutes = [
   {
-    slug: 'computer-principles',
-    path: '/computer-principles',
-    displayName: '計算機原理',
+    slug: 'a-group',
+    path: '/a-group',
+    displayName: 'A 組',
     category: 'professional'
   },
   {
-    slug: 'networking',
-    path: '/networking',
-    displayName: '網路概論',
-    category: 'professional'
-  },
-  {
-    slug: 'information-management',
-    path: '/information-management',
-    displayName: '資訊管理',
-    category: 'professional'
-  },
-  {
-    slug: 'programming',
-    path: '/programming',
-    displayName: '程式設計',
+    slug: 'b-group',
+    path: '/b-group',
+    displayName: 'B 組',
     category: 'professional'
   },
   {
@@ -41,11 +24,17 @@ const requiredRoutes = [
     path: '/language',
     displayName: '語言',
     category: 'common'
+  },
+  {
+    slug: 'learning',
+    path: '/learning',
+    displayName: '學習',
+    category: 'learning'
   }
 ] as const;
 
 describe('exam learning route metadata', () => {
-  it('exposes exactly the five required learning routes', () => {
+  it('exposes exactly the group-first primary learning routes', () => {
     expect(
       examRoutes.map(({ slug, path, displayName, category }) => ({
         slug,
@@ -57,13 +46,13 @@ describe('exam learning route metadata', () => {
   });
 
   it('keeps every route item within the typed metadata contract', () => {
-    expect(examRoutes).toHaveLength(5);
+    expect(examRoutes).toHaveLength(4);
 
     examRoutes.forEach((route: ExamRouteItem) => {
       expect(route.slug).toMatch(/^[a-z]+(?:-[a-z]+)*$/);
       expect(route.path).toBe(`/${route.slug}`);
       expect(route.displayName.trim().length).toBeGreaterThan(0);
-      expect(['professional', 'common']).toContain(route.category);
+      expect(['professional', 'common', 'learning']).toContain(route.category);
       expect(route.description.trim().length).toBeGreaterThan(0);
       expect(route.statusLabel).not.toBe('尚未匯入正式講義');
       expect(route.sourceGroup.trim().length).toBeGreaterThan(0);
@@ -71,24 +60,10 @@ describe('exam learning route metadata', () => {
     });
   });
 
-  it('connects every route to completed bundled subject content', () => {
-    const contentSlugs = subjectContents.map((content) => content.id);
-
-    expect(examRoutes.map((route) => route.slug)).toEqual(contentSlugs);
-
-    examRoutes.forEach((route) => {
-      const content = getSubjectContentBySlug(route.slug as SubjectSlug);
-
-      expect(content).toBeDefined();
-      expect(content?.routePath).toBe(route.path);
-      expect(content?.title).toBe(route.displayName);
-      expect(content?.category).toBe(route.category);
-      expect(content?.overview).not.toContain('待補');
-      expect(content?.overview).not.toContain('尚未');
-      expect(content?.highFrequencyPoints.length).toBeGreaterThan(0);
-      expect(content?.lectureSections.length).toBeGreaterThan(0);
-      expect(content?.questionMappings.length).toBeGreaterThan(0);
-    });
+  it('keeps legacy subject routes out of primary metadata', () => {
+    expect(examRoutes.map((route) => route.path)).not.toEqual(
+      expect.arrayContaining(['/computer-principles', '/networking', '/information-management', '/programming'])
+    );
   });
 });
 

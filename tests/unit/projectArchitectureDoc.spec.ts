@@ -9,6 +9,7 @@ describe('PROJECT_ARCHITECTURE documentation', () => {
     expect(architectureDoc).toContain('/a-group');
     expect(architectureDoc).toContain('/b-group');
     expect(architectureDoc).toContain('/language');
+    expect(architectureDoc).toContain('/learning');
   });
 
   it('documents the A group 107 through 114 complete year scope', () => {
@@ -33,5 +34,20 @@ describe('PROJECT_ARCHITECTURE documentation', () => {
     expect(architectureDoc).toContain('{year}ContentReview.ts');
     expect(architectureDoc).toContain('aGroup{year}QuestionContent.spec.ts');
     expect(architectureDoc).toContain('riskyExtractionReview.ts');
+  });
+
+  it('documents B group, language, learning, source index, progress storage, and lazy import behavior', () => {
+    expect(architectureDoc).toContain('B 組支援 107 至 114 年');
+    expect(architectureDoc).toContain('語言只支援 107 至 112 年');
+    expect(architectureDoc).toContain('不補 113/114');
+    expect(architectureDoc).toContain('LearningView.vue');
+    expect(architectureDoc).toContain('sourceIndex.ts');
+    expect(architectureDoc).toContain('finpub:b-group-progress:v1');
+    expect(architectureDoc).toContain('finpub:language-progress:v1');
+    expect(architectureDoc).toContain('useBGroupYearQuestions.ts');
+    expect(architectureDoc).toContain('useLanguageYearQuestions.ts');
+    expect(architectureDoc).toContain('年度 PDF -> 題目索引 -> 第 1 批 2 至 3 題解析');
+    expect(architectureDoc).toContain('diagramInstructions');
+    expect(architectureDoc).toContain('diagramAltText');
   });
 });

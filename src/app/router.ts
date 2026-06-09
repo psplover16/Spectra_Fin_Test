@@ -33,10 +33,28 @@ const routes: RouteRecordRaw[] = [
       meta: { title: 'B 組' }
     },
     {
+      path: '/b-group/:year(10[7-9]|11[0-4])',
+      name: 'b-group-year',
+      component: routeComponentLoaders.bGroupYear,
+      meta: { title: 'B 組年度解析' }
+    },
+    {
       path: '/language',
       name: 'language',
       component: routeComponentLoaders.language,
       meta: { title: '語言' }
+    },
+    {
+      path: '/language/:year(10[7-9]|11[0-2])',
+      name: 'language-year',
+      component: routeComponentLoaders.languageYear,
+      meta: { title: '語言年度解析' }
+    },
+    {
+      path: '/learning',
+      name: 'learning',
+      component: routeComponentLoaders.learning,
+      meta: { title: '學習' }
     },
     ...legacySubjectRedirects,
     {
