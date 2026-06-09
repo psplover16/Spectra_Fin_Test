@@ -26,6 +26,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Lint
+        run: npm run lint
+
       - name: Typecheck
         run: npm run typecheck
 
@@ -36,12 +39,7 @@ jobs:
         run: npm run build
 
       - name: Verify PWA output
-        run: |
-          test -f dist/index.html
-          test -f dist/manifest.webmanifest
-          test -f dist/service-worker.js
-          test -d dist/assets
-          test "$(find dist/assets -type f | wc -l)" -gt 0
+        run: npm run check:pwa-output
 
       - name: Install Playwright browser
         run: npx playwright install chromium

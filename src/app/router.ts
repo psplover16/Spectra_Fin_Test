@@ -1,30 +1,57 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import { examRoutes } from '@/modules/exam/data/examRoutes';
-import ExamRouteView from '@/modules/exam/views/ExamRouteView.vue';
-import LandingView from '@/modules/exam/views/LandingView.vue';
+import { createRouter, createWebHistory, type RouteRecordRaw, type RouterHistory } from 'vue-router';
+import { routeComponentLoaders } from '@/app/routePreload';
 import NotFoundView from '@/modules/exam/views/NotFoundView.vue';
 
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
+const legacySubjectRedirects = [
+  { path: '/computer-principles', redirect: '/a-group' },
+  { path: '/networking', redirect: '/a-group' },
+  { path: '/information-management', redirect: '/b-group' },
+  { path: '/programming', redirect: '/b-group' }
+] as const;
+
+const routes: RouteRecordRaw[] = [
     {
       path: '/',
-      component: LandingView,
-      meta: { title: '國營資訊職員考試講義' }
+      redirect: '/a-group'
     },
-    ...examRoutes.map((route) => ({
-      path: route.path,
-      name: route.slug,
-      component: ExamRouteView,
-      meta: { title: route.displayName, category: route.category }
-    })),
+    {
+      path: '/a-group',
+      name: 'a-group',
+      component: routeComponentLoaders.aGroup,
+      meta: { title: 'A 組' }
+    },
+    {
+      path: '/a-group/:year(10[7-9]|11[0-4])',
+      name: 'a-group-year',
+      component: routeComponentLoaders.aGroupYear,
+      meta: { title: 'A 組年度解析' }
+    },
+    {
+      path: '/b-group',
+      name: 'b-group',
+      component: routeComponentLoaders.bGroup,
+      meta: { title: 'B 組' }
+    },
+    {
+      path: '/language',
+      name: 'language',
+      component: routeComponentLoaders.language,
+      meta: { title: '語言' }
+    },
+    ...legacySubjectRedirects,
     {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: NotFoundView,
       meta: { title: '找不到頁面' }
     }
-  ]
-});
+  ];
 
-export default router;
+export function createAppRouter(history: RouterHistory = createWebHistory(import.meta.env.BASE_URL)) {
+  return createRouter({
+    history,
+    routes
+  });
+}
+
+export default createAppRouter();

@@ -1,0 +1,1556 @@
+import type {
+  QuestionTeachingReview,
+  QuestionTeachingReviewMap
+} from '@/modules/examGroups/aGroup/data/years/yearQuestionFactory';
+
+interface ReviewDraft {
+  answerVerification?: QuestionTeachingReview['answerVerification'];
+  answerNote?: string | null;
+  coreTerms: string[];
+  concept: string;
+  rule: string;
+  application: string;
+  commonTrap: string;
+  solvingSteps: string[];
+  optionExplanations: QuestionTeachingReview['optionExplanations'];
+  keyTakeaways: string[];
+  tags: string[];
+  extractionStatus?: QuestionTeachingReview['extractionStatus'];
+}
+
+function buildReview(draft: ReviewDraft): QuestionTeachingReview {
+  const review: QuestionTeachingReview = {
+    answerVerification: draft.answerVerification ?? 'verified',
+    answerNote: draft.answerNote ?? null,
+    coreTerms: draft.coreTerms,
+    beginnerExplanation: [
+      `前置觀念：${draft.concept}`,
+      `規則來源與適用條件：${draft.rule}`,
+      `套回本題：${draft.application}`,
+      `常見混淆：${draft.commonTrap}`
+    ].join('\n'),
+    solvingSteps: draft.solvingSteps,
+    optionExplanations: draft.optionExplanations,
+    keyTakeaways: draft.keyTakeaways,
+    tags: draft.tags
+  };
+
+  if (draft.extractionStatus) {
+    review.extractionStatus = draft.extractionStatus;
+  }
+
+  return review;
+}
+
+export const reviewedQuestionAnalyses = {
+  1: buildReview({
+    coreTerms: ['PROLOG', '人工智慧語言', '邏輯程式設計'],
+    concept:
+      '人工智慧早期常用能表示事實、規則與推論的語言。PROLOG 是邏輯程式設計語言，適合把知識寫成規則，再由推論引擎尋找解答。',
+    rule:
+      '判斷語言用途時，要看它的典型應用場景。AI 題目若強調知識表示、專家系統或邏輯推理，PROLOG 是標準代表。',
+    application:
+      '題幹問人工智慧運算常用的程式語言，四個選項中只有 PROLOG 以邏輯推論為核心，因此選 C。',
+    commonTrap:
+      'Fortran、BASIC、COBOL 都是重要歷史語言，但常見用途分別偏科學計算、入門教學與商業資料處理，不能只因年代久遠就判斷為 AI 語言。',
+    solvingSteps: [
+      '先辨認題目關鍵詞是「人工智慧運算常用」，不是問最早或最普遍的程式語言。',
+      '再套用語言典型用途：PROLOG 以事實、規則與查詢推論聞名。',
+      '比對 A、B、D，它們都有其他主要用途，與 AI 推論核心不符。',
+      '因此選出 C，並注意本題考的是語言用途，不是語言年代。'
+    ],
+    optionExplanations: {
+      A: 'Fortran 典型用途是科學與工程數值計算，不是 AI 知識推論的代表，屬於用途混淆。',
+      B: 'BASIC 常見於入門教學與早期個人電腦程式，不符合人工智慧運算常用語言的重點。',
+      C: 'PROLOG 用邏輯規則與查詢推論表達知識，是人工智慧與專家系統常見代表，所以正確。',
+      D: 'COBOL 主要用於商業資料與交易系統，不是人工智慧推論語言。'
+    },
+    keyTakeaways: [
+      '規則：AI 傳統語言題看到邏輯推論與專家系統，優先想到 PROLOG。',
+      'Fortran 偏科學計算，COBOL 偏商業資料處理，BASIC 偏教學入門。',
+      '陷阱是把「老語言」全部混成同一類，應依用途判斷。',
+      '人工智慧語言的核心重點常是知識表示與推理能力。'
+    ],
+    tags: ['artificial-intelligence', 'programming-language']
+  }),
+  2: buildReview({
+    coreTerms: ['氣泡排序', 'pass', '相鄰交換'],
+    concept:
+      '氣泡排序的前置觀念是「相鄰兩兩比較」。若要由小到大，左邊比右邊大就交換；一輪 pass 會把目前最大的值推到未排序區最右端。',
+    rule:
+      '題目問第二次結果時，適用條件通常是完成第二輪 pass 後的序列，而不是只做第二次相鄰比較。',
+    application:
+      '第一輪把 36 推到最後，得到 7、27、15、1、9、36；第二輪再把 27 推到倒數第二，得到 7、15、1、9、27、36。',
+    commonTrap:
+      '常見錯誤是只做兩次比較，或每輪結束後又把已排序的最大值拿回來比較，導致序列停在 A、B、C 的中間狀態。',
+    solvingSteps: [
+      '先列出初始序列：27、7、36、15、1、9。',
+      '第一輪由左到右比較並交換，36 會一路移到最右邊，序列成為 7、27、15、1、9、36。',
+      '第二輪只需處理前五個位置，27 依序與 15、1、9 交換，得到 7、15、1、9、27、36。',
+      '比對四個選項，只有 D 完整呈現第二輪 pass 後的結果。'
+    ],
+    optionExplanations: {
+      A: 'A 只像是剛做完第一個相鄰交換後的狀態，尚未完成第一輪，更不是第二輪結果。',
+      B: 'B 把部分小值推到前面但順序不符合逐步相鄰交換，常見於跳步排序的混淆。',
+      C: 'C 已讓 15 前移，但 1 和 9 的位置不符合第二輪氣泡排序實際交換後的序列。',
+      D: 'D 是第一輪推走 36、第二輪推走 27 後的序列，因此符合第二次結果。'
+    },
+    keyTakeaways: [
+      '規則：氣泡排序一輪 pass 會讓未排序區最大值到最右端。',
+      '「第二次結果」要先確認是第二輪 pass，而不是第二次比較。',
+      '陷阱是跳過相鄰交換的順序，直接把資料看成已經完全排序。',
+      '逐步寫出每輪結果可避免把中間狀態誤選成答案。'
+    ],
+    tags: ['sorting', 'bubble-sort']
+  }),
+  3: buildReview({
+    coreTerms: ['磁碟最佳化', '磁碟重組', '加密'],
+    concept:
+      '磁碟效能最佳化的前置觀念是減少讀寫等待、降低碎裂或修復錯誤。這類操作會讓資料存取更順暢，或避免錯誤拖慢系統。',
+    rule:
+      '判斷是否能提升效能，要看該操作是否直接改善磁碟存取效率。安全性措施可以很重要，但不一定等於效能最佳化。',
+    application:
+      '磁碟重組、修復錯誤、清除不必要檔案都可能改善存取或維護狀態；磁碟加密主要提升保密性，通常還會增加加解密負擔。',
+    commonTrap:
+      '常見混淆是把所有「系統管理」工作都看成效能最佳化；加密是安全控制，不是磁碟效能最佳化手段。',
+    solvingSteps: [
+      '先辨認題目問「無法提升磁碟效能最佳化」的一項。',
+      '再檢查每個選項是否改善存取速度、碎裂狀況或錯誤狀態。',
+      '排除重組、掃描修復、清除不必要檔案，因為它們都可能與效能或維護相關。',
+      '剩下磁碟加密偏安全性，並非效能最佳化，因此選 B。'
+    ],
+    optionExplanations: {
+      A: '磁碟重組可讓分散的檔案區塊較連續，對傳統硬碟存取效率有幫助，不是不相關項。',
+      B: '磁碟加密重點是保密與資料安全，規則上不是提升磁碟效能的最佳化方法，所以正確。',
+      C: '掃描修復磁碟錯誤可避免壞軌或檔案系統問題影響讀寫，屬於維護與效能穩定相關。',
+      D: '清除不必要檔案可釋放空間並降低管理負擔，與效能維護相關，不能選。'
+    },
+    keyTakeaways: [
+      '規則：效能最佳化看的是存取效率、空間管理與錯誤修復。',
+      '安全性措施不一定提升效能；加密常會增加額外運算。',
+      '陷阱是把所有系統維護工作都混為效能調校。',
+      '傳統磁碟重組與 SSD 的效益不同，但本題只需判斷選項屬性。'
+    ],
+    tags: ['storage', 'performance', 'security']
+  }),
+  4: buildReview({
+    coreTerms: ['RGB', '影像容量', '位元與位元組'],
+    concept:
+      '未壓縮影像容量取決於像素數與每像素需要多少位元。標準 RGB 全彩通常每個像素有 R、G、B 三個色彩通道，每通道 8 bit。',
+    rule:
+      '容量公式是寬度 × 高度 × 每像素位元數，再除以 8 轉成 byte。若以 MB 粗估，常用十進位 1 MB 約 1,000,000 bytes。',
+    application:
+      '1280 × 1024 有 1,310,720 像素；RGB 24 bit 等於 3 bytes，所以容量約 3,932,160 bytes，約 3.84 MB。',
+    commonTrap:
+      '常見錯誤是只用 1 byte 表示整個像素、把 bit 和 byte 混用，或把 MB 與 GB 單位搞錯。',
+    solvingSteps: [
+      '先計算像素總數：1280 × 1024 = 1,310,720。',
+      '再確認 RGB 全彩每像素是 24 bit，也就是 3 bytes。',
+      '套用容量公式：1,310,720 × 3 = 3,932,160 bytes。',
+      '換算約為 3.84 MB，因此選 A。'
+    ],
+    optionExplanations: {
+      A: '3.84 MB 符合 1280×1024×3 bytes 的未壓縮 RGB 容量估算。',
+      B: '1.4 MB 常見於低估每像素位元數或計算像素量錯誤，不符合 RGB 全彩。',
+      C: '1.4 GB 遠大於本題百萬像素等級的未壓縮大小，單位誤差太大。',
+      D: '10 MB 比正確估算大很多，通常是把位元組或通道數重複放大。'
+    },
+    keyTakeaways: [
+      '規則：未壓縮影像容量 = 像素數 × 每像素 bytes。',
+      '標準 RGB 全彩常用 24 bit，也就是每像素 3 bytes。',
+      '陷阱是 bit 與 byte 混用，或把 MB、GB 單位誤判。',
+      '題目若未提壓縮，不能用 JPEG 等壓縮大小估算。'
+    ],
+    tags: ['image-size', 'binary-units']
+  }),
+  5: buildReview({
+    coreTerms: ['I/O port', '連接埠', 'CISC'],
+    concept:
+      'I/O 連接埠是主機與外部設備溝通的介面規格，例如 USB、SCSI、RS-232。它們描述裝置連接與資料傳輸方式。',
+    rule:
+      '判斷是否為連接埠規格，要看名稱是否代表外部設備介面。CISC 是複雜指令集電腦的處理器指令集分類，不是外部連接埠。',
+    application:
+      '題目列出螢幕、滑鼠、磁碟機等輸出入設備，應選不是 I/O port 的項目；CISC 與處理器指令架構有關，因此選 C。',
+    commonTrap:
+      '常見混淆是看到都是英文縮寫就同類處理；縮寫是否屬介面、匯流排或 CPU 架構要分清楚。',
+    solvingSteps: [
+      '先確認題目問的是外部輸出入設備使用的連接埠規格。',
+      '再比對 USB、SCSI、RS-232 都可作為裝置連接或傳輸介面。',
+      '檢查 CISC，發現它是 CPU 指令集設計分類，不是 I/O 介面。',
+      '因此選 C。'
+    ],
+    optionExplanations: {
+      A: 'USB 是通用序列匯流排，常用於鍵盤、滑鼠、儲存裝置等 I/O 連接。',
+      B: 'SCSI 是早期常見的周邊與儲存裝置介面規格，屬於連接埠相關項。',
+      C: 'CISC 是處理器指令集架構，不是主機板連接外部設備的 I/O port 規格，所以正確。',
+      D: 'RS-232 是序列通訊介面，典型上就是連接埠規格。'
+    },
+    keyTakeaways: [
+      '規則：I/O port 指設備連接或通訊介面，不是 CPU 指令集。',
+      'USB、SCSI、RS-232 都可歸入外部介面或連接規格。',
+      '陷阱是被英文縮寫迷惑，應先判斷它描述的是哪一層概念。',
+      'CISC 與 RISC 是處理器指令集分類。'
+    ],
+    tags: ['io-port', 'computer-architecture']
+  }),
+  6: buildReview({
+    coreTerms: ['deadlock', '必要條件', 'circular wait'],
+    concept:
+      '死結是多個行程互相等待對方釋放資源，導致全部卡住。作業系統課本常用四個必要條件描述死結可能發生的情境。',
+    rule:
+      '四個必要條件是 mutual exclusion、hold and wait、no preemption、circular wait。題目問「不是」必要條件，要找出否定或相反的敘述。',
+    application:
+      'A、C、D 都對應必要條件；B 寫的是 non-circular wait，剛好否定 circular wait，因此不是必要條件。',
+    commonTrap:
+      '常見混淆是看到 wait 就以為一定正確；死結必要的是「循環等待」，不是「非循環等待」。',
+    solvingSteps: [
+      '先背出死結四必要條件：互斥、持有並等待、不可搶先、循環等待。',
+      '再逐項比對英文選項是否和四條件一致。',
+      'A、C、D 分別對應 hold and wait、no preemption、mutual exclusion。',
+      'B 是 non-circular wait，與 circular wait 相反，所以選 B。'
+    ],
+    optionExplanations: {
+      A: 'hold and wait 是行程持有部分資源又等待其他資源，屬於死結必要條件。',
+      B: 'non-circular wait 表示沒有循環等待，與死結必要條件相反，因此不是必要條件。',
+      C: 'no preemptive 指資源不能被強制搶回，對應 no preemption，屬於必要條件。',
+      D: 'mutual exclusion 表示資源同時只能給一個行程使用，是必要條件。'
+    },
+    keyTakeaways: [
+      '規則：死結四條件是互斥、持有並等待、不可搶先、循環等待。',
+      '只要破壞其中一個必要條件，就可預防死結。',
+      '陷阱是把 non-circular wait 看成 circular wait。',
+      '英文題要特別注意 no、non 這類否定詞。'
+    ],
+    tags: ['operating-system', 'deadlock']
+  }),
+  7: buildReview({
+    coreTerms: ['物件導向', '封裝', '繼承', '多型'],
+    concept:
+      '物件導向設計把資料與操作包成物件，常見核心特性包括封裝、繼承與多型。這些特性用來管理程式複雜度與重用性。',
+    rule:
+      '判斷 OOP 主要特色時，要看是否直接描述物件模型。多執行緒是並行執行機制，可存在於各種程式設計方式，不是 OOP 的主要特色。',
+    application:
+      'B、C、D 都是 OOP 教科書常見三大特性；A 多執行緒屬執行模型或作業系統/語言支援能力，因此是有誤項。',
+    commonTrap:
+      '常見混淆是把現代語言常支援的功能都當成物件導向特色；多執行緒常由語言或平台提供，但不等於 OOP 概念。',
+    solvingSteps: [
+      '先確認題目問「物件導向主要特色」且要找有誤選項。',
+      '再列出核心特性：封裝、繼承、多型。',
+      '比對 B、C、D 都在核心清單內。',
+      'A 多執行緒不屬物件導向主要特色，因此選 A。'
+    ],
+    optionExplanations: {
+      A: '多執行緒是並行執行機制，不是物件導向的核心特色，所以本題要選它。',
+      B: '封裝會把資料與方法包在物件中，屬於 OOP 核心特性。',
+      C: '繼承讓類別重用或擴充既有類別行為，是 OOP 典型特性。',
+      D: '多型讓同一介面在不同物件上有不同實作，也是 OOP 核心特性。'
+    },
+    keyTakeaways: [
+      '規則：OOP 核心常見三項是封裝、繼承、多型。',
+      '多執行緒是執行或並行機制，不是 OOP 本質。',
+      '陷阱是把現代語言功能與程式設計典範混在一起。',
+      '看到「主要特色」要回到定義，而不是列舉語言能力。'
+    ],
+    tags: ['oop', 'programming']
+  }),
+  8: buildReview({
+    coreTerms: ['direct access', 'sequential access', '檔案讀寫'],
+    concept:
+      '直接存取代表可以依位址或區段編號直接讀寫目標位置，不必從開頭一路讀到目標資料。它常用於需要快速定位某筆資料的檔案或儲存系統。',
+    rule:
+      '判斷 direct access 時，要看是否允許任意區段讀寫。若描述為循序一筆一筆讀寫，就比較像 sequential access，不是直接存取。',
+    application:
+      'A、B、D 都符合直接存取的概念；C 說循序一筆一筆讀寫資料，與直接存取相反，因此選 C。',
+    commonTrap:
+      '常見混淆是把「讀寫檔案」都當成同一種模式；直接存取的重點是能跳到指定區段，不是一定要照順序。',
+    solvingSteps: [
+      '先辨認題目問 direct access 的錯誤敘述。',
+      '再套用規則：直接存取可依區段或位置直接讀寫。',
+      '檢查 A、B、D，都提到大量即時、編號區段或任意區段，符合直接存取。',
+      'C 強調循序一筆一筆讀寫，違反直接存取，所以選 C。'
+    ],
+    optionExplanations: {
+      A: '大量資料若需要即時定位，直接存取很適合，這個敘述不是錯誤項。',
+      B: '分成有編號區段有助於直接定位，符合 direct access 的使用條件。',
+      C: '循序一筆一筆讀寫是 sequential access 的特性，不是 direct access，所以正確答案是 C。',
+      D: '允許讀寫任意區段正是直接存取的核心特性。'
+    },
+    keyTakeaways: [
+      '規則：direct access 可直接跳到指定區段讀寫。',
+      'sequential access 必須依序讀寫，不能任意跳轉。',
+      '陷阱是把任何檔案讀寫都當成循序模式。',
+      '看到「任意區段」通常就是直接存取的重要線索。'
+    ],
+    tags: ['file-system', 'storage']
+  }),
+  9: buildReview({
+    coreTerms: ['Round Robin', 'time quantum', 'CPU 排程'],
+    concept:
+      'CPU 排程會決定哪個行程先取得 CPU。Round Robin 的前置觀念是把 CPU 時間切成固定長度的 time quantum，讓行程輪流使用。',
+    rule:
+      '若行程在固定時間片內沒完成，就被暫停並排到佇列後面，等下一輪再繼續。這是分時系統常用的公平排程規則。',
+    application:
+      '題幹明確說使用固定 CPU 執行時間，超過就被迫捨棄等待下次循環，這正是 Round Robin，因此選 D。',
+    commonTrap:
+      '常見混淆是把「依 CPU 週期長短」誤導成 SJF；但題目後半段的固定時間片與循環等待才是關鍵。',
+    solvingSteps: [
+      '先抓關鍵詞「固定 CPU 執行時間」與「等待下次循環」。',
+      '再套用排程規則：固定時間片輪流執行就是 Round Robin。',
+      '排除 SJF，因為它按最短工作優先，不是固定時間片輪流。',
+      '排除 FCFS 與 Priority，最後選 D。'
+    ],
+    optionExplanations: {
+      A: 'SJF 依估計執行時間短者優先，沒有固定時間片輪流的規則。',
+      B: 'FCFS 依到達順序處理，不會每個行程用完固定時間片後排回佇列。',
+      C: 'Priority 依優先權決定順序，題幹沒有優先權條件。',
+      D: 'Round Robin 使用固定 time quantum，超時就讓出 CPU 並等待下一輪，符合題意。'
+    },
+    keyTakeaways: [
+      '規則：Round Robin 的辨識重點是固定 time quantum 與輪流執行。',
+      'SJF 看工作長短，Priority 看優先權，FCFS 看到達順序。',
+      '陷阱是只看「CPU 週期長短」而忽略固定時間片描述。',
+      '分時系統常用 Round Robin 讓多個使用者或行程公平取得 CPU。'
+    ],
+    tags: ['operating-system', 'scheduling']
+  }),
+  10: buildReview({
+    answerVerification: 'suspected-error',
+    answerNote:
+      'PDF 答案標記為 D。代入等式可得 R=7，但嚴格位值記法中 (731)R 含有數字 7，通常要求 R 大於 7；因此保留官方答案，同時註記此題有底數有效性疑義。',
+    coreTerms: ['進位制', '位值展開', '底數限制'],
+    concept:
+      '進位制的前置觀念是位值展開：三位數 (731)R 代表 7×R^2 + 3×R + 1。底數 R 決定每一位的權重。',
+    rule:
+      '解這類題要把右式依底數展開，再與十進位數相等。一般規則還要求每個數字都小於底數，這是本題容易產生疑義的地方。',
+    application:
+      '代入選項檢查，R=7 時 7×49 + 3×7 + 1 = 365，符合等式；但數字 7 在七進位中不合法，所以此題按官方答案選 D 並保留疑義。',
+    commonTrap:
+      '常見混淆是只做代入而忘記底數必須大於最大數字；考試官方此題採代入結果，學習時要知道嚴格定義下的限制。',
+    solvingSteps: [
+      '先把 (731)R 展開為 7R^2 + 3R + 1。',
+      '再用題目等式設成 7R^2 + 3R + 1 = 365。',
+      '逐一代入選項，R=7 會得到 343 + 21 + 1 = 365。',
+      '因此依 PDF 官方答案選 D；同時記住嚴格進位制要求 R > 7，本題答案狀態需註記。'
+    ],
+    optionExplanations: {
+      A: 'R=4 時 7×16+12+1=125，不等於 365，且數字 7 也超過底數限制。',
+      B: 'R=5 時 175+15+1=191，不符合等式，也不符合數字小於底數的規則。',
+      C: 'R=6 時 252+18+1=271，不符合 365，且同樣有數字 7 超過底數的問題。',
+      D: 'R=7 代入等式會得到 365，符合官方解法；但嚴格底數規則下仍有數字 7 不合法的疑義。'
+    },
+    keyTakeaways: [
+      '規則：三位數 (abc)R = aR^2 + bR + c。',
+      '底數通常必須大於該數中出現的最大數字。',
+      '陷阱是只求方程式而忽略進位制合法性。',
+      '遇到官方答案與嚴格定義有差異時，解析要同時保留官方標記與概念邊界。'
+    ],
+    tags: ['number-system', 'source-ambiguity']
+  }),
+  11: buildReview({
+    coreTerms: ['輪詢', '中斷', 'DMA', 'CPU 利用率'],
+    concept:
+      'CPU 與 I/O 溝通可用輪詢、中斷或 DMA。差別在於 CPU 是否要一直等待裝置，以及資料搬移時 CPU 介入程度。',
+    rule:
+      '輪詢要求 CPU 不斷檢查裝置狀態，利用率最差；中斷讓裝置需要時才通知 CPU；DMA 可由控制器直接搬移大量資料，CPU 負擔最低。',
+    application:
+      '題目問利用率排名的正確描述。輪詢會讓 CPU 花時間忙等，所以「輪詢最差」成立，選 A。',
+    commonTrap:
+      '常見混淆是覺得中斷會打斷 CPU 所以最差；但輪詢的持續檢查更浪費 CPU 時間。',
+    solvingSteps: [
+      '先比較三種方式的 CPU 介入程度。',
+      '輪詢需要 CPU 反覆查詢裝置，忙等時間最多。',
+      '中斷只在事件發生時通知 CPU，通常比輪詢有效率。',
+      'DMA 讓資料搬移主要由控制器處理，CPU 利用率通常最佳；因此 A 正確。'
+    ],
+    optionExplanations: {
+      A: '輪詢會讓 CPU 不斷查詢 I/O 狀態，忙等最多，因此 CPU 利用率最差。',
+      B: '中斷不是最差；它避免 CPU 持續輪詢，通常比輪詢有效率。',
+      C: 'DMA 讓資料搬移少占用 CPU，不會是三者中最差。',
+      D: '中斷不一定最佳；大量資料搬移時 DMA 通常讓 CPU 負擔更低。'
+    },
+    keyTakeaways: [
+      '規則：輪詢最耗 CPU，中斷減少忙等，DMA 最能降低大量搬移負擔。',
+      'CPU 利用率要看 CPU 是否被迫等待 I/O。',
+      '陷阱是把「中斷會打斷」誤解為效率最低。',
+      'DMA 適合大量資料傳輸，但仍需 CPU 設定與處理完成通知。'
+    ],
+    tags: ['operating-system', 'io']
+  }),
+  12: buildReview({
+    coreTerms: ['分頁', 'page fault', 'thrashing'],
+    concept:
+      '虛擬記憶體以分頁方式管理記憶體。若行程需要的工作集合放不進實體頁框，就會頻繁發生 page fault。',
+    rule:
+      '當系統大部分時間都在 swap-in/swap-out，而不是執行實際工作時，這種高頻率分頁抖動稱為 Thrashing。',
+    application:
+      '題幹描述實體頁框不足、分頁錯誤率極高、頻繁置出/置入，完全對應輾轉現象，因此選 B。',
+    commonTrap:
+      '常見混淆是把所有記憶體效率問題都叫碎裂；內部碎裂是配置空間浪費，並不是頻繁分頁置換。',
+    solvingSteps: [
+      '先抓題幹三個線索：frames 不足、page faults 極高、swap-in/swap-out 很頻繁。',
+      '再套用作業系統定義：大量時間花在換頁而非執行，稱為 Thrashing。',
+      '排除 Cycle Stealing，因為它通常指 DMA 暫時占用匯流排或記憶體週期。',
+      '排除 Belady 異常與內部碎裂，最後選 B。'
+    ],
+    optionExplanations: {
+      A: 'Cycle Stealing 常指 DMA 借用記憶體週期，不是行程頻繁換頁的現象。',
+      B: 'Thrashing 正是頁框不足造成高 page fault 與頻繁置入置出的狀態。',
+      C: 'Belady’s Anomaly 是某些演算法增加頁框反而 page fault 變多的異常，不是本題描述。',
+      D: 'Internal fragmentation 是配置區塊內部空間浪費，不是 swap-in/swap-out 高頻率活動。'
+    },
+    keyTakeaways: [
+      '規則：Thrashing 是系統花太多時間換頁，真正執行工作時間變少。',
+      '頁框不足與工作集合過大是常見原因。',
+      '陷阱是把分頁錯誤、碎裂與 Belady 異常混在一起。',
+      '改善方式通常要增加可用頁框或降低多工程度。'
+    ],
+    tags: ['operating-system', 'virtual-memory']
+  }),
+  13: buildReview({
+    coreTerms: ['記憶體階層', 'register', 'cache'],
+    concept:
+      '電腦記憶體階層越靠近 CPU，速度通常越快但容量越小。暫存器位於 CPU 內部，直接參與指令運算。',
+    rule:
+      '比較存取速度時，典型順序是暫存器最快，接著快取、主記憶體 DRAM，最後才是 SSD 等外部儲存。',
+    application:
+      '四個選項中，暫存器在 CPU 內部且最接近運算單元，因此存取速度最快，選 A。',
+    commonTrap:
+      '常見混淆是把容量或儲存持久性當成速度；SSD 容量大且可持久保存，但速度仍遠慢於暫存器與快取。',
+    solvingSteps: [
+      '先確認題目問「存取速度最快」，不是容量最大或價格最低。',
+      '再按記憶體階層排序：register、cache、DRAM、SSD。',
+      '比對選項，只有 A 是 CPU 內部暫存器。',
+      '因此選 A。'
+    ],
+    optionExplanations: {
+      A: '暫存器位於 CPU 內部，直接供指令運算使用，是四者中最快。',
+      B: 'SSD 比傳統硬碟快，但仍屬外部儲存，速度不能超過 CPU 內部暫存器。',
+      C: 'DRAM 是主記憶體，速度快於 SSD，但慢於 cache 與 register。',
+      D: 'cache 很快，但仍通常作為暫存器與主記憶體之間的緩衝，慢於 register。'
+    },
+    keyTakeaways: [
+      '規則：記憶體階層越靠近 CPU 越快、容量通常越小。',
+      '速度常見排序：register > cache > DRAM > SSD。',
+      '陷阱是用容量或非揮發性來判斷速度。',
+      '暫存器是 CPU 執行指令最直接使用的儲存位置。'
+    ],
+    tags: ['memory-hierarchy', 'computer-architecture']
+  }),
+  14: buildReview({
+    coreTerms: ['system call', 'monitor mode', 'interrupt'],
+    concept:
+      'system call 是使用者程式請求作業系統核心服務的方式，例如檔案、行程或 I/O 操作。它會讓控制權進入核心或監督模式。',
+    rule:
+      '系統呼叫通常透過 trap 或軟體中斷進入核心，因此「不引起中斷」不符合一般系統呼叫機制。',
+    application:
+      'A、B、D 都可描述系統呼叫涉及的模式切換或內容切換概念；C 說不引起中斷，與 trap/interrupt 機制相反，因此選 C。',
+    commonTrap:
+      '常見混淆是把硬體中斷與軟體中斷完全分開，以為 system call 不算中斷；考試通常把 trap 視為中斷類機制。',
+    solvingSteps: [
+      '先確認 system call 是使用者程式進入核心服務的入口。',
+      '再套用規則：進入核心需切換到 monitor/kernel mode，常由 trap 或軟體中斷觸發。',
+      '檢查 C 的否定描述「不引起中斷」，與此規則不符。',
+      '因此選 C。'
+    ],
+    optionExplanations: {
+      A: '進入監督模式是 system call 的典型特性，因為核心服務需要較高權限。',
+      B: '系統呼叫可能造成內容切換或至少造成執行脈絡由使用者態切到核心態，屬合理描述。',
+      C: 'system call 通常透過 trap 或軟體中斷進入核心，說「不引起中斷」不正確。',
+      D: '系統呼叫可伴隨排程或行程狀態變化，雖不是每次都換行程，但不是本題官方要排除的核心錯誤。'
+    },
+    keyTakeaways: [
+      '規則：system call 是使用者程式請求核心服務的介面。',
+      '進入核心通常會經由 trap/軟體中斷與模式切換。',
+      '陷阱是把 system call 當成一般函式呼叫，忽略權限切換。',
+      'system call 與硬體中斷不同，但都屬於控制權轉交核心的重要機制。'
+    ],
+    tags: ['operating-system', 'system-call']
+  }),
+  15: buildReview({
+    coreTerms: ['process state', 'ready', 'running', 'waiting'],
+    concept:
+      '行程狀態描述 process 在作業系統中的生命週期。常見狀態包括就緒、執行、等待或阻塞，另可有新建與終止。',
+    rule:
+      '判斷是否為行程狀態，要看它是否描述 CPU 排程或等待事件的狀態。「輸出」是 I/O 動作或結果，不是標準 process state 名稱。',
+    application:
+      'A、B、C 都是常見狀態；D output 不是行程狀態，因此選 D。',
+    commonTrap:
+      '常見混淆是把行程正在做的工作，例如輸入、輸出、計算，誤認為作業系統管理的狀態名稱。',
+    solvingSteps: [
+      '先列出基本行程狀態：ready、running、waiting/blocking。',
+      '再把選項與標準狀態名稱比對。',
+      'A 等待、B 就緒、C 執行都符合。',
+      'D 輸出是工作內容，不是狀態名稱，所以選 D。'
+    ],
+    optionExplanations: {
+      A: '等待 wait 是行程等 I/O 或事件完成時的狀態，屬於標準狀態。',
+      B: '就緒 ready 表示可執行但尚未取得 CPU，是標準狀態。',
+      C: '執行 running 表示正在 CPU 上執行，是標準狀態。',
+      D: '輸出 output 是可能進行的 I/O 行為，不是作業系統常用的行程狀態名稱。'
+    },
+    keyTakeaways: [
+      '規則：基本行程狀態常見 ready、running、waiting/blocking。',
+      'I/O 動作不等於 process state。',
+      '陷阱是把工作內容與系統管理狀態混淆。',
+      '狀態轉換通常由排程、I/O 等待或事件完成觸發。'
+    ],
+    tags: ['operating-system', 'process']
+  }),
+  16: buildReview({
+    coreTerms: ['critical section', 'mutual exclusion', 'bounded waiting'],
+    concept:
+      '臨界區間是多個行程或執行緒存取共享資源時，需要保護的一段程式碼。目標是避免競爭條件。',
+    rule:
+      '臨界區解法通常要求 mutual exclusion、progress、bounded waiting。這些性質處理同步正確性，不是平台支援範圍。',
+    application:
+      'A、C、D 都是臨界區間解法的必要性質；B 跨平台是軟體可移植性，不是同步演算法必要性質，因此選 B。',
+    commonTrap:
+      '常見混淆是看到看似正面的軟體品質就選入；跨平台很好，但和臨界區正確性條件不同。',
+    solvingSteps: [
+      '先辨認題目問臨界區間需具備的性質。',
+      '再列出三項同步條件：互斥、可進行性、有限等待。',
+      '比對 A、C、D 都在條件中。',
+      'B 跨平台不屬同步正確性條件，因此選 B。'
+    ],
+    optionExplanations: {
+      A: 'progress 可進行性要求沒有行程在臨界區時，想進入者能被合理選出，屬必要性質。',
+      B: 'cross platform 是可移植性，不是臨界區演算法的正確性條件，所以正確。',
+      C: 'bounded waiting 有限等待避免某行程永遠等不到臨界區，屬必要性質。',
+      D: 'mutual exclusion 互斥要求同時只有一個行程進入臨界區，是核心條件。'
+    },
+    keyTakeaways: [
+      '規則：臨界區解法看互斥、可進行性、有限等待。',
+      '跨平台是工程品質，不是同步正確性需求。',
+      '陷阱是把好聽的軟體特性混入作業系統同步條件。',
+      '臨界區的目的在於保護共享資源避免 race condition。'
+    ],
+    tags: ['operating-system', 'concurrency']
+  }),
+  17: buildReview({
+    coreTerms: ['分時系統', 'Round Robin', 'time sharing'],
+    concept:
+      '分時系統讓多個使用者或多個程式看起來能同時使用同一部電腦。它通常用短時間片快速切換 CPU。',
+    rule:
+      '若題幹出現多使用者、共用電腦、固定長度 CPU 時間、輪流執行，適用的作業系統類型就是分時系統。',
+    application:
+      '本題每個關鍵詞都指向 time sharing：多使用者共用、固定時間片、round robin，所以選 D。',
+    commonTrap:
+      '常見混淆是把同時執行多程式看成平行或分散式；但平行/分散強調多處理器或多電腦，題目強調時間片共享。',
+    solvingSteps: [
+      '先抓題幹的「多使用者同時共用」與「固定長度 CPU 時間」。',
+      '再辨認 round robin scheduling 是分時系統常用排程方式。',
+      '排除嵌入式，因為它通常為專用裝置服務。',
+      '排除平行與分散式，因為題目沒有多處理器或多電腦協同，最後選 D。'
+    ],
+    optionExplanations: {
+      A: '嵌入式系統多為特定設備或控制用途，不是多使用者共用 CPU 時間片的重點。',
+      B: '平行系統強調多處理器同時運算，題幹強調的是時間片輪流。',
+      C: '分散式系統強調多台電腦透過網路協同，不是單機多使用者分時。',
+      D: '分時系統用時間片與輪流排程讓多使用者共享電腦資源，符合題意。'
+    },
+    keyTakeaways: [
+      '規則：多使用者共享加固定時間片，是分時系統的典型線索。',
+      'Round Robin 常服務於分時與互動式系統。',
+      '陷阱是把「同時」誤解成平行或分散。',
+      '分時的核心是快速切換造成互動上的同時感。'
+    ],
+    tags: ['operating-system', 'time-sharing']
+  }),
+  18: buildReview({
+    coreTerms: ['LRU', 'page fault', '分頁替換'],
+    concept:
+      'LRU 分頁替換的前置觀念是：記憶體頁框滿了且要載入新頁時，淘汰最近最久沒有被使用的頁面。',
+    rule:
+      '計算 page fault 時，頁面不在 4 個 frames 內就算一次錯誤；若 frames 已滿，依 LRU 規則換掉最久未用者。',
+    application:
+      '依序處理 1,2,3,4 先有 4 次 fault，後續 5、6、3、7、1、6 又造成 fault，總數為 10。',
+    commonTrap:
+      '常見混淆是把「最近較少使用」誤算成 FIFO，或在命中頁面時忘記更新最近使用時間。',
+    solvingSteps: [
+      '先建立 4 個空頁框，依序讀入 1、2、3、4，累計 4 次 page fault。',
+      '接著 2、1 命中，只更新最近使用順序，不增加 fault。',
+      '讀入 5、6 時各自不在頁框內，依 LRU 淘汰最久未用頁，累計到 6 次。',
+      '繼續依序更新命中與替換，到整串結束共得到 10 次 page fault，所以選 C。'
+    ],
+    optionExplanations: {
+      A: '7 次太少，通常是漏算後半段 3、7、1、6 造成的替換。',
+      B: '8 次仍少算部分 fault，常見於命中後沒有更新 LRU 順序。',
+      C: '10 次符合 4 個 frames 下逐步套用 LRU 的總 page fault 數。',
+      D: '12 次偏多，常見於把已在頁框中的命中也誤算為 fault。'
+    },
+    keyTakeaways: [
+      '規則：LRU 淘汰最近最久未使用的頁面。',
+      '命中頁面不算 fault，但必須更新最近使用順序。',
+      '陷阱是把 LRU 當 FIFO，或把命中也算錯誤。',
+      '長串列題建議畫表格追蹤 frames、命中、淘汰與 fault 總數。'
+    ],
+    tags: ['operating-system', 'virtual-memory', 'lru']
+  }),
+  19: buildReview({
+    coreTerms: ['IDS', '入侵偵測', '備份加密'],
+    concept:
+      'IDS 是入侵偵測系統，核心用途是監控系統或網路活動，判斷是否有可疑行為，並通知管理者。',
+    rule:
+      '判斷 IDS 功能時，要看是否屬於偵測、監控、分析、警示。備份資料加密是資料保護措施，不是 IDS 的主要功能。',
+    application:
+      'A、B、D 都與偵測或警示有關；C 備份資料加密是備份與保密工作，因此選 C。',
+    commonTrap:
+      '常見混淆是把所有資安措施都歸到 IDS。IDS 偵測入侵，但不負責完成所有備份、加密或修補工作。',
+    solvingSteps: [
+      '先確認題目問「並非 IDS 主要功能」。',
+      '再列出 IDS 目的：收集狀態、分析入侵、發出警示。',
+      '比對 A、B、D 都符合偵測與警示。',
+      'C 是備份資料加密，不屬 IDS 主要功能，所以選 C。'
+    ],
+    optionExplanations: {
+      A: '蒐集網路或系統狀態是 IDS 判斷入侵的資料來源，屬主要功能。',
+      B: '預警通知管理者是 IDS 偵測異常後的重要功能。',
+      C: '備份資料加密屬備份與資料保護，不是 IDS 入侵偵測的主要功能。',
+      D: '判斷是否有入侵行為正是 IDS 的核心目的。'
+    },
+    keyTakeaways: [
+      '規則：IDS 重點是監控、偵測、分析與警示。',
+      '資料備份與加密是其他安全控制，不是 IDS 本體功能。',
+      '陷阱是把防火牆、備份、加密、IDS 等資安工具混成一類。',
+      'IPS 偏防禦阻擋，IDS 偏偵測通知，也要分清楚。'
+    ],
+    tags: ['security', 'ids']
+  }),
+  20: buildReview({
+    coreTerms: ['時間複雜度', 'exponential time', 'Big O'],
+    concept:
+      '時間複雜度描述輸入規模 n 變大時，演算法執行時間成長的趨勢。指數時間代表 n 每增加一點，運算量會依指數倍數成長。',
+    rule:
+      '常見成長階層中，O(1) 是常數，O(n^2) 是多項式，O(2^n) 是指數，O(n!) 是階乘且通常比 2^n 更快爆炸。',
+    application:
+      '題目問 exponential time，四個選項中 C 的 O(2^n) 正是指數型，因此選 C。',
+    commonTrap:
+      '常見混淆是把 n! 也看成「很大所以是指數」。n! 的確很大，但分類名稱是階乘時間，不是標準指數時間選項。',
+    solvingSteps: [
+      '先辨認題目關鍵詞 exponential time。',
+      '再把各選項分類：常數、多項式、指數、階乘。',
+      '找出底數固定、指數含 n 的形式，即 2^n。',
+      '因此選 C。'
+    ],
+    optionExplanations: {
+      A: 'O(1) 是常數時間，不會隨 n 增加而成比例成長。',
+      B: 'O(n^2) 是平方時間，屬多項式時間，不是指數時間。',
+      C: 'O(2^n) 的 n 位於指數位置，正是 exponential time。',
+      D: 'O(n!) 是階乘時間，成長很快但分類不是本題問的指數時間。'
+    },
+    keyTakeaways: [
+      '規則：指數時間常見形式是 O(c^n)，例如 O(2^n)。',
+      '多項式時間像 O(n)、O(n^2)，n 在底數位置。',
+      '陷阱是把「很慢」都叫指數；n! 應稱階乘時間。',
+      '判斷 Big O 類型時要看 n 出現在底數、指數或階乘中。'
+    ],
+    tags: ['algorithm', 'complexity']
+  }),
+  21: buildReview({
+    coreTerms: ['循序搜尋', '二分搜尋', '排序'],
+    concept:
+      '搜尋演算法的前置觀念是資料是否有排序。循序搜尋逐筆檢查，不要求排序；二分搜尋每次切半，前提是資料已排序。',
+    rule:
+      '二分搜尋能排除一半資料，是因為排序後才能判斷目標在左半或右半；若資料未排序，切半就沒有意義。',
+    application:
+      '選項 D 說二分搜尋法之資料須先排序過，符合二分搜尋適用條件，因此正確。',
+    commonTrap:
+      '常見混淆是覺得二分搜尋很快所以適用所有資料；它對動態、未排序資料需要額外維護排序成本。',
+    solvingSteps: [
+      '先分辨循序搜尋與二分搜尋的需求。',
+      '循序搜尋不必排序，只要逐一比對。',
+      '二分搜尋每次比較中間值，因此資料必須有序。',
+      '比對選項後，只有 D 正確。'
+    ],
+    optionExplanations: {
+      A: '循序搜尋可直接逐筆檢查，資料不須先排序，因此 A 錯。',
+      B: '二分搜尋不特別適合頻繁變動且未維持排序的動態資料，因此 B 的說法過度簡化。',
+      C: '雜湊法可用於快速查找；「不具保密性」不是本題演算法描述的正確核心。',
+      D: '二分搜尋必須建立在排序資料上，才能依大小關係排除一半範圍。'
+    },
+    keyTakeaways: [
+      '規則：二分搜尋的必要條件是資料已排序。',
+      '循序搜尋不需排序，但最壞情況要掃過全部資料。',
+      '陷阱是只記二分搜尋快，忘記它的適用條件。',
+      '動態資料若要用二分搜尋，需維護資料排序。'
+    ],
+    tags: ['algorithm', 'search']
+  }),
+  22: buildReview({
+    coreTerms: ['hardwired control', 'microprogramming', 'firmware'],
+    concept:
+      'CPU 控制單元可用硬體接線法或微程式設計實作。硬體接線法把控制邏輯做成電路；微程式設計把控制序列存在控制記憶體中。',
+    rule:
+      '微程式控制的控制程式常被視為韌體 firmware，優點是修改與擴充較有彈性；硬體接線法通常速度較快但設計修改較困難。',
+    application:
+      '選項 B 說微程式設計製作韌體，符合微程式控制的定義，因此選 B。',
+    commonTrap:
+      '常見混淆是把微程式看成一般應用程式，或把硬體接線法誤認為一定較簡單、成本較低。',
+    solvingSteps: [
+      '先分辨 hardwired control 與 microprogramming 的實作方式。',
+      '再套用規則：微程式存在控制儲存中，可視為韌體層。',
+      '檢查 A，微程式通常不是速度較快的方案。',
+      '檢查 C、D，硬體接線法不代表設計簡單或成本較低；因此 B 正確。'
+    ],
+    optionExplanations: {
+      A: '執行速度較快通常是硬體接線法的優勢，不是微程式設計的典型優勢。',
+      B: '微程式設計把控制序列做成控制儲存中的程式，常視為 firmware，因此正確。',
+      C: '硬體接線法修改困難，設計不一定較簡單，尤其控制邏輯複雜時更明顯。',
+      D: '硬體接線法可能速度快，但成本是否較低不是固定規則，不能作為正確敘述。'
+    },
+    keyTakeaways: [
+      '規則：hardwired control 偏電路控制，microprogramming 偏控制韌體。',
+      '微程式設計彈性較高，硬體接線法速度通常較快。',
+      '陷阱是把速度快、設計簡單、成本低全部套到同一方案。',
+      'firmware 位在硬體與軟體之間，常用於控制硬體行為。'
+    ],
+    tags: ['computer-architecture', 'cpu-control']
+  }),
+  23: buildReview({
+    coreTerms: ['編譯式語言', '直譯式語言', 'COBOL'],
+    concept:
+      '編譯式語言通常先把原始程式轉成機器碼或中間目標碼，再執行。直譯式或腳本語言則常由解譯器逐步執行。',
+    rule:
+      '判斷時要看語言的典型執行模式。COBOL 是傳統商業應用中典型的編譯式語言；shell、JavaScript、Perl 常被歸為腳本或直譯式。',
+    application:
+      '四個選項中，COBOL 最符合編譯式程式語言的典型分類，因此選 D。',
+    commonTrap:
+      '常見混淆是現代 JavaScript 也可能經 JIT 最佳化，但考試分類通常看傳統教材中的典型定位。',
+    solvingSteps: [
+      '先確認題目問「屬於編譯式程式語言」。',
+      '再依典型教材分類：UNIX shell、JavaScript、Perl 偏腳本語言。',
+      'COBOL 傳統上需編譯後執行，屬編譯式語言。',
+      '因此選 D。'
+    ],
+    optionExplanations: {
+      A: 'UNIX shell 通常是命令腳本，由 shell 解譯執行，不是典型編譯式語言。',
+      B: 'JavaScript 在教材分類中常列為腳本語言；雖有 JIT，但不是本題典型答案。',
+      C: 'Perl 常作為直譯式腳本語言使用，不是典型編譯式代表。',
+      D: 'COBOL 是傳統編譯式商業程式語言，符合題意。'
+    },
+    keyTakeaways: [
+      '規則：編譯式語言通常先轉成目標碼或機器碼再執行。',
+      'shell、Perl、JavaScript 在基本分類題常列為腳本或直譯式。',
+      '陷阱是用現代執行器細節推翻教材典型分類。',
+      'COBOL 常用於商業資料處理，是傳統編譯式語言代表。'
+    ],
+    tags: ['programming-language', 'compiler']
+  }),
+  24: buildReview({
+    coreTerms: ['卡諾圖', '布林代數', '吸收律'],
+    concept:
+      '布林函數化簡可用卡諾圖，也可用布林代數。X’ + XY 的重點是 X’ 與 X 的互補關係會讓式子化成 X’ + Y。',
+    rule:
+      '可用恆等式 A + BC = (A+B)(A+C)。令 A=X’，B=X，C=Y，得到 X’ + XY = (X’+X)(X’+Y)=1·(X’+Y)=X’+Y。',
+    application:
+      '套用吸收/共識類規則後，原式等於 X’ + Y，對應選項 C。',
+    commonTrap:
+      '常見錯誤是把 X’+X 當成 0，或把 XY 直接刪掉變成 X’，忘記 Y=1 時也可能讓輸出為 1。',
+    solvingSteps: [
+      '先寫下原式 F(X,Y)=X’ + XY。',
+      '再套用 A + BC = (A+B)(A+C)：變成 (X’+X)(X’+Y)。',
+      '因為 X’+X=1，所以式子化為 1·(X’+Y)=X’+Y。',
+      '比對選項，C 為 X’+Y。'
+    ],
+    optionExplanations: {
+      A: 'X’+Y’ 把 Y 取反了；當 X=1,Y=1 時原式為 1，但此選項為 0，不符合。',
+      B: 'X+Y 少了 X 為 0 時仍由 X’ 使輸出為 1 的情況，與原式不同。',
+      C: 'X’+Y 符合布林代數化簡結果，因此正確。',
+      D: 'X+Y’ 同時把 X 與 Y 的條件方向弄錯，與原式真值表不一致。'
+    },
+    keyTakeaways: [
+      '規則：X’ + XY 可化簡為 X’ + Y。',
+      '可用 A + BC = (A+B)(A+C) 推導，不必一定畫卡諾圖。',
+      '陷阱是把互補律 X’+X=1 誤認成 0。',
+      '檢查布林化簡可用少量真值代入驗證。'
+    ],
+    tags: ['boolean-algebra', 'karnaugh-map']
+  }),
+  25: buildReview({
+    answerNote:
+      '已人工對照 109.pdf 第 3 頁二元樹圖形：1 為根；左子節點 2，其子節點為 4、5；右子節點 3，其子節點為 6、7。',
+    coreTerms: ['二元樹', '前序', '中序', '後序'],
+    concept:
+      '二元樹走訪有三種基本順序：前序是根、左、右；中序是左、根、右；後序是左、右、根。規則要對每一個子樹遞迴套用。',
+    rule:
+      '本題圖形條件為根 1，左子樹 2-4/5，右子樹 3-6/7。中序走訪必須先走完整左子樹，再走根，再走右子樹。',
+    application:
+      '左子樹中序是 4,2,5；根是 1；右子樹中序是 6,3,7，所以整棵樹中序為 4251637，對應 B。',
+    commonTrap:
+      '常見混淆是只記根的位置，沒有對子樹遞迴套用；或把前序、後序的選項拿來比中序。',
+    solvingSteps: [
+      '先確認圖形：1 是根，2 和 3 分別是左右子節點，2 連 4、5，3 連 6、7。',
+      '再套用中序規則 left-root-right 到左子樹，得到 4、2、5。',
+      '接著放入根節點 1。',
+      '最後套用中序到右子樹，得到 6、3、7；合併為 4251637，選 B。'
+    ],
+    optionExplanations: {
+      A: '1245376 標為前序，但正確前序應是 1245367，此選項右子樹順序也不符合。',
+      B: '4251637 正是左子樹 425、根 1、右子樹 637 的中序結果。',
+      C: '1254367 標為前序，但前序應先根再左再右，節點 4、5 的位置被顛倒混淆。',
+      D: '4526713 標為後序，但正確後序應是 4526731，根 1 應最後出現。'
+    },
+    keyTakeaways: [
+      '規則：前序 root-left-right，中序 left-root-right，後序 left-right-root。',
+      '走訪規則必須對每個子樹遞迴套用。',
+      '陷阱是只看整棵樹根節點，忽略左右子樹內部順序。',
+      '圖形題完成後最好同時計算三種走訪，避免選項標籤誤導。'
+    ],
+    tags: ['data-structure', 'tree-traversal'],
+    extractionStatus: 'verified'
+  }),
+  26: buildReview({
+    coreTerms: ['TCP/IP', 'MAC address', 'IP address', 'port'],
+    concept:
+      'TCP/IP 網路中，不同層負責不同種類的位址。MAC 位址用於資料鏈結層的區域網路傳送；IP 位址用於網路層；Port 用於傳輸層。',
+    rule:
+      '判斷位址層級時，要對應該層的封包或框架功能。實體層處理 bit 訊號，不負責 MAC 位址尋址。',
+    application:
+      '選項 A 說 MAC 位址用於實體層，這把資料鏈結層與實體層混淆，因此是有誤敘述。',
+    commonTrap:
+      '常見混淆是把網卡硬體位址中的「硬體」理解成實體層；MAC 雖常燒在網卡上，但協定層級屬資料鏈結層。',
+    solvingSteps: [
+      '先列出層級對應：MAC 對資料鏈結層，IP 對網路層，Port 對傳輸層。',
+      '再看電子郵件地址，屬應用層識別或應用服務資訊。',
+      '檢查選項，B、C、D 都符合常見層級對應。',
+      'A 把 MAC 放到 Physical Layer，錯在層級，因此選 A。'
+    ],
+    optionExplanations: {
+      A: 'MAC 位址屬資料鏈結層，不是只處理訊號與 bit 的實體層，所以此項有誤。',
+      B: 'IP 位址用於網路層路由與跨網路傳送，敘述正確。',
+      C: 'Port 編號用於傳輸層區分應用程式端點，敘述正確。',
+      D: '電子郵件位址屬應用層使用的識別資訊，敘述可接受。'
+    },
+    keyTakeaways: [
+      '規則：MAC 在資料鏈結層，IP 在網路層，Port 在傳輸層。',
+      '實體層處理訊號與位元，不做 MAC 尋址。',
+      '陷阱是把「硬體位址」誤認為實體層位址。',
+      '位址題可用封裝層級由下到上逐一對應。'
+    ],
+    tags: ['networking', 'tcp-ip']
+  }),
+  27: buildReview({
+    coreTerms: ['repeater', 'bridge', 'gateway', 'router'],
+    concept:
+      '網路設備依功能層級不同而有不同用途：中繼器強化訊號，橋接器連接同類區段，路由器連接不同網路，閘道器可做協定轉換。',
+    rule:
+      '判斷設備敘述時，要看它能否跨越不同協定或網路。Gateway 的典型用途之一就是連接不同通信協定的異質網路。',
+    application:
+      'C 說閘道器無法連接不同通信協定的異質網路，正好與 gateway 定義相反，因此選 C。',
+    commonTrap:
+      '常見混淆是把 router 與 gateway 完全視為同義；router 偏路由轉送，gateway 可包含協定轉換或不同系統互通。',
+    solvingSteps: [
+      '先確認題目要找有誤敘述。',
+      '再快速定位各設備功能：repeater 訊號、bridge 區段、router 網路、gateway 異質互通。',
+      '比對 A、B、D 都符合其設備功能。',
+      'C 把 gateway 功能說反，所以選 C。'
+    ],
+    optionExplanations: {
+      A: '中繼器可重生或增強訊號，延伸傳輸距離，敘述正確。',
+      B: '橋接器可依資料鏈結層資訊決定是否讓資料通過，連接同網路不同區段，敘述正確。',
+      C: '閘道器可連接不同協定或異質網路，說「無法」是錯誤敘述。',
+      D: '路由器可依網路層位址連接不同區域網路或廣域網路，敘述正確。'
+    },
+    keyTakeaways: [
+      '規則：gateway 常處理異質網路或協定轉換。',
+      'repeater、bridge、router、gateway 的功能層級不同。',
+      '陷阱是把所有連網設備都只看成「轉送資料」。',
+      '題目問有誤時，特別注意「無法」這類否定詞。'
+    ],
+    tags: ['networking', 'network-devices']
+  }),
+  28: buildReview({
+    coreTerms: ['ARP', 'IP address', 'MAC address'],
+    concept:
+      '在同一區域網路中，主機若知道目標 IP 位址，還需要知道對方 MAC 位址才能封裝資料鏈結層 frame。',
+    rule:
+      'ARP 的用途是由 IP 位址查詢對應的 MAC 位址；DNS 則是網域名稱與 IP 位址之間的解析。',
+    application:
+      '題幹明確問查詢 IP 位址所對應的 MAC 位址，因此符合 ARP，選 D。',
+    commonTrap:
+      '常見混淆是看到查詢就選 DNS；DNS 查的是 domain name 到 IP，不是 IP 到 MAC。',
+    solvingSteps: [
+      '先確認查詢方向是 IP address 到 MAC address。',
+      '再套用協定用途：ARP 負責 IP-to-MAC 解析。',
+      '排除 DNS，因為它處理名稱與 IP 的解析。',
+      'FTP、NNTP 是應用層服務，與位址解析不符；因此選 D。'
+    ],
+    optionExplanations: {
+      A: 'FTP 是檔案傳輸協定，不處理 IP 對 MAC 的查詢。',
+      B: 'NNTP 是新聞群組傳輸協定，不是位址解析協定。',
+      C: 'DNS 解析網域名稱與 IP 位址，不解析 IP 到 MAC。',
+      D: 'ARP 用於查詢 IP 位址對應的 MAC 位址，正確。'
+    },
+    keyTakeaways: [
+      '規則：ARP 是 IP 到 MAC；DNS 是名稱到 IP。',
+      'MAC 位址用於區域網路資料鏈結層傳送。',
+      '陷阱是把所有查詢服務都誤選 DNS。',
+      'ARP 通常在同一廣播網段內運作。'
+    ],
+    tags: ['networking', 'arp']
+  }),
+  29: buildReview({
+    coreTerms: ['IoT', '感知層', '網路層', '應用層'],
+    concept:
+      '物聯網常用三層架構描述：感知層負責感測與辨識，網路層負責傳輸連線，應用層提供服務與應用。',
+    rule:
+      '判斷是否屬於 IoT 三層架構時，要看名稱是否在感知、網路、應用三者中。鏈結層雖是網路模型名詞，但不是此三層架構的標準成員。',
+    application:
+      'A、C、D 分別對應網路層、應用層、感知層；B 鏈結層不在三層 IoT 架構內，因此選 B。',
+    commonTrap:
+      '常見混淆是把 OSI 或 TCP/IP 的資料鏈結層拿來套進 IoT 三層架構。',
+    solvingSteps: [
+      '先列出 IoT 三層：感知層、網路層、應用層。',
+      '再把四個選項逐一比對。',
+      '網路層、應用層、感知層都在清單內。',
+      '鏈結層不屬於這個三層架構，因此選 B。'
+    ],
+    optionExplanations: {
+      A: '網路層是 IoT 三層架構中的傳輸與連接層，屬於成員。',
+      B: '鏈結層是 OSI/TCP 網路分層名詞，不是 IoT 三層架構標準成員。',
+      C: '應用層提供智慧家居、監控、管理等服務，屬於 IoT 架構成員。',
+      D: '感知層負責感測器、RFID 等資料取得，屬於 IoT 架構成員。'
+    },
+    keyTakeaways: [
+      '規則：IoT 常見三層是感知、網路、應用。',
+      '鏈結層屬其他網路模型名詞，不是此題三層成員。',
+      '陷阱是混用不同架構的分層名稱。',
+      '判斷分層題要先確認使用的是哪一套模型。'
+    ],
+    tags: ['iot', 'networking']
+  }),
+  30: buildReview({
+    coreTerms: ['NFC', '13.56 MHz', '近距離通訊'],
+    concept:
+      'NFC 是近距離無線通訊技術，常用於行動支付、感應卡讀取與點對點短距離資料交換。',
+    rule:
+      '辨認 NFC 的典型條件是 13.56 MHz、距離很短、常與感應卡或近距離點對點互動有關。',
+    application:
+      '題幹提到手機 APP 感應信用卡資料、13.56 MHz、20 公分內點對點通訊，完全符合 NFC，因此選 A。',
+    commonTrap:
+      '常見混淆是看到手機無線就選 Bluetooth 或 Wi-Fi；但它們的距離、頻段與典型用途不同。',
+    solvingSteps: [
+      '先抓關鍵詞「信用卡感應」與「13.56 MHz」。',
+      '再確認距離限制在 20 公分內，屬近距離通訊。',
+      '比對選項，只有 NFC 符合這些條件。',
+      '因此選 A。'
+    ],
+    optionExplanations: {
+      A: 'NFC 使用 13.56 MHz，常用於近距離感應與支付，符合題意。',
+      B: 'Bluetooth 通常用於較長距離的個人區域網路，不以 13.56 MHz 感應卡為典型線索。',
+      C: 'Wi-Fi 是無線區域網路技術，距離與用途都不同。',
+      D: 'WiMAX 是都會或寬頻無線接取技術，不是近距離信用卡感應。'
+    },
+    keyTakeaways: [
+      '規則：NFC 的關鍵線索是 13.56 MHz 與短距離感應。',
+      'NFC 常見應用包含交通卡、信用卡感應與行動支付。',
+      '陷阱是把所有手機無線通訊都看成 Wi-Fi 或 Bluetooth。',
+      '距離、頻率與典型應用是辨認無線技術的三個重點。'
+    ],
+    tags: ['networking', 'nfc']
+  }),
+  31: buildReview({
+    coreTerms: ['Ad hoc network', 'hidden node', 'topology'],
+    concept:
+      '隱藏節點問題常出現在無線網路中：兩個節點都能和中間節點通訊，但彼此聽不到對方，因而可能同時傳送造成碰撞。',
+    rule:
+      'Ad hoc network 沒有固定集中式基礎建設，節點彼此直接通訊，較容易出現隱藏節點與媒體競爭問題。',
+    application:
+      '四個拓樸中，Ad hoc network 最符合無線節點直接互連與隱藏節點的情境，因此選 C。',
+    commonTrap:
+      '常見混淆是把隱藏節點想成任何拓樸都會發生；它特別和無線傳輸範圍與載波偵測限制有關。',
+    solvingSteps: [
+      '先辨認 hidden node 是無線通訊的媒體存取問題。',
+      '再找出選項中最典型的無線直接互連拓樸。',
+      'Ad hoc network 沒有固定 AP 集中管理，節點可因距離而彼此聽不到。',
+      '因此選 C。'
+    ],
+    optionExplanations: {
+      A: 'Ring network 是有線或邏輯環狀拓樸，並非 hidden node 的典型情境。',
+      B: 'Star network 有中心節點集中連接，較不是本題隱藏節點線索。',
+      C: 'Ad hoc network 節點直接互連，無線範圍限制容易造成 hidden node，正確。',
+      D: 'Bus network 共享匯流排，但隱藏節點不是其典型描述。'
+    },
+    keyTakeaways: [
+      '規則：hidden node 常見於無線 ad hoc 或無線網路媒體存取。',
+      'Ad hoc network 沒有固定基礎建設，節點直接互通。',
+      '陷阱是用有線拓樸概念解釋無線範圍問題。',
+      '無線網路的碰撞問題常來自節點彼此聽不到。'
+    ],
+    tags: ['networking', 'wireless']
+  }),
+  32: buildReview({
+    coreTerms: ['802.22', 'WRAN', 'Super Wi-Fi'],
+    concept:
+      'Super Wi-Fi 或 WRAN 指利用電視白頻譜等較低頻段提供較大範圍的無線區域接取概念。',
+    rule:
+      'IEEE 802.22 是 Wireless Regional Area Network 的標準；802.11 系列主要是 WLAN，802.16 是 WiMAX/MAN。',
+    application:
+      '題幹明確寫 WRAN，因此要對應 IEEE 802.22，選 B。',
+    commonTrap:
+      '常見混淆是看到 Wi-Fi 就選 802.11ac 或 802.11n；但 Super Wi-Fi 這裡指的是 WRAN，不是一般 WLAN。',
+    solvingSteps: [
+      '先抓關鍵字 wireless regional area network，也就是 WRAN。',
+      '再套用 IEEE 標準對應：WRAN 對 802.22。',
+      '排除 802.11ac 與 802.11n，因為它們是 WLAN Wi-Fi。',
+      '排除 802.16，因為它偏 WiMAX/MAN；因此選 B。'
+    ],
+    optionExplanations: {
+      A: '802.16 通常對應 WiMAX 或無線都會網路，不是 WRAN 標準答案。',
+      B: '802.22 是 WRAN 的 IEEE 標準，符合 Super Wi-Fi 題幹。',
+      C: '802.11ac 是一般 Wi-Fi/WLAN 標準，不是 WRAN。',
+      D: '802.11n 也是 WLAN Wi-Fi 標準，不是 Super Wi-Fi 的 WRAN 對應。'
+    },
+    keyTakeaways: [
+      '規則：WRAN 對應 IEEE 802.22。',
+      '802.11 是 WLAN，802.16 常見於 WiMAX/MAN。',
+      '陷阱是被 Super Wi-Fi 的 Wi-Fi 字樣帶去選 802.11。',
+      '看到 regional area network 要想到範圍比一般 WLAN 更大。'
+    ],
+    tags: ['networking', 'wireless-standard']
+  }),
+  33: buildReview({
+    coreTerms: ['handoff', '基地台', '行動通訊'],
+    concept:
+      '行動通訊中，使用者移動時可能從一個基地台覆蓋區進入另一個基地台覆蓋區。為了讓通話不中斷，系統要切換服務基地台或頻道。',
+    rule:
+      '這種通話中從目前基地台或頻道切換到鄰近基地台可用頻道的動作稱為 handoff，也常譯為交遞或換手。',
+    application:
+      '題幹直接描述通話過程中轉換到鄰近基地台頻道以維持通話，符合 handoff，因此選 D。',
+    commonTrap:
+      '常見混淆是把 routing 或 switch 當成一般轉換；handoff 特別用在行動通訊連線維持。',
+    solvingSteps: [
+      '先辨認場景是行動電話正在通話且使用者移動。',
+      '再抓動作：從目前基地台頻道切到鄰近基地台頻道。',
+      '套用行動通訊術語，這是 handoff。',
+      '因此選 D。'
+    ],
+    optionExplanations: {
+      A: '交換 switch 是一般交換或切換概念，不是行動通訊維持通話的專用術語。',
+      B: '路由 routing 是封包選路，與基地台通話切換不同。',
+      C: '追蹤 tracking 可能涉及定位或狀態追蹤，但不是頻道切換動作名稱。',
+      D: '交遞 handoff 指通話中切換服務基地台或頻道以維持連線，符合題意。'
+    },
+    keyTakeaways: [
+      '規則：行動通訊中基地台切換稱 handoff。',
+      'handoff 的目的在於移動時維持通話不中斷。',
+      '陷阱是把一般 routing、switching 與行動通訊交遞混淆。',
+      '看到基地台、頻道、通話持續，要優先想到 handoff。'
+    ],
+    tags: ['networking', 'mobile-network']
+  }),
+  34: buildReview({
+    coreTerms: ['OSI', 'Session Layer', '對話控制'],
+    concept:
+      'OSI 七層模型由下而上包含實體、資料鏈結、網路、傳輸、會談、表示、應用。每一層有不同職責。',
+    rule:
+      '會談層 Session Layer 負責建立、維護與終止會談，以及對話控制與同步點等功能。',
+    application:
+      '題幹寫建立、維護與切斷連線、對話控制，這正是會談層職責，因此選 C。',
+    commonTrap:
+      '常見混淆是看到連線就選傳輸層；傳輸層處理端到端傳輸可靠性，會談層才強調對話與會談管理。',
+    solvingSteps: [
+      '先辨認題目問 OSI 哪一層。',
+      '再抓關鍵詞「建立、維護、切斷連線」與「對話控制」。',
+      '套用會談層定義：管理 session 與對話。',
+      '因此選 C。'
+    ],
+    optionExplanations: {
+      A: '網路層負責路由與邏輯位址，不是對話控制。',
+      B: '資料鏈結層處理框架與同一鏈路傳輸，不負責 session 管理。',
+      C: '會談層負責建立、維護、終止會談與對話控制，符合題意。',
+      D: '傳輸層處理端到端傳輸、流量與可靠性，不是本題描述的會談控制。'
+    },
+    keyTakeaways: [
+      '規則：Session Layer 管理會談與對話控制。',
+      '傳輸層負責端到端資料傳送，不等同會談管理。',
+      '陷阱是看到「連線」就直接選 Transport Layer。',
+      'OSI 題可用關鍵詞對應職責快速判斷。'
+    ],
+    tags: ['networking', 'osi']
+  }),
+  35: buildReview({
+    coreTerms: ['802.11ac', 'Wi-Fi', '傳輸速度'],
+    concept:
+      'IEEE 802.11 系列是 Wi-Fi 無線區域網路標準，不同版本的理論速度不同。',
+    rule:
+      '在 802.11a、b、n、ac 的常見比較中，802.11ac 是較新的高吞吐量標準，速度高於 802.11n、a、b。',
+    application:
+      '四個選項中 802.11ac 傳輸速度最快，因此選 B。',
+    commonTrap:
+      '常見混淆是只看字母順序或只記得 802.11n 很快；但 ac 是本組選項中的較高速度標準。',
+    solvingSteps: [
+      '先確認四個選項都屬 IEEE 802.11 Wi-Fi 標準。',
+      '再依常見速度世代排序：b 較慢，a 早期，n 較快，ac 更快。',
+      '比較後找出最快者 802.11ac。',
+      '因此選 B。'
+    ],
+    optionExplanations: {
+      A: '802.11a 是早期 5 GHz 標準，速度低於 n 與 ac。',
+      B: '802.11ac 提供更高吞吐量，是四者中速度最快的常見答案。',
+      C: '802.11b 是早期低速 Wi-Fi 標準，不可能最快。',
+      D: '802.11n 比 a/b 快，但通常低於 802.11ac。'
+    },
+    keyTakeaways: [
+      '規則：此組速度常見排序可記為 b < a < n < ac。',
+      '802.11ac 是高吞吐量 WLAN 標準。',
+      '陷阱是用字母順序或只記單一標準，沒有比較世代。',
+      '無線標準題要確認比較的是速度、頻段還是範圍。'
+    ],
+    tags: ['networking', 'wifi']
+  }),
+  36: buildReview({
+    coreTerms: ['OSI 封裝', 'data', 'segment', 'packet', 'frame', 'bit'],
+    concept:
+      '資料從 OSI 上層往下傳送時，每一層會加上自己的控制資訊，這個過程稱為封裝。',
+    rule:
+      '常見封裝名稱依序是應用層資料 data，傳輸層 segment，網路層 packet，資料鏈結層 frame，實體層 bit。',
+    application:
+      '題目給 ①資料、②位元、③區段、④封包、⑤訊框；由上到下順序是 ①③④⑤②，對應 A。',
+    commonTrap:
+      '常見混淆是把 bit 放太前面；bit 是實體層最下層的傳送形式，不是上層資料的起點。',
+    solvingSteps: [
+      '先從上層往下列出封裝順序：data、segment、packet、frame、bit。',
+      '再把題目編號代入：data=①，segment=③，packet=④，frame=⑤，bit=②。',
+      '得到順序 ①③④⑤②。',
+      '比對選項，選 A。'
+    ],
+    optionExplanations: {
+      A: '①③④⑤② 對應 data、segment、packet、frame、bit，符合上層往下封裝順序。',
+      B: '①②④③⑤ 把 bit 放在第二個，混淆實體層位置。',
+      C: '①④③⑤② 把 packet 與 segment 顛倒，忽略傳輸層在網路層之上。',
+      D: '①⑤②④③ 把 frame 與 bit 放太前面，層級順序不符合 OSI。'
+    },
+    keyTakeaways: [
+      '規則：封裝順序是 data -> segment -> packet -> frame -> bit。',
+      '傳輸層產生 segment，網路層產生 packet，資料鏈結層產生 frame。',
+      '陷阱是把 bit 當成最早的資料單位；bit 是實體層傳送形式。',
+      '記憶法：越往下越接近實體媒介。'
+    ],
+    tags: ['networking', 'osi', 'encapsulation']
+  }),
+  37: buildReview({
+    coreTerms: ['half-duplex', 'simplex', 'full-duplex'],
+    concept:
+      '傳輸模式常分為單工、半雙工、全雙工。差別在於資料能否雙向傳，以及能否同時雙向傳。',
+    rule:
+      '半雙工 half-duplex 允許雙向傳輸，但同一時間只能一個方向傳；全雙工才允許雙向同時傳。',
+    application:
+      '題目問半雙工特性，選項 D「雙向傳輸，但不可同時進行」正好符合定義。',
+    commonTrap:
+      '常見混淆是把半雙工看成單向，或看到雙向就直接以為可同時進行。',
+    solvingSteps: [
+      '先列出三種模式：simplex 單向、half-duplex 雙向不同時、full-duplex 雙向同時。',
+      '再把題目半雙工對應到「雙向但不可同時」。',
+      '排除 A、B，因為它們說單向。',
+      '排除 C，因為它是全雙工；因此選 D。'
+    ],
+    optionExplanations: {
+      A: '單向傳輸是 simplex，不是半雙工。',
+      B: '單向傳輸但同時進行本身概念混亂，也不符合半雙工定義。',
+      C: '雙向且可同時進行是 full-duplex，不是 half-duplex。',
+      D: '雙向傳輸但不可同時進行正是 half-duplex 定義。'
+    },
+    keyTakeaways: [
+      '規則：simplex 單向，half-duplex 雙向不同時，full-duplex 雙向同時。',
+      '半雙工不是半個方向，而是共享同一時間的雙向能力。',
+      '陷阱是把「雙向」與「同時」混在一起。',
+      '對講機是半雙工常見例子。'
+    ],
+    tags: ['networking', 'transmission-mode']
+  }),
+  38: buildReview({
+    answerNote:
+      '已人工對照 109.pdf 第 4 頁路由表欄位：位址、子網路遮罩、下一站分別為 128.96.39.0/m0、128.96.39.128/m1、128.96.40.0/R2、192.4.153.0/R3、預設/R4。',
+    coreTerms: ['路由表', '子網路遮罩', 'longest prefix match'],
+    concept:
+      '路由器收到封包後，會用目的 IP 與路由表的遮罩做比對，找出符合的網路項目。若多個項目符合，通常採最長前綴符合。',
+    rule:
+      '本題各列遮罩明確列出。目的位址 128.96.40.12 與 255.255.255.128 運算後屬於 128.96.40.0/25，所以符合下一站 R2。',
+    application:
+      '128.96.40.12 的前 25 位與 128.96.40.0/25 相符；它不屬於 128.96.39.* 或 192.4.153.*，因此下一站為 R2。',
+    commonTrap:
+      '常見混淆是只看前兩段 128.96 就選介面 m0/m1，或忽略遮罩 255.255.255.128 會把網段切成 0-127 與 128-255。',
+    solvingSteps: [
+      '先讀表格欄位：位址、子網路遮罩、下一站，避免把欄位錯位。',
+      '再比對目的位址 128.96.40.12，不屬於 128.96.39.0 或 128.96.39.128 兩個網段。',
+      '使用 255.255.255.128 遮罩檢查 128.96.40.12，得到網路位址 128.96.40.0。',
+      '表中 128.96.40.0/25 的下一站是 R2，因此選 C。'
+    ],
+    optionExplanations: {
+      A: '介面 m0 對應 128.96.39.0/25，目的位址第三段是 40，不符合。',
+      B: '介面 m1 對應 128.96.39.128/25，仍是 128.96.39.* 網段，不符合 128.96.40.12。',
+      C: 'R2 對應 128.96.40.0/25，目的位址 128.96.40.12 落在 0-127 範圍內，正確。',
+      D: 'R3 對應 192.4.153.0/26，與 128.96.40.12 完全不同網段。'
+    },
+    keyTakeaways: [
+      '規則：目的 IP 要和路由表位址、遮罩一起比對。',
+      '255.255.255.128 代表最後一段切成 0-127 與 128-255 兩半。',
+      '陷阱是只比對 IP 前幾段而忽略遮罩。',
+      '路由表題要先確認欄位沒有錯位，再做 longest prefix match。'
+    ],
+    tags: ['networking', 'routing', 'subnetting'],
+    extractionStatus: 'verified'
+  }),
+  39: buildReview({
+    coreTerms: ['CIDR', '路由聚合', '/22'],
+    concept:
+      'CIDR 聚合會把連續且大小相同的網段合併成較短前綴，減少路由表項目。合併後的網段必須涵蓋原本所有網段且不能多出不該涵蓋的範圍太多。',
+    rule:
+      '四個連續 /24 若第三個 octet 是連續 132、133、134、135，且起點 132 是 4 的倍數，就能聚合成一個 /22。',
+    application:
+      '212.56.132.0 到 212.56.135.255 共 4 個 /24，起點為 132，所以最大聚合是 212.56.132.0/22。',
+    commonTrap:
+      '常見混淆是只聚合相鄰兩個 /24 成 /23，沒有看到四個連續網段可進一步聚合成 /22。',
+    solvingSteps: [
+      '先確認四個位址都是 /24 且第三段為 132、133、134、135。',
+      '再看四個連續 /24 可合併成一個 /22，因為 /22 包含 4 個 /24。',
+      '檢查起點 132 是否符合 /22 邊界；132 可被 4 整除，符合。',
+      '因此聚合結果是 212.56.132.0/22，選 D。'
+    ],
+    optionExplanations: {
+      A: '212.56.133.0/23 起點不是涵蓋四個 /24 的正確邊界，也漏掉 132 與 135 的部分範圍。',
+      B: '212.56.132.0/23 只涵蓋 132 與 133 兩個 /24，沒有涵蓋 134、135。',
+      C: '212.56.134.0/22 起點不在 /22 的正確 4 網段邊界，且範圍會錯位。',
+      D: '212.56.132.0/22 正好涵蓋 132、133、134、135 四個連續 /24。'
+    },
+    keyTakeaways: [
+      '規則：一個 /22 可包含 4 個連續 /24。',
+      '聚合起點必須落在前綴邊界上，例如第三段需符合 4 的倍數。',
+      '陷阱是只做兩兩 /23 聚合，忘記可再合成 /22。',
+      'CIDR 聚合要同時檢查連續性與對齊邊界。'
+    ],
+    tags: ['networking', 'cidr']
+  }),
+  40: buildReview({
+    coreTerms: ['TCP header', 'IP header', 'source port'],
+    concept:
+      'TCP 是傳輸層協定，表頭負責端到端連線控制，例如連接埠、序號、確認號、視窗大小等。IP 是網路層協定，表頭包含來源與目的 IP 位址。',
+    rule:
+      '判斷是否屬 TCP 封包表頭欄位，要區分傳輸層與網路層。目的 IP 位址是 IP header 欄位，不是 TCP header 欄位。',
+    application:
+      'A sequence number、C source port、D window size 都是 TCP 表頭常見欄位；B destination IP address 屬 IP 表頭，因此選 B。',
+    commonTrap:
+      '常見混淆是把整個封包中看得到的資訊都算 TCP 表頭；實際上 TCP segment 會被 IP packet 包住，欄位分層不同。',
+    solvingSteps: [
+      '先確認題目問「並非 TCP 封包表頭」。',
+      '再列出 TCP 表頭常見欄位：source/destination port、sequence number、ack number、window size。',
+      '比對 A、C、D 都在 TCP 表頭概念內。',
+      '目的 IP 位址屬 IP 表頭，排除後選 B。'
+    ],
+    optionExplanations: {
+      A: 'Sequence 編號是 TCP 用來排序與可靠傳輸的表頭欄位。',
+      B: '目的 IP 位址位於 IP header，不屬 TCP header，所以是本題正確答案。',
+      C: 'Source port 是 TCP/UDP 傳輸層表頭欄位，用於識別應用端點。',
+      D: 'Window size 是 TCP 流量控制使用的表頭欄位。'
+    },
+    keyTakeaways: [
+      '規則：Port、sequence、window 屬 TCP；IP address 屬 IP。',
+      '封裝後一個封包包含多層表頭，但欄位仍要分層判斷。',
+      '陷阱是把 packet 中所有資訊都歸到 TCP header。',
+      'TCP 管端點與可靠性，IP 管位址與路由。'
+    ],
+    tags: ['networking', 'tcp'],
+    extractionStatus: 'verified'
+  }),
+  41: buildReview({
+    coreTerms: ['光纖', '傳輸媒體', '電磁干擾'],
+    concept:
+      '網路傳輸媒體可分有線與無線。光纖使用光訊號傳輸，不像銅線那樣受電磁干擾影響，也較難被外部電磁方式竊聽。',
+    rule:
+      '若題目同時強調傳輸快、不受電路干擾、具保密性，典型答案是光纖。',
+    application:
+      '四個選項中，光纖以光傳輸，速度高且抗電磁干擾，因此選 A。',
+    commonTrap:
+      '常見混淆是微波或無線電也能高速傳輸，但它們使用電磁波，較不符合「不受電路干擾」與保密性線索。',
+    solvingSteps: [
+      '先抓關鍵詞「傳輸快」「不受電路干擾」「具保密性」。',
+      '再套用媒體特性：光纖以光訊號在纖芯中傳送。',
+      '排除電話線，因為銅線較受電磁干擾。',
+      '排除微波與無線電，因為它們是開放空間電磁波；因此選 A。'
+    ],
+    optionExplanations: {
+      A: '光纖速度高、抗電磁干擾且較具保密性，符合題意。',
+      B: '電話線是銅線媒體，較容易受電磁干擾，也不是速度最佳選項。',
+      C: '微波可高速傳輸但屬無線電磁波，保密與干擾條件不如光纖。',
+      D: '無線電使用開放空間傳播，較容易受干擾或被截收。'
+    },
+    keyTakeaways: [
+      '規則：光纖用光傳輸，抗電磁干擾能力強。',
+      '銅線容易受電磁干擾，無線媒體也較可能被截收。',
+      '陷阱是只看速度，忽略抗干擾與保密性。',
+      '多條件題要選同時滿足所有條件的媒體。'
+    ],
+    tags: ['networking', 'physical-media']
+  }),
+  42: buildReview({
+    coreTerms: ['紅外線', '視線傳輸', '收訊角度'],
+    concept:
+      '不同無線傳輸媒介對方向性與障礙物的敏感度不同。紅外線傳輸常要求發射端與接收端對準，且可被障礙物阻擋。',
+    rule:
+      '題幹強調收訊端必須對準發射端且誤差不能超過收訊角度，這是紅外線方向性傳輸的典型描述。',
+    application:
+      '無線電與微波也有傳播特性，但本題的「對準」與「收訊角度」最直接對應紅外線，因此選 C。',
+    commonTrap:
+      '常見混淆是看到對準就想到微波；微波常需視線傳輸，但教材中遙控器式對準收訊角度通常指紅外線。',
+    solvingSteps: [
+      '先抓關鍵詞「必須對準」與「收訊角度」。',
+      '再比較傳輸媒介：紅外線方向性強且容易被遮蔽。',
+      '排除雙絞線，因為它是有線媒介。',
+      '排除無線電與微波後，選 C。'
+    ],
+    optionExplanations: {
+      A: '無線電通常可較廣泛傳播，不是必須精準對準收訊角度的典型答案。',
+      B: '微波也有方向性，但本題描述的近端對準與收訊角度常對應紅外線。',
+      C: '紅外線傳輸需對準接收端，角度偏差過大會收不到訊號，符合題意。',
+      D: '雙絞線是有線傳輸媒介，不涉及發射端與收訊端角度對準。'
+    },
+    keyTakeaways: [
+      '規則：紅外線方向性強，常需要視線與角度對準。',
+      '有線媒介不適用發射端/收訊端角度描述。',
+      '陷阱是把所有視線傳輸都直接歸為微波。',
+      '判斷媒介題時，要看距離、方向性、是否有線與典型應用。'
+    ],
+    tags: ['networking', 'wireless-media']
+  }),
+  43: buildReview({
+    coreTerms: ['Bluetooth', 'RF', 'Physical Layer'],
+    concept:
+      'OSI 實體層負責實際訊號傳輸，包括電氣、光學或無線射頻訊號。Bluetooth 使用 RF radio frequency 傳送資料。',
+    rule:
+      '只要題目問 RF 屬於 OSI 哪一層，應對應到實體層，因為它描述的是傳輸媒介上的訊號形式。',
+    application:
+      'Bluetooth 的 RF 是無線射頻訊號，屬於 Physical Layer，因此選 B。',
+    commonTrap:
+      '常見混淆是 Bluetooth 有應用與協定堆疊，就把 RF 歸到應用層；但 RF 只描述底層傳輸訊號。',
+    solvingSteps: [
+      '先辨認 RF 是 radio frequency，代表無線射頻訊號。',
+      '再套用 OSI 層級：訊號與媒介屬實體層。',
+      '排除應用、傳輸、網路層，因為它們處理服務、端到端或路由。',
+      '因此選 B。'
+    ],
+    optionExplanations: {
+      A: '應用層處理使用者服務與應用協定，不負責 RF 訊號本身。',
+      B: '實體層處理無線射頻、電壓、光訊號等媒介傳輸形式，符合 RF。',
+      C: '傳輸層處理端到端連線與連接埠，不是射頻訊號。',
+      D: '網路層處理位址與路由，不是 Bluetooth RF 的層級。'
+    },
+    keyTakeaways: [
+      '規則：RF、電壓、光訊號等媒介訊號屬實體層。',
+      'Bluetooth 有多層協定，但 RF 只指底層傳輸。',
+      '陷阱是把整個技術名稱與單一訊號層級混淆。',
+      'OSI 題要看題目問的是功能、協定還是媒介訊號。'
+    ],
+    tags: ['networking', 'osi', 'bluetooth']
+  }),
+  44: buildReview({
+    coreTerms: ['modem', '調變', '數位與類比'],
+    concept:
+      '數據機 modem 名稱來自 modulator/demodulator，功能是在數位訊號與類比訊號之間轉換。',
+    rule:
+      '若題目問哪個設備能將數位訊號轉換為類比訊號，應選數據機。交換器、路由器、集線器都主要負責資料轉送或集中連接。',
+    application:
+      '本題直接描述數位轉類比，對應 modem 調變功能，因此選 C。',
+    commonTrap:
+      '常見混淆是看到網路設備就選路由器；路由器負責路由，不負責調變數位/類比訊號。',
+    solvingSteps: [
+      '先抓關鍵詞「數位訊號轉換為類比訊號」。',
+      '再套用 modem 的定義：調變與解調。',
+      '排除 switch、router、hub，因為它們不是數位類比轉換器。',
+      '因此選 C。'
+    ],
+    optionExplanations: {
+      A: '交換器依 MAC 位址轉送 frame，不負責數位與類比訊號轉換。',
+      B: '路由器依 IP 路由封包，不是調變解調設備。',
+      C: '數據機 modem 可調變/解調，負責數位與類比訊號轉換，符合題意。',
+      D: '集線器主要重送訊號到多個連接埠，不是數位類比轉換設備。'
+    },
+    keyTakeaways: [
+      '規則：modem = modulator + demodulator。',
+      '數位/類比轉換題優先想到數據機。',
+      '陷阱是把所有網路設備都看成同樣的連線盒。',
+      'switch、router、hub 的主要功能分別是交換、路由、集中/重送。'
+    ],
+    tags: ['networking', 'modem']
+  }),
+  45: buildReview({
+    coreTerms: ['網路拓樸', 'bus topology', '匯流排網路'],
+    concept:
+      '網路拓樸描述節點如何連接。匯流排拓樸會讓所有節點連到同一條主幹纜線上，共享傳輸媒介。',
+    rule:
+      '若題幹描述所有網路節點放在一條纜線上，就是 bus network，也稱匯流排網路。',
+    application:
+      '本題「一條纜線」是匯流排拓樸的核心線索，因此選 C。',
+    commonTrap:
+      '常見混淆是把一條線想成廣域網路或環狀網路；拓樸看連接形狀，不看覆蓋範圍。',
+    solvingSteps: [
+      '先確認題目問網路拓樸，不是網路範圍。',
+      '再抓關鍵描述「所有節點放在一條纜線上」。',
+      '套用拓樸定義，這是 bus topology。',
+      '因此選 C。'
+    ],
+    optionExplanations: {
+      A: '廣域網路描述地理範圍，不是所有節點接在一條纜線上的拓樸。',
+      B: '環狀網路是節點形成環形連接，不是一條共享主幹線。',
+      C: '匯流排網路把節點連到同一條纜線主幹上，符合題意。',
+      D: '星形網路是節點連到中心設備，不是一條共享纜線。'
+    },
+    keyTakeaways: [
+      '規則：一條共享主幹纜線是 bus topology。',
+      '拓樸描述連接形狀，WAN/LAN 描述範圍或規模。',
+      '陷阱是把網路範圍名稱與拓樸名稱混淆。',
+      '星形看中心點，環狀看閉合環，匯流排看共用線。'
+    ],
+    tags: ['networking', 'topology']
+  }),
+  46: buildReview({
+    coreTerms: ['IPv4', '/19', '子網路位址'],
+    concept:
+      '子網路位址是把 IP 位址與子網路遮罩做 AND 運算後得到的網路部分。/19 表示前 19 位是網路位元。',
+    rule:
+      '255.255.224.0 的第三個 octet 遮罩是 224，二進位為 11100000，因此第三段的區塊大小是 256-224=32。',
+    application:
+      '142.50.140.22 的第三段 140 落在 128 到 159 這個 /19 區塊，因此子網路位址是 142.50.128.0。',
+    commonTrap:
+      '常見混淆是用第三段 140 直接取整，或誤以為選項 130、132、136 都可能是網路邊界；/19 的邊界以 32 遞增。',
+    solvingSteps: [
+      '先把遮罩 255.255.224.0 看成 /19，第三段區塊大小為 32。',
+      '再列第三段網路邊界：0、32、64、96、128、160。',
+      '確認 140 落在 128 到 159 之間。',
+      '主機位元歸零後得到 142.50.128.0，選 A。'
+    ],
+    optionExplanations: {
+      A: '142.50.128.0 是第三段 140 在 /19 遮罩下所屬的正確網路位址。',
+      B: '142.50.130.0 不是 /19 的 32 倍數邊界，不能作為 netid。',
+      C: '142.50.132.0 也不是 /19 網路邊界，是主機範圍內的位址。',
+      D: '142.50.136.0 同樣落在 128/19 網段內，但不是網路位址。'
+    },
+    keyTakeaways: [
+      '規則：netid = IP address AND subnet mask。',
+      '255.255.224.0 的第三段區塊大小是 32。',
+      '陷阱是把任何看似接近的第三段都當成網路邊界。',
+      '/19 網段第三段邊界為 0、32、64、96、128、160、192、224。'
+    ],
+    tags: ['networking', 'subnetting']
+  }),
+  47: buildReview({
+    coreTerms: ['Application Layer', 'HTTP', 'POP3', 'FTP', 'ARP'],
+    concept:
+      '應用層協定直接支援使用者或應用程式服務，例如網頁、郵件收取、檔案傳輸等。',
+    rule:
+      'HTTP、POP3、FTP 都是典型應用層協定。ARP 用於解析 IP 與 MAC 位址，通常歸在網路/資料鏈結相關位置，不是應用層協定。',
+    application:
+      '題目問不屬於應用層者，只有 ARP 不屬應用層，因此選 D。',
+    commonTrap:
+      '常見混淆是只要是協定就都算應用層；協定也可能屬於位址解析、傳輸或網路層功能。',
+    solvingSteps: [
+      '先列出應用層常見協定：HTTP、POP3、FTP。',
+      '再檢查 ARP 的用途：IP 到 MAC 位址解析。',
+      'ARP 不提供使用者應用服務，而是支援區域網路傳送。',
+      '因此選 D。'
+    ],
+    optionExplanations: {
+      A: 'HTTP 提供網頁與超文字傳輸服務，屬應用層。',
+      B: 'POP3 用於電子郵件收取，屬應用層。',
+      C: 'FTP 用於檔案傳輸，屬應用層。',
+      D: 'ARP 用於 IP 與 MAC 位址解析，不屬應用層，所以正確。'
+    },
+    keyTakeaways: [
+      '規則：HTTP、POP3、FTP 是應用層；ARP 不是。',
+      '應用層協定通常直接支援使用者服務。',
+      '陷阱是把所有協定名稱都歸到應用層。',
+      'ARP 的關鍵用途是 address resolution。'
+    ],
+    tags: ['networking', 'application-layer']
+  }),
+  48: buildReview({
+    coreTerms: ['TTL', 'router', 'IP header'],
+    concept:
+      'TTL 是 IP 封包中的存活期欄位，用來限制封包在網路中可經過的跳數，避免路由迴圈讓封包永遠存在。',
+    rule:
+      '每經過一台路由器，TTL 通常會遞減；當 TTL 減到 0 時，封包會被丟棄並可回報錯誤。',
+    application:
+      '四個設備中，會逐跳處理 IP 封包並遞減 TTL 的是路由器，因此選 B。',
+    commonTrap:
+      '常見混淆是交換器也會轉送資料，但交換器主要處理資料鏈結層 frame，不會遞減 IP TTL。',
+    solvingSteps: [
+      '先確認 TTL 位於 IP 封包，和網路層轉送有關。',
+      '再判斷哪種設備會做跨網路 IP 路由。',
+      '路由器每轉送一跳會遞減 TTL。',
+      '因此選 B。'
+    ],
+    optionExplanations: {
+      A: '交換器依 MAC 位址轉送 frame，一般不處理或遞減 IP TTL。',
+      B: '路由器轉送 IP 封包時會遞減 TTL，符合題意。',
+      C: 'DNS 伺服器負責名稱解析，不是逐跳遞減 TTL 的網路設備。',
+      D: '橋接器屬資料鏈結層連接設備，不負責 IP TTL 遞減。'
+    },
+    keyTakeaways: [
+      '規則：TTL 是 IP 層跳數限制，每過一台 router 遞減。',
+      'TTL 可避免路由迴圈造成封包永久流竄。',
+      '陷阱是把 switch/bridge 的轉送與 router 的 IP 路由混淆。',
+      'DNS 也有 TTL 名詞，但本題問的是封包存活期。'
+    ],
+    tags: ['networking', 'routing']
+  }),
+  49: buildReview({
+    coreTerms: ['DSL', 'FDM', 'TDM'],
+    concept:
+      'DSL 使用既有電話線提供數位資料傳輸，會把不同用途的訊號或通道安排在不同頻率或時間資源上。',
+    rule:
+      '教材常將 DSL 視為結合 FDM 與 TDM 的多工應用：FDM 用頻率區分語音與資料或上下行頻段，TDM 可用時間分配資料通道。',
+    application:
+      '選項中只有 C 同時列出 FDM 與 TDM，符合 DSL 多工技術的結合應用，因此選 C。',
+    commonTrap:
+      '常見混淆是把 AM、FM 這類調變方式和多工方式混在一起；題目問的是多工技術，不是廣播調變。',
+    solvingSteps: [
+      '先確認 DSL 是 digital subscriber line，題目問多工技術結合。',
+      '再辨認 FDM 與 TDM 都是多工方式。',
+      '排除 AM、FM，因為它們是調變概念，不是本題要的多工組合。',
+      '因此選 C。'
+    ],
+    optionExplanations: {
+      A: 'AM 與 FM 是調變方式，不是 DSL 題目要比較的多工技術組合。',
+      B: 'AM 是調變方式，雖有 TDM 但組合不符合 DSL 多工描述。',
+      C: 'FDM 與 TDM 都是多工技術，符合 DSL 結合應用的官方答案。',
+      D: 'FDM 是多工，但 FM 是調變方式，少了 TDM。'
+    },
+    keyTakeaways: [
+      '規則：FDM 用頻率分割，TDM 用時間分割。',
+      'DSL 題目常考 FDM 與 TDM 的多工結合。',
+      '陷阱是把 AM/FM 調變與多工技術混淆。',
+      '看到 multiplexing 要先分辨是頻率、時間、碼或波長分割。'
+    ],
+    tags: ['networking', 'multiplexing', 'dsl']
+  }),
+  50: buildReview({
+    coreTerms: ['VPN', 'PPTP', 'TCP port 1723'],
+    concept:
+      'PPTP 是早期 VPN 通道協定之一，會建立點對點隧道來承載私有網路流量。',
+    rule:
+      'PPTP 控制連線的預設 TCP 連接埠是 1723；另外還會涉及 GRE 封裝資料流，但題目只問 TCP 連接埠號。',
+    application:
+      '四個選項中，PPTP 的預設 TCP port 對應 1723，因此選 A。',
+    commonTrap:
+      '常見混淆是把其他服務常見 port 混入，例如 3306 是 MySQL，3389 是 RDP，不能只因都是連接埠就選。',
+    solvingSteps: [
+      '先確認題目問 PPTP 的預設 TCP 連接埠。',
+      '再套用常見 port 對應：PPTP 控制通道使用 TCP 1723。',
+      '排除 3306 與 3389，因為它們分別是 MySQL 與遠端桌面常見 port。',
+      '比對選項後選 A。'
+    ],
+    optionExplanations: {
+      A: '1723 是 PPTP 控制連線常用的預設 TCP port，符合題意。',
+      B: '2146 不是 PPTP 常見預設連接埠，屬干擾選項。',
+      C: '3306 是 MySQL 常見連接埠，不是 PPTP。',
+      D: '3389 是 Windows Remote Desktop/RDP 常見連接埠，不是 PPTP。'
+    },
+    keyTakeaways: [
+      '規則：PPTP 預設 TCP port 是 1723。',
+      '3306 常見於 MySQL，3389 常見於 RDP。',
+      '陷阱是把不同服務的 port number 混在一起背。',
+      'VPN 協定題要區分控制連線 port 與資料封裝方式。'
+    ],
+    tags: ['networking', 'vpn', 'pptp']
+  })
+} satisfies QuestionTeachingReviewMap;

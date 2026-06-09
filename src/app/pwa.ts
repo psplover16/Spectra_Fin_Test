@@ -1,19 +1,30 @@
-import type { InjectionKey, Ref } from 'vue';
+import { ref, type InjectionKey, type Ref } from 'vue';
 
-export type OfflineReadinessStatus = 'checking' | 'ready' | 'unsupported' | 'error';
+export type OfflineReadinessStatus = 'checking' | 'ready' | 'unsupported' | 'error' | 'updateAvailable';
 
 export interface OfflineReadinessState {
   status: OfflineReadinessStatus;
   message: string;
 }
 
-interface ServiceWorkerContainerLike {
-  register(scriptURL: string, options?: RegistrationOptions): Promise<unknown>;
-  ready?: Promise<unknown>;
+export interface RegisterSWOptions {
+  immediate?: boolean;
+  onNeedRefresh?: () => void;
+  onOfflineReady?: () => void;
+  onRegisterError?: (error: unknown) => void;
 }
 
-export interface NavigatorWithServiceWorker {
-  serviceWorker?: ServiceWorkerContainerLike;
+export type UpdateServiceWorker = (reloadPage?: boolean) => void | Promise<void>;
+export type RegisterSW = (options?: RegisterSWOptions) => UpdateServiceWorker;
+
+export interface PwaRuntimeOptions {
+  registerSW?: RegisterSW;
+  serviceWorkerSupported?: boolean;
+}
+
+export interface PwaRuntime {
+  state: Ref<OfflineReadinessState>;
+  updateServiceWorker: UpdateServiceWorker;
 }
 
 export const defaultOfflineReadinessState: OfflineReadinessState = {
@@ -23,54 +34,69 @@ export const defaultOfflineReadinessState: OfflineReadinessState = {
 
 export const offlineReadinessKey: InjectionKey<Ref<OfflineReadinessState>> = Symbol('offline-readiness');
 
-function normalizeBasePath(basePath: string): string {
-  if (!basePath || basePath === '.') {
-    return '/';
-  }
+const unsupportedState: OfflineReadinessState = {
+  status: 'unsupported',
+  message: '離線功能尚未就緒，仍可線上瀏覽'
+};
 
-  const withLeadingSlash = basePath.startsWith('/') ? basePath : `/${basePath}`;
-  return withLeadingSlash.endsWith('/') ? withLeadingSlash : `${withLeadingSlash}/`;
+const readyState: OfflineReadinessState = {
+  status: 'ready',
+  message: '離線閱讀已就緒'
+};
+
+const errorState: OfflineReadinessState = {
+  status: 'error',
+  message: '離線功能尚未就緒，仍可線上瀏覽'
+};
+
+const updateAvailableState: OfflineReadinessState = {
+  status: 'updateAvailable',
+  message: '有新版講義可更新'
+};
+
+function isServiceWorkerSupported(): boolean {
+  return typeof navigator !== 'undefined' && 'serviceWorker' in navigator;
 }
 
-export function getServiceWorkerScriptUrl(basePath = import.meta.env.BASE_URL): {
-  scriptUrl: string;
-  scope: string;
-} {
-  const scope = normalizeBasePath(basePath);
+const missingRegisterSW: RegisterSW = () => {
+  throw new Error('vite-plugin-pwa registerSW implementation is required.');
+};
 
-  return {
-    scriptUrl: `${scope}service-worker.js`,
-    scope
-  };
-}
+export function createPwaRuntime({
+  registerSW = missingRegisterSW,
+  serviceWorkerSupported = isServiceWorkerSupported()
+}: PwaRuntimeOptions = {}): PwaRuntime {
+  const state = ref<OfflineReadinessState>(defaultOfflineReadinessState);
+  let updateServiceWorker: UpdateServiceWorker = () => undefined;
 
-export async function registerExamServiceWorker(
-  navigatorLike: NavigatorWithServiceWorker = navigator,
-  basePath = import.meta.env.BASE_URL
-): Promise<OfflineReadinessState> {
-  const serviceWorker = navigatorLike.serviceWorker;
+  if (!serviceWorkerSupported) {
+    state.value = unsupportedState;
 
-  if (!serviceWorker) {
     return {
-      status: 'unsupported',
-      message: '離線功能尚未就緒，仍可線上瀏覽'
+      state,
+      updateServiceWorker
     };
   }
 
   try {
-    const { scriptUrl, scope } = getServiceWorkerScriptUrl(basePath);
-
-    await serviceWorker.register(scriptUrl, { scope });
-    await serviceWorker.ready;
-
-    return {
-      status: 'ready',
-      message: '離線閱讀已就緒'
-    };
+    updateServiceWorker = registerSW({
+      immediate: true,
+      onOfflineReady: () => {
+        state.value = readyState;
+      },
+      onNeedRefresh: () => {
+        state.value = updateAvailableState;
+      },
+      onRegisterError: () => {
+        state.value = errorState;
+      }
+    });
   } catch {
-    return {
-      status: 'error',
-      message: '離線功能尚未就緒，仍可線上瀏覽'
-    };
+    state.value = errorState;
   }
+
+  return {
+    state,
+    updateServiceWorker
+  };
 }
