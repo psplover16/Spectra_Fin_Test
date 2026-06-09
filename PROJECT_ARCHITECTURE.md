@@ -37,7 +37,7 @@
 ## PWA Runtime
 
 - `vite.config.ts` 使用 `vite-plugin-pwa` 產生 manifest 與 generated service worker，production build 後應有 `dist/manifest.webmanifest` 與 `dist/sw.js`。
-- manifest 的 `start_url` 與 `scope` 由 `VITE_APP_BASE_PATH` 推導，`main` 使用 `/finPubTest/`，`dev` 使用 `/finPubTest/staging/`。
+- manifest 的 `start_url` 與 `scope` 由 `VITE_APP_BASE_PATH` 推導，`main` 使用 `/Spectra_Fin_Test/`，`dev` 使用 `/Spectra_Fin_Test/staging/`。
 - Workbox `navigateFallback` 指向目前 base path 的 `index.html`，讓已快取後離線開啟 primary learning route 可以回到 app shell。
 - PWA 狀態是非阻斷 UI：不支援 service worker 或註冊失敗時仍可線上瀏覽；plugin 回報 update 時 AppShell 顯示 `updateAvailable` 狀態。
 - 手寫 service worker 已移除，PWA runtime 以 plugin 產物為準。
