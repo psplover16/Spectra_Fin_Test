@@ -2,12 +2,12 @@ export const DEPLOYMENT_TARGETS = {
   main: {
     branchName: 'main',
     publishTarget: 'production',
-    basePath: '/finPubTest/'
+    basePath: '/Spectra_Fin_Test/'
   },
   dev: {
     branchName: 'dev',
     publishTarget: 'staging',
-    basePath: '/finPubTest/staging/'
+    basePath: '/Spectra_Fin_Test/staging/'
   }
 };
 

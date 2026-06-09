@@ -9,7 +9,7 @@ describe('deployment base path resolution', () => {
     expect(resolveDeploymentTarget('main')).toEqual({
       branchName: 'main',
       publishTarget: 'production',
-      basePath: '/finPubTest/'
+      basePath: '/Spectra_Fin_Test/'
     });
   });
 
@@ -17,7 +17,7 @@ describe('deployment base path resolution', () => {
     expect(resolveDeploymentTarget('dev')).toEqual({
       branchName: 'dev',
       publishTarget: 'staging',
-      basePath: '/finPubTest/staging/'
+      basePath: '/Spectra_Fin_Test/staging/'
     });
   });
 
@@ -25,8 +25,8 @@ describe('deployment base path resolution', () => {
     const githubEnv = formatGithubEnv(resolveDeploymentTarget('dev'));
 
     expect(githubEnv).toContain('PUBLISH_TARGET=staging');
-    expect(githubEnv).toContain('VITE_APP_BASE_PATH=/finPubTest/staging/');
-    expect(githubEnv).toContain('VITE_APP_START_URL=/finPubTest/staging/');
+    expect(githubEnv).toContain('VITE_APP_BASE_PATH=/Spectra_Fin_Test/staging/');
+    expect(githubEnv).toContain('VITE_APP_START_URL=/Spectra_Fin_Test/staging/');
   });
 
   it('rejects unsupported deployment branches instead of falling back silently', () => {
