@@ -1,63 +1,64 @@
 # 專案架構紀錄
 
-## 變更：build-exam-pwa-routes-and-cicd
+## 變更：rebuild-exam-pwa-group-year-analysis
 
-本變更先建立國營事業資訊人員考試講義 PWA 的手機版外殼、5 個學習路由、參考樣式與 GitHub Pages CI/CD。完整考古題、正式講義、題庫與逐題解析不在本次範圍內。
+本專案目前是國營資訊職員考試講義 PWA。公開導覽已從舊科目路由改成組別導向：`/a-group`、`/b-group`、`/language`，其中 A 組第一批完成 114 年 50 題逐題解析；107 至 113 年保留年度入口並顯示 pending 狀態，等版型確認後再擴充完整解析。
 
-## 參考專案比對結論
+## `src/app`
 
-參考專案：`C:\Users\Gary\Documents\Spectra-Learning-Japanese`
+- `src/app/main.ts` 建立 Vue app、掛載 Vue Router，並以 `createPwaRuntime` 封裝 `vite-plugin-pwa` 的 runtime 狀態後 provide 給 AppShell。
+- `src/app/AppShell.vue` 是手機優先的全站外殼，包含 A 組、B 組、語言主導覽、active state、route preload 觸發，以及非阻斷 PWA 狀態列。
+- `src/app/router.ts` 定義 group-first routing contract：`/` redirect 到 `/a-group`，舊科目路由 redirect 到 A/B 組，`/a-group/:year` 只接受 107 至 114，invalid year 顯示 NotFound。
+- `src/app/routePreload.ts` 集中 lazy route component loader，讓組別頁與年度解析頁可在 focus 或 pointerenter 時預載。
+- `src/app/pwa.ts` 只暴露 `checking`、`ready`、`unsupported`、`error`、`updateAvailable` 狀態與 `updateServiceWorker` wrapper，不直接呼叫 `navigator.serviceWorker.register`。
 
-### N5 文法子路由可採用的版面與互動
+## `src/modules/examGroups/`
 
-- 參考 `src/modules/n5Grammar/views/N5GrammarView.vue` 的區塊節奏：loading/error 狀態先行，正式內容拆成待完成與已完成區塊；本專案改為學習入口與 5 個科目路由的佔位學習區。
-- 參考 `src/modules/n5Grammar/components/N5GrammarSectionCard.vue` 的 section card 模式：卡片標題列、可展開內容區、狀態控制與可觸控命中區；本專案採用科目卡片與內容承載區，不複製日文資料。
-- 參考 `src/styles/main.css` 的閱讀節奏：手機優先、safe-area 變數、8px 以下卡片圓角、sticky section header、`section-card` / `surface-card` 類型的輕量卡片、內容區 `space-y` 間距、標題列置中與左右操作區。
-- 參考 `tests/e2e/n5-grammar-layout.spec.ts` 的驗證方向：375px 手機寬度、無水平 overflow、console/page error 為空、sticky header 與離線可用。
+- `src/modules/examGroups/aGroup/` 是 A 組 feature module，包含年度摘要、localStorage 進度、年度 loader、114 年資料、解析頁與題卡元件。
+- `src/modules/examGroups/aGroup/data/yearSummaries.ts` 定義 114 至 107 年清單與 route path，`/a-group` 依序顯示八個年度。
+- `src/modules/examGroups/aGroup/storage/aGroupProgressStorage.ts` 使用 versioned localStorage snapshot 保存 completed years 與單一 bookmark；壞 JSON、缺欄位或不支援版本會 fail safe。
+- `src/modules/examGroups/aGroup/composables/useAGroupYearQuestions.ts` lazy load 年度內容；114 年載入完整題庫，107 至 113 年回傳 pending 狀態。
+- `src/modules/examGroups/aGroup/data/years/114.ts` 組合來源基準與審查後解析，交付 114 年 50 題完整 `ExamQuestionAnalysis`。
+- `src/modules/examGroups/aGroup/data/years/114SourceBaseline.ts` 保留原題、A-D 選項、官方答案與 PDF sourceRef 對照。
+- `src/modules/examGroups/aGroup/data/years/114ReviewedAnalyses.ts` 放置逐題教學解析、核心術語、解題步驟、選項辨析、重點整理與 tags；114 年解析採用新手系統教學標準。
+- `src/modules/examGroups/aGroup/data/years/114ContentReview.ts` 定義 114 年內容審查 rubric，檢查來源基準、資料 shape、逐選項辨析、疑義題註記與新手系統教學標準。
+- `src/modules/examGroups/aGroup/components/AGroupQuestionCard.vue` 將原題內容、官方答案檢查、教學解析與來源追溯分區呈現。
+- `src/modules/examGroups/bGroup/` 與 `src/modules/examGroups/language/` 目前是可到達的輕量入口，完整逐題解析不在本 change 範圍內。
 
-### GitHub Pages 設定差異
+## A 組內容範圍
 
-- 參考專案 CI 使用 `.github/workflows/ci.yml`：`pull_request` 與非 `gh-pages` push 觸發，Node 22、`npm ci`、lint、typecheck、unit test、build、Playwright Chromium 與失敗 artifact 上傳。
-- 參考專案 CD 使用 `.github/workflows/cd.yml`：`dev` 與 `main` push 觸發，Node 22、`npm ci`、依 branch 設定 `VITE_APP_BASE_PATH` / `VITE_APP_START_URL`，build 後以 `.deploy-pages` worktree 發布到 `gh-pages`。
-- 本專案部署目標同為 GitHub Pages；唯一預期差異是 repository 對應的 base path。參考專案使用 `/Spectra-Learning-Japanese/` 與 `/Spectra-Learning-Japanese/staging/`，本專案應改為 `/finPubTest/` 與 `/finPubTest/staging/`。
-- 參考專案透過 `scripts/publishPages.mjs` 同步 `dist` 到 gh-pages worktree，並保留 `.nojekyll`、`CNAME` 與 staging 目錄。本專案會採同一發布模式。
+- 114 年是第一批完整內容，頁面顯示 50 題解析、官方答案狀態與 PDF 來源追溯。
+- 114 年每題解析都必須把讀者視為第一次接觸該觀念的新手；`beginnerExplanation` 說明前置觀念、公式或規則來源、適用條件與容易混淆的邊界，`solvingSteps` 把規則逐步套回題目具體值或選項，`optionExplanations` 說明 A-D 干擾選項錯在哪個條件，`keyTakeaways` 留下可複用規則與常見陷阱。
+- 107 至 113 年是有效年度但尚未製作完整解析，年度列與路由會保留，年度頁顯示 pending，不會出現 50 題完整題卡。
+- invalid year，例如 `/a-group/115`、`/a-group/999`、`/a-group/abc`，不 redirect，直接顯示 NotFound。
+- 目前沒有把 B 組、語言或 107 至 113 年完整題庫放入資料模組；這些內容需另開 change。
 
-## 目前實作架構
+## PWA Runtime
 
-### `src/app`
+- `vite.config.ts` 使用 `vite-plugin-pwa` 產生 manifest 與 generated service worker，production build 後應有 `dist/manifest.webmanifest` 與 `dist/sw.js`。
+- manifest 的 `start_url` 與 `scope` 由 `VITE_APP_BASE_PATH` 推導，`main` 使用 `/finPubTest/`，`dev` 使用 `/finPubTest/staging/`。
+- Workbox `navigateFallback` 指向目前 base path 的 `index.html`，讓已快取後離線開啟 primary learning route 可以回到 app shell。
+- PWA 狀態是非阻斷 UI：不支援 service worker 或註冊失敗時仍可線上瀏覽；plugin 回報 update 時 AppShell 顯示 `updateAvailable` 狀態。
+- 手寫 service worker 已移除，PWA runtime 以 plugin 產物為準。
 
-- `src/app/main.ts` 建立 Vue app、掛載 Vue Router，並提供 PWA 離線就緒狀態。
-- `src/app/AppShell.vue` 是手機優先的 PWA 外殼，包含全站標題、非阻塞離線狀態提示與 route outlet。
-- `src/app/router.ts` 以 `examRoutes` 作為單一來源產生 5 個學習路由，未知路由導向 not-found 狀態。
-- `src/app/pwa.ts` 封裝 service worker 註冊、base path 正規化與註冊失敗 fallback；service worker 不支援或註冊失敗時，網站仍維持線上瀏覽。
+## CI/CD 與部署
 
-### `src/modules/exam`
+- `.github/workflows/ci.yml` 在 pull request 與非 `gh-pages` push 執行 `npm ci`、`npm run lint`、`npm run typecheck`、`npm run test:unit`、`npm run build`、`npm run check:pwa-output`、`npm run test:e2e`。
+- `.github/workflows/cd.yml` 只在 `dev` 與 `main` push 執行；部署前同樣跑 lint、typecheck、unit test、build、PWA output check 與 e2e，全部通過後才同步 `dist` 到 `gh-pages`。
+- `scripts/deploymentBasePaths.mjs` 是 branch-to-base-path 的單一來源；`scripts/resolveDeploymentTarget.mjs` 在 GitHub Actions 中寫入 `PUBLISH_TARGET`、`VITE_APP_BASE_PATH`、`VITE_APP_START_URL`。
+- `scripts/check-pwa-output.mjs` 驗證 `dist/manifest.webmanifest` 與 `dist/sw.js` 存在，是 CI/CD 使用的 PWA output gate。
+- `scripts/publishPages.mjs` 將 `dist/` 同步到 `.deploy-pages` worktree；production 發布到 root，staging 發布到 `staging/` 子目錄，並保留 `.nojekyll`、`CNAME` 與既有 staging 目錄。
 
-- `src/modules/exam/data/examRoutes.ts` 定義 `ExamRouteItem`、5 筆固定路由、來源群組標籤與非正式 placeholder 內容。
-- `src/modules/exam/views/LandingView.vue` 呈現學習入口，導覽由 `examRoutes` 產生，避免路由與顯示名稱不同步。
-- `src/modules/exam/views/ExamRouteView.vue` 呈現參考 N5 文法子路由節奏的學習頁：科目識別、內容狀態、來源群組、章節卡與底部操作區。
-- `src/modules/exam/views/NotFoundView.vue` 呈現未知路由恢復狀態，提供回到學習入口的動作。
+## 測試覆蓋摘要
 
-### `src/shared`
+- Router 與 route smoke 覆蓋 group routes、legacy redirects、valid/pending years、invalid years。
+- Storage tests 覆蓋 A 組 bookmark、completed years、壞 snapshot fail safe。
+- Loader 與 data tests 覆蓋 114 年 50 題、資料 shape、來源基準與整批內容審查。
+- `tests/unit/aGroup114QuestionContent.spec.ts` 逐題驗證 114 年 50 題的新手系統教學內容；`tests/unit/aGroup114ContentReview.spec.ts` 與 `npm run check:a-group-114-content` 驗證 rubric 能抓出只給結論、跳過前置觀念、缺少規則來源或缺少常見陷阱的淺層解析。
+- Component tests 覆蓋 AppShell 導覽、PWA 狀態列與題卡分區呈現。
+- Playwright smoke 覆蓋 375px 手機導覽、A 組年度控制、114 年離線 reload，以及 `/a-group` cached navigation fallback。
 
-- 本變更尚未建立 `src/shared`。目前共用邏輯集中在 `src/app/pwa.ts` 與 `src/modules/exam/data/examRoutes.ts`；若後續題庫、講義匯入或互動元件擴張，再抽出 shared module。
+## 私有內容範圍
 
-### `public`
-
-- `public/manifest.webmanifest` 提供 PWA 名稱 `國營資訊職員考試講義`、display mode、theme metadata 與 icon。
-- `public/icons/exam-icon.svg` 是本 PWA 的安裝圖示。
-- `public/service-worker.js` 快取 build 後 app shell、manifest、icon 與主要路由 fallback；首次成功載入後，5 個學習路由可在離線狀態顯示 placeholder 內容。
-
-## CI/CD 與 Build Output
-
-- `.github/workflows/ci.yml` 在 pull request 與非 `gh-pages` push 執行 Node 22、`npm ci`、typecheck、unit test、build、Playwright Chromium 安裝與 E2E 測試；失敗時上傳 Playwright diagnostics。
-- `.github/workflows/cd.yml` 在 `main` 與 `dev` push 執行部署。部署前同樣跑 typecheck、unit test、build 與 E2E，任一驗證失敗就不會進入 `gh-pages` 同步。
-- `main` branch 使用 `VITE_APP_BASE_PATH=/finPubTest/` 並發布 production root；`dev` branch 使用 `VITE_APP_BASE_PATH=/finPubTest/staging/` 並發布 staging 子目錄。
-- `vite.config.ts` 的 build output 是 `dist/`，chunk warning limit 維持 500 KB，並將 Vue/Vue Router 拆為 `vendor-vue` chunk。
-- `scripts/publishPages.mjs` 將 `dist/` 同步到 `.deploy-pages` worktree，保留 `.nojekyll`、`CNAME` 與 `staging`；本專案版額外拒絕把目前 repo root 或 `dist/` 當 publish worktree，以降低誤刪風險。
-
-### 私有內容範圍警戒
-
-- 本次沒有讀取或整理本專案 `_private/計算機原理、網路概論/`、`_private/資訊管理、程式設計/`、`_private/國文、英文/` 內的 Markdown 或 PDF 作為頁面資料。
-- 本次只在 route metadata 中保留來源群組名稱，供後續內容匯入變更使用。
-- 後續實作若需要顯示內容狀態，必須顯示「尚未匯入正式講義」這類佔位訊息，不得把私有來源檔案轉為正式講義或題庫。
+- 題目來源資料只轉為 `src/modules/examGroups/aGroup/data/years/` 下的靜態 TypeScript 資料，不把私有 PDF 或筆記檔作為 public asset 發布。
+- 後續內容匯入仍需遵守 AGENTS.md 的私有檔案限制；受限 `_private/_private_notes/` 與 `_private/_private_fileAssets/` 版本資料夾不得讀取或修改。

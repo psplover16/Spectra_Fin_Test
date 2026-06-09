@@ -52,6 +52,12 @@ Vite 使用 `VitePWA` 產生 manifest、service worker 與 Workbox 快取。`src
 
 第一批只交付 114 年 50 題完整解析。107 至 113 年保留年度列、路由與 pending 頁，並明確顯示等待版型確認後製作。這能先把資料結構、PWA、逐題解析頁與互動狀態驗證清楚，再一口氣擴充 107 至 113 年。
 
+### Use systematic novice teaching analysis as the content quality bar
+
+114 年逐題解析的品質標準改為「把讀者當成第一次接觸該觀念的新手」。每題不得只給答案結論或短版解析；若題目涉及公式、表示法、演算法、通訊流程、資料結構、資料庫規則、程式語言規則或安全機制，`beginnerExplanation` 必須先交代必要前置觀念、規則來源與適用條件，再把規則套回本題。`solvingSteps` 必須逐步說明本題如何使用那些觀念，`keyTakeaways` 必須留下可在類似題目重用的規則與常見陷阱。
+
+替代方案是只維持既有的欄位存在檢查與簡短專業解析；淘汰原因是欄位存在不等於新手能看懂，會讓 107 至 113 年批次製作時複製到太淺的解析標準。
+
 ## Implementation Contract
 
 **Routing behavior:** 根路由進入 `/a-group`。舊科目路由必須 redirect 到新組別路由。`/a-group/114` 顯示完整年度解析。`/a-group/107` 至 `/a-group/113` 顯示 pending 頁。invalid year 顯示 NotFound。驗證目標是 Vue Router unit tests 與 Playwright route smoke tests。
@@ -62,6 +68,8 @@ Vite 使用 `VitePWA` 產生 manifest、service worker 與 Workbox 快取。`src
 
 **114 content contract:** 114 年資料必須有 50 題。每題都需要原題題幹、四個選項、官方答案檢查、AI 教學解析、選項辨析、解題步驟、核心術語、易錯提醒、tags 與 PDF 來源追溯。專業內容審查要確認定義正確、解題邏輯完整、干擾選項能區分觀念。
 
+**Systematic novice teaching contract:** 每題都必須用現有 `ExamQuestionAnalysis` 欄位達成新手教學，不新增資料 shape。`beginnerExplanation` 需包含本題必要前置觀念、公式或規則來源、適用條件、為何答案成立、以及本題容易混淆的邊界。`solvingSteps` 需把抽象規則逐步套到題目中的具體值、語句或選項。`optionExplanations` 需說明每個干擾選項錯在哪個觀念或條件。`keyTakeaways` 需包含可複用的規則與常見陷阱。驗收方式是內容審查函式能抓出只給結論、跳過前置觀念或缺少規則來源的淺層解析，並以 114 年逐題 unit tests 與內容審查表確認 50 題都符合。
+
 **PWA contract:** `vite.config.ts` 使用 `VitePWA`。production build 後必須有 `dist/manifest.webmanifest` 與 generated service worker。`src/app/pwa.ts` 不直接註冊 service worker。離線後 primary learning routes 能由 app shell fallback 開啟。CI 必須跑 lint、typecheck、unit test、build、PWA output check 與 e2e。
 
 **Scope boundaries:** 此 change 只涵蓋 114 年完整解析、107 至 113 年 pending 路徑、A 組年度進度、組別路由、PWA plugin runtime、CI/CD 與架構文件。107 至 113 年完整解析、B 組逐題解析、語言逐題解析、後端同步與 analytics 需要另開 change。
@@ -69,6 +77,7 @@ Vite 使用 `VitePWA` 產生 manifest、service worker 與 Workbox 快取。`src
 ## Risks / Trade-offs
 
 - 114 年 50 題內容製作量大，任務需逐題拆分，並以資料 shape 測試與內容審查降低批次錯誤。
+- 新手系統解析會顯著增加單題文字量 → 以既有欄位承載、題卡支援換行與手機 viewport smoke 驗證可讀性，避免新增複雜資料模型。
 - PDF 抽取可能有換行、選項符號或表格錯位，資料需要保留 `extractionStatus` 與來源資訊，不能把未校對內容標示為 verified。
 - PWA plugin 會改變 service worker 生命週期，因此 CI 必須檢查 output，AppShell 必須顯示非阻斷狀態，避免離線更新流程靜默失敗。
 - 舊路由 redirect 會影響既有 e2e 與 deep link，需用 router tests 與 Playwright smoke tests 同時覆蓋。

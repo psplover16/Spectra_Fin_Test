@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit -p tsconfig.json && vite build",
     "preview": "vite preview",
+    "lint": "eslint .",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
+    "check:a-group-114-content": "vitest run tests/unit/aGroup114ContentReview.spec.ts",
+    "check:deployment-base-paths": "vitest run tests/unit/deploymentBasePaths.spec.ts",
+    "check:pwa-output": "node scripts/check-pwa-output.mjs",
     "test:unit": "vitest run",
     "test:e2e": "playwright test"
   },
@@ -16,16 +20,22 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.56.1",
     "@types/node": "^24.12.0",
     "@vitejs/plugin-vue": "^6.0.5",
     "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.21",
+    "eslint": "^10.4.1",
+    "eslint-plugin-vue": "^10.9.2",
+    "globals": "^17.6.0",
     "jsdom": "^27.0.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.18",
     "typescript": "~5.9.3",
+    "typescript-eslint": "^8.61.0",
     "vite": "^7.3.1",
+    "vite-plugin-pwa": "^1.3.0",
     "vitest": "^4.1.8",
     "vue-tsc": "^3.2.5"
   }

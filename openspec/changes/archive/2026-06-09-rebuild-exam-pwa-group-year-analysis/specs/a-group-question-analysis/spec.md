@@ -48,6 +48,29 @@ Each 114 question analysis SHALL include beginner-oriented teaching content for 
 - **WHEN** a user expands or reads any 114 question analysis
 - **THEN** the page shows core terms, beginner explanation, solving steps, option explanations, key takeaways, and tags
 
+### Requirement: Question Analysis Provides Systematic Novice Teaching Content
+
+Each 114 professional-subject question analysis SHALL teach the required concept as if the reader is encountering that topic for the first time. The teaching content MUST NOT provide only a conclusion or a short answer explanation. It SHALL explain the prerequisite concepts used by the question, the formula or rule source when a formula or rule is used, the conditions under which the rule applies, the step-by-step application to the specific question, the reason the accepted answer is correct, common traps or boundary cases relevant to the question, and reusable takeaways for similar questions.
+
+#### Scenario: Systematic teaching analysis is present
+
+- **WHEN** the application reads any 114 question analysis record
+- **THEN** the beginner explanation identifies the prerequisite concepts needed for the question
+- **THEN** the beginner explanation explains any formula, rule, protocol behavior, algorithm behavior, data-structure property, database rule, programming-language rule, or security mechanism that is required to solve the question
+- **THEN** the solving steps apply those concepts to the concrete values or statements in the question
+- **THEN** the key takeaways include reusable rules and common traps for similar questions
+
+#### Scenario: Content review rejects shallow teaching analysis
+
+- **WHEN** the 114 content review validates the question analyses
+- **THEN** a question whose teaching content only states the answer, repeats the option text, or skips the prerequisite concept explanation is reported as failing the systematic novice teaching standard
+
+##### Example: Two-complement novice teaching
+
+| Question topic | Required novice teaching coverage |
+| ----- | ----- |
+| 6-bit two-complement addition | Explain 2^6 states, the -32 to 31 range, the signed highest-bit weight, the unsigned-value-minus-2^n conversion, the invert-plus-one rule source, fixed-width carry discard, and signed overflow |
+
 ### Requirement: Official Answer Verification Is Explicit
 
 Each 114 question analysis SHALL expose answerVerification as verified, suspected-error, or needs-review.

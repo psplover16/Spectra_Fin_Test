@@ -7,6 +7,7 @@
 - **BREAKING**: 根路由改導向 A 組，既有科目路由改為對應組別 redirect。
 - 新增 A 組年度清單、年度完成狀態、年度書籤與 invalid year NotFound 行為。
 - 新增 A 組 114 年 50 題年度解析頁，保留原題、答案、選項、官方答案檢查與 AI 教學解析。
+- 將 114 年每題 AI 教學解析提升為新手系統教學：逐題說明必要前置觀念、公式或規則來源、逐步套用、常見陷阱與可複用重點，避免只給結論或短版答案解析。
 - 將 PWA 改為由 vite-plugin-pwa 統一產生 manifest、service worker 與快取策略。
 
 ## Non-Goals
@@ -34,5 +35,5 @@
 - Affected specs: exam-group-routing, a-group-year-progress, a-group-question-analysis, pwa-plugin-runtime
 - Affected code:
   - New: src/app/routePreload.ts, src/modules/examGroups/aGroup/views/AGroupView.vue, src/modules/examGroups/aGroup/views/AGroupYearView.vue, src/modules/examGroups/aGroup/data/yearSummaries.ts, src/modules/examGroups/aGroup/data/years/114.ts, src/modules/examGroups/aGroup/storage/aGroupProgressStorage.ts, src/modules/examGroups/aGroup/composables/useAGroupYearQuestions.ts
-  - Modified: package.json, package-lock.json, vite.config.ts, src/app/router.ts, src/app/AppShell.vue, src/app/pwa.ts, src/styles/main.css, .github/workflows/ci.yml, .github/workflows/cd.yml, PROJECT_ARCHITECTURE.md
+  - Modified: package.json, package-lock.json, vite.config.ts, src/app/router.ts, src/app/AppShell.vue, src/app/pwa.ts, src/styles/main.css, .github/workflows/ci.yml, .github/workflows/cd.yml, PROJECT_ARCHITECTURE.md, src/modules/examGroups/aGroup/data/years/114ReviewedAnalyses.ts, src/modules/examGroups/aGroup/data/years/114ContentReview.ts, tests/unit/aGroup114QuestionContent.spec.ts, tests/unit/aGroup114ContentReview.spec.ts
   - Removed: existing hand-written service-worker registration path if separate from src/app/pwa.ts
