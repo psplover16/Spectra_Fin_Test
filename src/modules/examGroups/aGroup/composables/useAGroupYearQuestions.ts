@@ -10,31 +10,25 @@ export type AGroupYearQuestionModuleLoader = () => Promise<AGroupYearQuestionMod
 export type AGroupYearQuestionLoaders = Partial<Record<AGroupYear, AGroupYearQuestionModuleLoader>>;
 
 export type AGroupYearQuestionState =
-  | {
-      status: 'complete';
-      year: AGroupYear;
-      questions: ExamQuestionAnalysis[];
-    }
-  | {
-      status: 'pending';
-      year: Exclude<AGroupYear, '114'>;
-      questions: [];
-    };
+  {
+    status: 'complete';
+    year: AGroupYear;
+    questions: ExamQuestionAnalysis[];
+  };
 
-const defaultLoaders: AGroupYearQuestionLoaders = {
+const defaultLoaders: Record<AGroupYear, AGroupYearQuestionModuleLoader> = {
+  '107': () => import('@/modules/examGroups/aGroup/data/years/107'),
+  '108': () => import('@/modules/examGroups/aGroup/data/years/108'),
+  '109': () => import('@/modules/examGroups/aGroup/data/years/109'),
+  '110': () => import('@/modules/examGroups/aGroup/data/years/110'),
+  '111': () => import('@/modules/examGroups/aGroup/data/years/111'),
+  '112': () => import('@/modules/examGroups/aGroup/data/years/112'),
+  '113': () => import('@/modules/examGroups/aGroup/data/years/113'),
   '114': () => import('@/modules/examGroups/aGroup/data/years/114')
 };
 
 export function createAGroupYearQuestionLoader(loaders: AGroupYearQuestionLoaders = defaultLoaders) {
   async function load(year: AGroupYear): Promise<AGroupYearQuestionState> {
-    if (year !== '114') {
-      return {
-        status: 'pending',
-        year,
-        questions: []
-      };
-    }
-
     const loadYear = loaders[year];
 
     if (!loadYear) {

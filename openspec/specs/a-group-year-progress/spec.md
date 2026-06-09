@@ -7,147 +7,209 @@ TBD - created by archiving change 'rebuild-exam-pwa-group-year-analysis'. Update
 ## Requirements
 
 ### Requirement: A Group Year List Shows All Years
+The A group route SHALL display exactly eight year rows in descending order: 114, 113, 112, 111, 110, 109, 108, 107. Each row SHALL identify the year as a complete analysis year with 50 questions.
 
-The A group route SHALL display exactly eight year rows in descending order: 114, 113, 112, 111, 110, 109, 108, 107.
-
-#### Scenario: A group shows ordered years
-
+#### Scenario: A group shows ordered complete years
 - **WHEN** a user opens `/a-group`
 - **THEN** the page shows year rows in this order: 114, 113, 112, 111, 110, 109, 108, 107
+- **THEN** every year row is marked as complete
+- **THEN** every year row shows a question count of 50
+
+##### Example: Year list states
+| Year | Status | Question count |
+| ----- | ----- | ----- |
+| 114 | complete | 50 |
+| 113 | complete | 50 |
+| 112 | complete | 50 |
+| 111 | complete | 50 |
+| 110 | complete | 50 |
+| 109 | complete | 50 |
+| 108 | complete | 50 |
+| 107 | complete | 50 |
 
 
 <!-- @trace
-source: rebuild-exam-pwa-group-year-analysis
+source: complete-a-group-107-113-year-analyses
 updated: 2026-06-09
 code:
-  - .github/workflows/cd.yml
-  - src/app/pwa.ts
+  - src/modules/examGroups/aGroup/data/years/110ContentReview.ts
+  - src/modules/examGroups/aGroup/data/years/107ContentReview.ts
+  - src/modules/examGroups/aGroup/data/years/112SourceBaseline.ts
+  - src/modules/examGroups/aGroup/data/years/113ContentReview.ts
   - package.json
-  - src/app/router.ts
-  - src/app/main.ts
-  - src/modules/examGroups/aGroup/data/years/114.ts
-  - src/modules/examGroups/aGroup/data/years/114ContentReview.ts
-  - .github/workflows/ci.yml
-  - src/modules/examGroups/bGroup/views/BGroupView.vue
   - src/modules/examGroups/aGroup/data/years/114SourceBaseline.ts
-  - src/modules/examGroups/aGroup/types/questionAnalysis.ts
-  - PROJECT_ARCHITECTURE.md
-  - scripts/check-pwa-output.mjs
-  - src/modules/examGroups/language/views/LanguageGroupView.vue
-  - src/modules/examGroups/aGroup/composables/useAGroupYearQuestions.ts
-  - scripts/resolveDeploymentTarget.mjs
-  - src/env.d.ts
-  - TEST_MATRIX.md
-  - src/app/AppShell.vue
-  - src/modules/examGroups/aGroup/views/AGroupYearView.vue
-  - src/modules/examGroups/aGroup/data/yearSummaries.ts
-  - src/modules/examGroups/aGroup/components/AGroupQuestionCard.vue
-  - src/modules/examGroups/aGroup/storage/aGroupProgressStorage.ts
+  - src/modules/examGroups/aGroup/data/years/111ReviewedAnalyses.ts
+  - src/modules/examGroups/aGroup/data/years/109SourceBaseline.ts
+  - src/modules/examGroups/aGroup/data/years/111SourceBaseline.ts
+  - src/modules/examGroups/aGroup/data/years/107.ts
+  - src/modules/examGroups/aGroup/data/years/112ReviewedAnalyses.ts
+  - src/modules/examGroups/aGroup/data/years/110ReviewedAnalyses.ts
+  - src/modules/examGroups/aGroup/data/years/111.ts
+  - src/modules/examGroups/aGroup/data/years/109ReviewedAnalyses.ts
   - src/modules/examGroups/aGroup/views/AGroupView.vue
-  - vite.config.ts
-  - src/app/routePreload.ts
-  - scripts/deploymentBasePaths.mjs
-  - src/modules/examGroups/aGroup/data/years/114ReviewedAnalyses.ts
-  - public/service-worker.js
-  - eslint.config.mjs
+  - src/modules/examGroups/aGroup/data/years/107ReviewedAnalyses.ts
+  - src/modules/examGroups/aGroup/data/years/113SourceBaseline.ts
+  - src/modules/examGroups/aGroup/data/years/108.ts
+  - src/modules/examGroups/aGroup/data/years/110SourceBaseline.ts
+  - src/modules/examGroups/aGroup/data/years/109.ts
+  - src/modules/examGroups/aGroup/data/years/108ContentReview.ts
+  - src/modules/examGroups/aGroup/data/years/114ContentReview.ts
+  - src/modules/examGroups/aGroup/data/years/112.ts
+  - src/modules/examGroups/aGroup/data/years/112ContentReview.ts
+  - src/modules/examGroups/aGroup/data/yearSummaries.ts
+  - src/modules/examGroups/aGroup/data/years/sourceBaselineReview.ts
+  - PROJECT_ARCHITECTURE.md
+  - src/modules/examGroups/aGroup/data/years/113.ts
+  - src/modules/examGroups/aGroup/composables/useAGroupYearQuestions.ts
+  - src/modules/examGroups/aGroup/views/AGroupYearView.vue
+  - src/modules/examGroups/aGroup/data/years/107SourceBaseline.ts
+  - src/modules/examGroups/aGroup/data/years/113ReviewedAnalyses.ts
+  - src/modules/examGroups/aGroup/data/years/111ContentReview.ts
+  - src/modules/examGroups/aGroup/data/years/yearQuestionFactory.ts
+  - src/modules/examGroups/aGroup/data/years/108SourceBaseline.ts
+  - src/modules/examGroups/aGroup/data/years/contentReview.ts
+  - src/modules/examGroups/aGroup/data/years/109ContentReview.ts
+  - TEST_MATRIX.md
+  - src/modules/examGroups/aGroup/data/years/riskyExtractionReview.ts
+  - src/modules/examGroups/aGroup/data/years/108ReviewedAnalyses.ts
+  - .spectra.yaml
+  - src/modules/examGroups/aGroup/data/years/110.ts
 tests:
-  - tests/unit/aGroup114QuestionContent.spec.ts
-  - tests/unit/AGroupQuestionCard.spec.ts
-  - tests/unit/aGroupYearQuestionLoader.spec.ts
-  - tests/unit/questionAnalysisShape.spec.ts
-  - tests/unit/testMatrixDoc.spec.ts
-  - tests/unit/examGroupsBoundary.spec.ts
-  - tests/unit/AppShell.spec.ts
-  - tests/unit/aGroup114SourceBaseline.spec.ts
-  - tests/unit/aGroupProgressStorage.spec.ts
-  - tests/unit/AGroupYearView.spec.ts
   - tests/unit/aGroup114ContentReview.spec.ts
+  - tests/unit/aGroup108SourceBaseline.spec.ts
+  - tests/unit/aGroup109SourceBaseline.spec.ts
+  - tests/unit/aGroupProgressStorage.spec.ts
+  - tests/unit/aGroup111QuestionContent.spec.ts
+  - tests/unit/aGroup113ContentReview.spec.ts
+  - tests/unit/yearQuestionFactory.spec.ts
+  - tests/unit/aGroup108ContentReview.spec.ts
   - tests/unit/projectArchitectureDoc.spec.ts
-  - tests/unit/ciWorkflow.spec.ts
-  - tests/unit/pwaRuntime.spec.ts
-  - tests/unit/routePreload.spec.ts
-  - tests/e2e/exam-learning.spec.ts
-  - tests/unit/deploymentBasePaths.spec.ts
+  - tests/unit/aGroup109ContentReview.spec.ts
+  - tests/unit/aGroup112SourceBaseline.spec.ts
+  - tests/unit/aGroupRiskyExtractionReview.spec.ts
   - tests/e2e/group-routes.spec.ts
-  - tests/unit/cdWorkflow.spec.ts
   - tests/unit/aGroupYearSummaries.spec.ts
-  - tests/unit/groupRoutes.spec.ts
-  - tests/unit/pwaRegistration.spec.ts
+  - tests/unit/aGroup109QuestionContent.spec.ts
+  - tests/unit/aGroup110ContentReview.spec.ts
+  - tests/unit/aGroupSourceBaselineReview.spec.ts
+  - tests/unit/aGroup110QuestionContent.spec.ts
+  - tests/unit/aGroup111SourceBaseline.spec.ts
+  - tests/unit/aGroup112ContentReview.spec.ts
+  - tests/unit/aGroup113SourceBaseline.spec.ts
+  - tests/unit/testMatrixDoc.spec.ts
+  - tests/unit/aGroup113QuestionContent.spec.ts
+  - tests/unit/aGroup107To113SourceBaselineValidation.spec.ts
+  - tests/unit/aGroup111ContentReview.spec.ts
+  - tests/unit/aGroup112QuestionContent.spec.ts
+  - tests/unit/aGroup108QuestionContent.spec.ts
+  - tests/unit/aGroup110SourceBaseline.spec.ts
+  - tests/unit/aGroup107SourceBaseline.spec.ts
+  - tests/unit/AGroupYearView.spec.ts
+  - tests/unit/aGroupContentReview.spec.ts
+  - tests/unit/aGroup107QuestionContent.spec.ts
+  - tests/unit/questionAnalysisShape.spec.ts
+  - tests/unit/aGroupYearQuestionLoader.spec.ts
+  - tests/unit/aGroup107ContentReview.spec.ts
+  - tests/unit/AGroupQuestionCard.spec.ts
 -->
 
 ---
 ### Requirement: Year Row Main Area Navigates To Year Route
-
 Each A group year row SHALL navigate from its main content area to `/a-group/:year` for that row.
 
 #### Scenario: User opens year 114 from the row body
-
 - **WHEN** a user activates the main content area of the 114 row
 - **THEN** the application navigates to `/a-group/114`
 
-#### Scenario: User opens pending year from the row body
-
-- **WHEN** a user activates the main content area of the 113 row
-- **THEN** the application navigates to `/a-group/113`
+#### Scenario: User opens historical complete year from the row body
+- **WHEN** a user activates the main content area of any 107 through 113 row
+- **THEN** the application navigates to `/a-group/:year` for the activated year
+- **THEN** the destination route renders a complete analysis page instead of a pending page
 
 
 <!-- @trace
-source: rebuild-exam-pwa-group-year-analysis
+source: complete-a-group-107-113-year-analyses
 updated: 2026-06-09
 code:
-  - .github/workflows/cd.yml
-  - src/app/pwa.ts
+  - src/modules/examGroups/aGroup/data/years/110ContentReview.ts
+  - src/modules/examGroups/aGroup/data/years/107ContentReview.ts
+  - src/modules/examGroups/aGroup/data/years/112SourceBaseline.ts
+  - src/modules/examGroups/aGroup/data/years/113ContentReview.ts
   - package.json
-  - src/app/router.ts
-  - src/app/main.ts
-  - src/modules/examGroups/aGroup/data/years/114.ts
-  - src/modules/examGroups/aGroup/data/years/114ContentReview.ts
-  - .github/workflows/ci.yml
-  - src/modules/examGroups/bGroup/views/BGroupView.vue
   - src/modules/examGroups/aGroup/data/years/114SourceBaseline.ts
-  - src/modules/examGroups/aGroup/types/questionAnalysis.ts
-  - PROJECT_ARCHITECTURE.md
-  - scripts/check-pwa-output.mjs
-  - src/modules/examGroups/language/views/LanguageGroupView.vue
-  - src/modules/examGroups/aGroup/composables/useAGroupYearQuestions.ts
-  - scripts/resolveDeploymentTarget.mjs
-  - src/env.d.ts
-  - TEST_MATRIX.md
-  - src/app/AppShell.vue
-  - src/modules/examGroups/aGroup/views/AGroupYearView.vue
-  - src/modules/examGroups/aGroup/data/yearSummaries.ts
-  - src/modules/examGroups/aGroup/components/AGroupQuestionCard.vue
-  - src/modules/examGroups/aGroup/storage/aGroupProgressStorage.ts
+  - src/modules/examGroups/aGroup/data/years/111ReviewedAnalyses.ts
+  - src/modules/examGroups/aGroup/data/years/109SourceBaseline.ts
+  - src/modules/examGroups/aGroup/data/years/111SourceBaseline.ts
+  - src/modules/examGroups/aGroup/data/years/107.ts
+  - src/modules/examGroups/aGroup/data/years/112ReviewedAnalyses.ts
+  - src/modules/examGroups/aGroup/data/years/110ReviewedAnalyses.ts
+  - src/modules/examGroups/aGroup/data/years/111.ts
+  - src/modules/examGroups/aGroup/data/years/109ReviewedAnalyses.ts
   - src/modules/examGroups/aGroup/views/AGroupView.vue
-  - vite.config.ts
-  - src/app/routePreload.ts
-  - scripts/deploymentBasePaths.mjs
-  - src/modules/examGroups/aGroup/data/years/114ReviewedAnalyses.ts
-  - public/service-worker.js
-  - eslint.config.mjs
+  - src/modules/examGroups/aGroup/data/years/107ReviewedAnalyses.ts
+  - src/modules/examGroups/aGroup/data/years/113SourceBaseline.ts
+  - src/modules/examGroups/aGroup/data/years/108.ts
+  - src/modules/examGroups/aGroup/data/years/110SourceBaseline.ts
+  - src/modules/examGroups/aGroup/data/years/109.ts
+  - src/modules/examGroups/aGroup/data/years/108ContentReview.ts
+  - src/modules/examGroups/aGroup/data/years/114ContentReview.ts
+  - src/modules/examGroups/aGroup/data/years/112.ts
+  - src/modules/examGroups/aGroup/data/years/112ContentReview.ts
+  - src/modules/examGroups/aGroup/data/yearSummaries.ts
+  - src/modules/examGroups/aGroup/data/years/sourceBaselineReview.ts
+  - PROJECT_ARCHITECTURE.md
+  - src/modules/examGroups/aGroup/data/years/113.ts
+  - src/modules/examGroups/aGroup/composables/useAGroupYearQuestions.ts
+  - src/modules/examGroups/aGroup/views/AGroupYearView.vue
+  - src/modules/examGroups/aGroup/data/years/107SourceBaseline.ts
+  - src/modules/examGroups/aGroup/data/years/113ReviewedAnalyses.ts
+  - src/modules/examGroups/aGroup/data/years/111ContentReview.ts
+  - src/modules/examGroups/aGroup/data/years/yearQuestionFactory.ts
+  - src/modules/examGroups/aGroup/data/years/108SourceBaseline.ts
+  - src/modules/examGroups/aGroup/data/years/contentReview.ts
+  - src/modules/examGroups/aGroup/data/years/109ContentReview.ts
+  - TEST_MATRIX.md
+  - src/modules/examGroups/aGroup/data/years/riskyExtractionReview.ts
+  - src/modules/examGroups/aGroup/data/years/108ReviewedAnalyses.ts
+  - .spectra.yaml
+  - src/modules/examGroups/aGroup/data/years/110.ts
 tests:
-  - tests/unit/aGroup114QuestionContent.spec.ts
-  - tests/unit/AGroupQuestionCard.spec.ts
-  - tests/unit/aGroupYearQuestionLoader.spec.ts
-  - tests/unit/questionAnalysisShape.spec.ts
-  - tests/unit/testMatrixDoc.spec.ts
-  - tests/unit/examGroupsBoundary.spec.ts
-  - tests/unit/AppShell.spec.ts
-  - tests/unit/aGroup114SourceBaseline.spec.ts
-  - tests/unit/aGroupProgressStorage.spec.ts
-  - tests/unit/AGroupYearView.spec.ts
   - tests/unit/aGroup114ContentReview.spec.ts
+  - tests/unit/aGroup108SourceBaseline.spec.ts
+  - tests/unit/aGroup109SourceBaseline.spec.ts
+  - tests/unit/aGroupProgressStorage.spec.ts
+  - tests/unit/aGroup111QuestionContent.spec.ts
+  - tests/unit/aGroup113ContentReview.spec.ts
+  - tests/unit/yearQuestionFactory.spec.ts
+  - tests/unit/aGroup108ContentReview.spec.ts
   - tests/unit/projectArchitectureDoc.spec.ts
-  - tests/unit/ciWorkflow.spec.ts
-  - tests/unit/pwaRuntime.spec.ts
-  - tests/unit/routePreload.spec.ts
-  - tests/e2e/exam-learning.spec.ts
-  - tests/unit/deploymentBasePaths.spec.ts
+  - tests/unit/aGroup109ContentReview.spec.ts
+  - tests/unit/aGroup112SourceBaseline.spec.ts
+  - tests/unit/aGroupRiskyExtractionReview.spec.ts
   - tests/e2e/group-routes.spec.ts
-  - tests/unit/cdWorkflow.spec.ts
   - tests/unit/aGroupYearSummaries.spec.ts
-  - tests/unit/groupRoutes.spec.ts
-  - tests/unit/pwaRegistration.spec.ts
+  - tests/unit/aGroup109QuestionContent.spec.ts
+  - tests/unit/aGroup110ContentReview.spec.ts
+  - tests/unit/aGroupSourceBaselineReview.spec.ts
+  - tests/unit/aGroup110QuestionContent.spec.ts
+  - tests/unit/aGroup111SourceBaseline.spec.ts
+  - tests/unit/aGroup112ContentReview.spec.ts
+  - tests/unit/aGroup113SourceBaseline.spec.ts
+  - tests/unit/testMatrixDoc.spec.ts
+  - tests/unit/aGroup113QuestionContent.spec.ts
+  - tests/unit/aGroup107To113SourceBaselineValidation.spec.ts
+  - tests/unit/aGroup111ContentReview.spec.ts
+  - tests/unit/aGroup112QuestionContent.spec.ts
+  - tests/unit/aGroup108QuestionContent.spec.ts
+  - tests/unit/aGroup110SourceBaseline.spec.ts
+  - tests/unit/aGroup107SourceBaseline.spec.ts
+  - tests/unit/AGroupYearView.spec.ts
+  - tests/unit/aGroupContentReview.spec.ts
+  - tests/unit/aGroup107QuestionContent.spec.ts
+  - tests/unit/questionAnalysisShape.spec.ts
+  - tests/unit/aGroupYearQuestionLoader.spec.ts
+  - tests/unit/aGroup107ContentReview.spec.ts
+  - tests/unit/AGroupQuestionCard.spec.ts
 -->
 
 ---

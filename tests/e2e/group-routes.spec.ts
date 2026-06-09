@@ -13,7 +13,7 @@ const legacyRedirects = [
   { path: '/programming', target: '/b-group', heading: 'B 組' }
 ] as const;
 
-const pendingYears = ['107', '108', '109', '110', '111', '112', '113'] as const;
+const completeHistoricalYears = ['107', '108', '109', '110', '111', '112', '113'] as const;
 
 test.describe('group learning route smoke', () => {
   test('opens A group from the root route', async ({ page }) => {
@@ -100,14 +100,34 @@ test.describe('group learning route smoke', () => {
     await context.setOffline(false);
   });
 
-  for (const year of pendingYears) {
-    test(`opens pending valid A group year ${year}`, async ({ page }) => {
+  test('serves complete historical A group year routes while offline', async ({ context, page }) => {
+    await page.goto('/a-group');
+
+    await expect(page.getByRole('heading', { name: '國營資訊職員考試講義' })).toBeVisible();
+    await expect(page.getByTestId('offline-readiness')).toContainText('離線閱讀已就緒', { timeout: 15000 });
+
+    await context.setOffline(true);
+
+    for (const year of ['107', '113'] as const) {
+      const offlinePage = await context.newPage();
+      await offlinePage.goto(`/a-group/${year}`, { waitUntil: 'domcontentloaded' });
+
+      await expect(offlinePage.getByRole('heading', { name: `${year} 年 A 組逐題解析` })).toBeVisible();
+      await expect(offlinePage.getByTestId('a-group-question-card')).toHaveCount(50);
+      await offlinePage.close();
+    }
+
+    await context.setOffline(false);
+  });
+
+  for (const year of completeHistoricalYears) {
+    test(`opens complete valid A group year ${year}`, async ({ page }) => {
       await page.goto(`/a-group/${year}`);
 
-      await expect(page.getByRole('heading', { name: `${year} 年 A 組` })).toBeVisible();
-      await expect(page.getByText('等待版型確認後製作')).toBeVisible();
-      await expect(page.getByTestId('a-group-question-card')).toHaveCount(0);
-      await expect(page.getByText('已載入 50 題解析資料')).toHaveCount(0);
+      await expect(page.getByRole('heading', { name: `${year} 年 A 組逐題解析` })).toBeVisible();
+      await expect(page.getByText('等待版型確認後製作')).toHaveCount(0);
+      await expect(page.getByTestId('a-group-question-card')).toHaveCount(50);
+      await expect(page.getByText('已載入 50 題解析資料')).toBeVisible();
       await expect(page.getByTestId('not-found-view')).toHaveCount(0);
     });
   }

@@ -11,10 +11,11 @@ describe('PROJECT_ARCHITECTURE documentation', () => {
     expect(architectureDoc).toContain('/language');
   });
 
-  it('documents the A group 114 first batch and pending year scope', () => {
+  it('documents the A group 107 through 114 complete year scope', () => {
     expect(architectureDoc).toContain('114 年');
     expect(architectureDoc).toContain('107 至 113 年');
-    expect(architectureDoc).toContain('pending');
+    expect(architectureDoc).toContain('complete 年度');
+    expect(architectureDoc).toContain('useAGroupYearQuestions.ts');
   });
 
   it('documents vite-plugin-pwa and current CI/CD checks', () => {
@@ -29,7 +30,8 @@ describe('PROJECT_ARCHITECTURE documentation', () => {
     expect(architectureDoc).toContain('前置觀念');
     expect(architectureDoc).toContain('規則來源');
     expect(architectureDoc).toContain('常見陷阱');
-    expect(architectureDoc).toContain('114ContentReview.ts');
-    expect(architectureDoc).toContain('aGroup114QuestionContent.spec.ts');
+    expect(architectureDoc).toContain('{year}ContentReview.ts');
+    expect(architectureDoc).toContain('aGroup{year}QuestionContent.spec.ts');
+    expect(architectureDoc).toContain('riskyExtractionReview.ts');
   });
 });

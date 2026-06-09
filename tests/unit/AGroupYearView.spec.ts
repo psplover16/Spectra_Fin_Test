@@ -49,19 +49,11 @@ vi.mock('vue-router', () => ({
 }));
 
 vi.mock('@/modules/examGroups/aGroup/composables/useAGroupYearQuestions', () => ({
-  loadAGroupYearQuestions: vi.fn(async (year: string) =>
-    year === '114'
-      ? {
-          status: 'complete',
-          year: '114',
-          questions: [question]
-        }
-      : {
-          status: 'pending',
-          year,
-          questions: []
-        }
-  )
+  loadAGroupYearQuestions: vi.fn(async (year: string) => ({
+    status: 'complete',
+    year,
+    questions: [{ ...question, year }]
+  }))
 }));
 
 describe('AGroupYearView', () => {
@@ -79,15 +71,16 @@ describe('AGroupYearView', () => {
     expect(wrapper.find('[data-testid="teaching-analysis-section"]').text()).toContain(question.beginnerExplanation);
   });
 
-  it('renders a pending valid year without complete question analysis cards', async () => {
+  it('renders a historical valid year with complete question analysis cards', async () => {
     routeYear.value = '113';
 
     const wrapper = mount(AGroupYearView);
 
     await flushPromises();
 
-    expect(wrapper.get('[data-testid="a-group-year-view"]').text()).toContain('等待版型確認後製作');
-    expect(wrapper.findAll('[data-testid="a-group-question-card"]')).toHaveLength(0);
-    expect(wrapper.text()).not.toContain('已載入 50 題解析資料');
+    expect(wrapper.get('[data-testid="a-group-year-view"]').text()).toContain('113 年 A 組逐題解析');
+    expect(wrapper.get('[data-testid="a-group-year-view"]').text()).not.toContain('等待版型確認後製作');
+    expect(wrapper.findAll('[data-testid="a-group-question-card"]')).toHaveLength(1);
+    expect(wrapper.text()).toContain('已載入 1 題解析資料');
   });
 });

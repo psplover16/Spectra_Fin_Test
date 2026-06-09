@@ -1,7 +1,6 @@
 ---
 name: spectra-commit
 description: "Commit files related to a specific Spectra change"
-effort: low
 license: MIT
 compatibility: Requires spectra CLI.
 metadata:

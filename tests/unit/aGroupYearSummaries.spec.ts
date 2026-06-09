@@ -32,6 +32,8 @@ describe('A group year summaries', () => {
       '107'
     ]);
     expect(A_GROUP_YEAR_SUMMARIES).toHaveLength(8);
+    expect(A_GROUP_YEAR_SUMMARIES.every((summary) => summary.status === 'complete')).toBe(true);
+    expect(A_GROUP_YEAR_SUMMARIES.every((summary) => summary.questionCount === 50)).toBe(true);
   });
 
   it('renders the ordered year rows on the A group page', async () => {
@@ -52,7 +54,8 @@ describe('A group year summaries', () => {
 
   it.each([
     ['114', '/a-group/114'],
-    ['113', '/a-group/113']
+    ['113', '/a-group/113'],
+    ['107', '/a-group/107']
   ])('navigates from year %s row main area', async (year, routePath) => {
     const { router, wrapper } = await mountAGroupView();
     const push = vi.spyOn(router, 'push');

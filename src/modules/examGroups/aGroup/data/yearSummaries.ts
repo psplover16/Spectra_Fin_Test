@@ -18,55 +18,55 @@ export const A_GROUP_YEAR_SUMMARIES: readonly AGroupYearSummary[] = [
     routePath: '/a-group/114',
     status: 'complete',
     questionCount: 50,
-    statusLabel: '第一批完整解析'
+    statusLabel: '完整逐題解析'
   },
   {
     year: '113',
     routePath: '/a-group/113',
-    status: 'pending',
+    status: 'complete',
     questionCount: 50,
-    statusLabel: '等待版型確認後製作'
+    statusLabel: '完整逐題解析'
   },
   {
     year: '112',
     routePath: '/a-group/112',
-    status: 'pending',
+    status: 'complete',
     questionCount: 50,
-    statusLabel: '等待版型確認後製作'
+    statusLabel: '完整逐題解析'
   },
   {
     year: '111',
     routePath: '/a-group/111',
-    status: 'pending',
+    status: 'complete',
     questionCount: 50,
-    statusLabel: '等待版型確認後製作'
+    statusLabel: '完整逐題解析'
   },
   {
     year: '110',
     routePath: '/a-group/110',
-    status: 'pending',
+    status: 'complete',
     questionCount: 50,
-    statusLabel: '等待版型確認後製作'
+    statusLabel: '完整逐題解析'
   },
   {
     year: '109',
     routePath: '/a-group/109',
-    status: 'pending',
+    status: 'complete',
     questionCount: 50,
-    statusLabel: '等待版型確認後製作'
+    statusLabel: '完整逐題解析'
   },
   {
     year: '108',
     routePath: '/a-group/108',
-    status: 'pending',
+    status: 'complete',
     questionCount: 50,
-    statusLabel: '等待版型確認後製作'
+    statusLabel: '完整逐題解析'
   },
   {
     year: '107',
     routePath: '/a-group/107',
-    status: 'pending',
+    status: 'complete',
     questionCount: 50,
-    statusLabel: '等待版型確認後製作'
+    statusLabel: '完整逐題解析'
   }
 ] as const;

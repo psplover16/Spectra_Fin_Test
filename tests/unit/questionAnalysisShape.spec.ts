@@ -3,6 +3,13 @@ import {
   hasQuestionAnalysisShape,
   type ExamQuestionAnalysis
 } from '@/modules/examGroups/aGroup/types/questionAnalysis';
+import { questions as questions107 } from '@/modules/examGroups/aGroup/data/years/107';
+import { questions as questions108 } from '@/modules/examGroups/aGroup/data/years/108';
+import { questions as questions109 } from '@/modules/examGroups/aGroup/data/years/109';
+import { questions as questions110 } from '@/modules/examGroups/aGroup/data/years/110';
+import { questions as questions111 } from '@/modules/examGroups/aGroup/data/years/111';
+import { questions as questions112 } from '@/modules/examGroups/aGroup/data/years/112';
+import { questions as questions113 } from '@/modules/examGroups/aGroup/data/years/113';
 
 const completeQuestion = {
   year: '114',
@@ -35,6 +42,16 @@ const completeQuestion = {
     extractionStatus: 'verified'
   }
 } satisfies ExamQuestionAnalysis;
+
+const historicalYearQuestions = [
+  ['107', questions107],
+  ['108', questions108],
+  ['109', questions109],
+  ['110', questions110],
+  ['111', questions111],
+  ['112', questions112],
+  ['113', questions113]
+] as const;
 
 describe('question analysis shape', () => {
   it('accepts a complete single-answer question record', () => {
@@ -72,5 +89,10 @@ describe('question analysis shape', () => {
         }
       })
     ).toBe(false);
+  });
+
+  it.each(historicalYearQuestions)('accepts every %s historical question record', (_year, questions) => {
+    expect(questions).toHaveLength(50);
+    expect(questions.every(hasQuestionAnalysisShape)).toBe(true);
   });
 });

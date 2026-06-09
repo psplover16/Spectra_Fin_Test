@@ -1,0 +1,1357 @@
+import type { QuestionTeachingReviewMap } from '@/modules/examGroups/aGroup/data/years/yearQuestionFactory';
+
+export const reviewedQuestionAnalyses = {
+  1: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['進位制轉換', '十進位', '八進位', '除基取餘'],
+    beginnerExplanation:
+      '前置觀念是位置記數法：十進位每一位是 10 的冪次，八進位每一位是 8 的冪次。把十進位整數轉成八進位時，規則來源是反覆除以 8，記下每次餘數；最後由最後一次餘數往前讀，因為最高位是最後才除出來的商。這個方法適用於整數轉換，常見混淆是把 200 直接拆成十進位位數，或把餘數順序由上往下讀反。',
+    solvingSteps: [
+      '先確認題目要把十進位 200 轉成八進位，而不是把字串 200 當八進位解讀。',
+      '用除基取餘：200 ÷ 8 = 25 餘 0，所以八進位最低位是 0。',
+      '繼續 25 ÷ 8 = 3 餘 1，再算 3 ÷ 8 = 0 餘 3。',
+      '由最後一次餘數往前讀，得到 3、1、0，也就是 (310)8。',
+      '反查驗算：(310)8 = 3×64 + 1×8 + 0 = 200，符合題幹。'
+    ],
+    optionExplanations: {
+      A: '(310)8 依權重計算為 3×8^2 + 1×8 + 0 = 200，正確。',
+      B: '(376)8 代表 3×64 + 7×8 + 6 = 254，且不是除 8 餘數反讀的結果。',
+      C: '(412)8 代表 266，常見錯誤是除法或餘數順序弄錯。',
+      D: '(420)8 代表 272，不符合十進位 200 的八進位表示。'
+    },
+    keyTakeaways: [
+      '十進位整數轉八進位可用反覆除以 8 取餘數。',
+      '餘數要由最後一次往第一次反向讀，才會得到高位到低位。',
+      '驗算時可把八進位位值展開成 8 的冪次。',
+      '常見陷阱是把餘數讀反，或沒有用八進位權重檢查答案。'
+    ],
+    tags: ['number-system', 'octal-conversion']
+  },
+  2: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['萬用閘', 'NAND', 'NOR', '布林代數'],
+    beginnerExplanation:
+      '萬用閘的前置觀念是：只靠某一種邏輯閘，就能組合出 NOT、AND、OR 等基本邏輯，這種閘才稱為 universal gate。規則來源是布林代數的完備性；NAND 與 NOR 都能單獨建構所有基本邏輯。這題選項中只有 NAND 閘符合，常見混淆是把很常用的 AND、OR 或 XOR 誤認成萬用閘。',
+    solvingSteps: [
+      '先把題目關鍵字「萬用閘」轉成判斷條件：單靠同一種閘是否能做出所有基本邏輯。',
+      '檢查 AND 與 OR：它們是基本閘，但單獨無法直接做出反相 NOT，因此不是萬用閘。',
+      '檢查 NAND：把 NAND 的兩個輸入接在一起可得到 NOT，再用 NAND 組出 AND 與 OR。',
+      '檢查 XOR：它有特定互斥功能，但不是標準可單獨完備所有邏輯的萬用閘。',
+      '因此符合萬用閘定義的是 NAND。'
+    ],
+    optionExplanations: {
+      A: 'AND 閘是基本邏輯閘，但單獨不能產生 NOT，沒有功能完備性。',
+      B: 'OR 閘也是基本閘，單獨使用無法完成反相與其他所有邏輯。',
+      C: 'NAND 閘可組出 NOT、AND、OR，具備單一閘完成功能完備邏輯的能力。',
+      D: 'XOR 常用於加法器中的和位元，但不是標準萬用閘。'
+    },
+    keyTakeaways: [
+      '萬用閘的判斷重點是能否只用同一種閘組合出所有基本邏輯。',
+      'NAND 與 NOR 是常見萬用閘。',
+      'AND、OR、XOR 雖常用，但不等於萬用閘。',
+      '常見陷阱是把「常見」與「功能完備」混在一起。'
+    ],
+    tags: ['digital-logic', 'universal-gate']
+  },
+  3: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['CISC', 'RISC', '指令集架構', '編譯器最佳化'],
+    beginnerExplanation:
+      'CISC 的前置觀念是複雜指令集架構會提供較多、較複雜的指令與定址模式，讓單一指令可以完成較多工作，許多指令也可能直接存取記憶體。相對地，RISC 較強調簡化指令、固定長度、load/store 與透過編譯器安排較有效率的指令序列。題目問「有誤」，所以要找把 RISC 特徵放到 CISC 身上的敘述。',
+    solvingSteps: [
+      '先確認 CISC 的核心特性：指令種類多、定址模式多，指令可能直接操作記憶體。',
+      '比對 A：較多指令種類符合 CISC。',
+      '比對 C：定址模式較多也符合 CISC。',
+      '比對 D：大部分指令能存取記憶體是 CISC 常見描述。',
+      '比對 B：依賴編譯器做最佳化指令設計更接近 RISC 的說法，因此是有誤項。'
+    ],
+    optionExplanations: {
+      A: 'CISC 通常有較多、較複雜的指令種類，因此不是錯誤敘述。',
+      B: '強調編譯器最佳化與簡化指令較接近 RISC，不是 CISC 的典型描述。',
+      C: 'CISC 常有較多定址模式，這是其複雜指令能力的一部分。',
+      D: 'CISC 指令可直接存取記憶體的比例較高，與 load/store 型 RISC 相比更符合題意。'
+    },
+    keyTakeaways: [
+      'CISC 常見關鍵字是複雜指令、多定址模式、較多記憶體存取指令。',
+      'RISC 常見關鍵字是簡化指令、load/store、編譯器最佳化與管線效率。',
+      '有誤題要找和該架構核心精神相反或放錯分類的敘述。',
+      '常見陷阱是只看到「最佳化」是好事，就忽略它在此題指向 RISC。'
+    ],
+    tags: ['computer-architecture', 'instruction-set']
+  },
+  4: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['Pipeline', 'Hazard', '結構危障', '硬體資源衝突'],
+    beginnerExplanation:
+      '管線化的前置觀念是把指令執行切成多個階段，讓多個指令在不同階段同時進行。危障是讓管線不能順利前進的情況；資料危障來自資料相依，控制危障來自分支或跳躍，結構危障則來自硬體資源不夠。題幹明確說硬體無法滿足同一週期同時執行的指令，適用條件正是結構危障。',
+    solvingSteps: [
+      '先抓題幹關鍵字：硬體無法滿足每個時脈週期中管線同時被執行的指令。',
+      '把原因分類：問題不是資料前後相依，也不是分支方向不確定，而是硬體資源不足。',
+      '硬體資源不足造成多個管線階段爭用同一資源，依定義稱為結構危障。',
+      '因此選 D。'
+    ],
+    optionExplanations: {
+      A: '排程危障不是標準三大 pipeline hazard 分類，容易把排程策略和硬體衝突混淆。',
+      B: '控制危障來自分支、跳躍造成下一個指令位址不確定，題幹沒有分支條件。',
+      C: '資料危障來自前一指令結果尚未產生，後一指令就要使用；題幹重點不是資料相依。',
+      D: '結構危障就是硬體資源不足或被同時爭用，正符合題幹。'
+    },
+    keyTakeaways: [
+      '管線危障常分為結構、資料、控制三類。',
+      '結構危障看資源是否不夠；資料危障看資料相依；控制危障看分支流程。',
+      '題幹出現硬體無法同時支援多個階段，優先判斷為結構危障。',
+      '常見陷阱是看到管線停頓就直接選資料危障，沒有先找原因。'
+    ],
+    tags: ['pipeline', 'hazard']
+  },
+  5: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['RAID', 'RAID 0', 'RAID 1', '鏡像', '同位元檢查'],
+    beginnerExplanation:
+      'RAID 成本的前置觀念是看同樣可用容量需要多少額外磁碟。RAID 0 只做 striping，沒有容錯，容量利用率高；RAID 1 做 mirroring，資料要完整複製一份，所以同樣可用容量通常需要兩倍磁碟。RAID 3 與 RAID 4 使用同位元檢查磁碟，通常額外成本是一顆 parity disk。題目問成本最高，規則上鏡像的 RAID 1 在這些選項中最高。',
+    solvingSteps: [
+      '先比較各 RAID 的冗餘方式，而不是只看編號大小。',
+      'RAID 0 不做冗餘，成本最低但容錯差。',
+      'RAID 1 要把資料完整鏡像到另一顆磁碟，容量成本約 100% 額外開銷。',
+      'RAID 3/4 主要用同位元檢查提供容錯，額外成本通常低於完整鏡像。',
+      '因此在 A-D 中成本最高的是 RAID 1。'
+    ],
+    optionExplanations: {
+      A: 'RAID 0 沒有鏡像或同位元冗餘，成本低但沒有容錯，並非最高。',
+      B: 'RAID 1 需要完整鏡像資料，同樣可用容量下磁碟成本最高。',
+      C: 'RAID 3 使用同位元檢查，通常不是每份資料都完整複製。',
+      D: 'RAID 4 也是以獨立同位元檢查磁碟提供容錯，成本通常低於 RAID 1。'
+    },
+    keyTakeaways: [
+      '比較 RAID 成本要看容量利用率與冗餘方式。',
+      'RAID 1 是鏡像，安全但容量成本高。',
+      'RAID 0 成本低但不提供容錯。',
+      '常見陷阱是以 RAID 編號大小判斷成本，而不是看是否完整複製資料。'
+    ],
+    tags: ['storage', 'raid']
+  },
+  6: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['Polling', 'Interrupt', 'DMA', 'CPU 利用率', 'I/O'],
+    beginnerExplanation:
+      'Polling 的前置觀念是 CPU 週期性主動詢問 I/O 裝置狀態。它的規則很簡單，軟硬體設計也容易，但 CPU 需要花時間反覆查詢，若資料量大或裝置速度高，CPU 會被查詢工作占用，效率變差。高速大量資料傳輸通常更適合中斷或 DMA，因為它們能減少 CPU 忙等或搬移資料的負擔。',
+    solvingSteps: [
+      '先把題目轉成「找 Polling 的錯誤敘述」。',
+      '檢查 A：Polling 實作簡單，是常見優點。',
+      '檢查 B：CPU 週期性確認 I/O 狀態，正是 Polling 定義。',
+      '檢查 D：CPU 要反覆查詢，所以利用率較差也正確。',
+      '檢查 C：高速大量資料傳送不適合 Polling，應偏向 interrupt 或 DMA，因此 C 有誤。'
+    ],
+    optionExplanations: {
+      A: 'Polling 不需要複雜中斷處理流程，確實簡單易執行。',
+      B: 'CPU 週期性確認 I/O 狀態就是輪詢的核心機制。',
+      C: '高速裝置傳送大量資料時，Polling 會浪費 CPU 時間，不是適用場景。',
+      D: 'CPU 一直查詢狀態會造成忙等或額外負擔，所以利用率較差。'
+    },
+    keyTakeaways: [
+      'Polling 是 CPU 主動反覆查詢 I/O 狀態。',
+      'Polling 優點是簡單，缺點是浪費 CPU 時間。',
+      '高速或大量資料傳輸常用 interrupt 或 DMA 較合適。',
+      '常見陷阱是把「容易做」誤解成「任何場景都有效率」。'
+    ],
+    tags: ['operating-system', 'io']
+  },
+  7: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['分時系統', 'Round Robin', 'time quantum', 'CPU scheduling'],
+    beginnerExplanation:
+      '分時系統的前置觀念是讓多個使用者或行程看起來能同時互動，因此排程要公平、反應時間可接受，不能讓單一行程長時間霸占 CPU。Round Robin 的規則是每個行程輪流拿一小段 time quantum，時間到就換下一個。這個規則適合互動式與分時環境，常見混淆是把平均等待時間最佳的 SJF 或簡單的 FCFS 誤認為最適合分時。',
+    solvingSteps: [
+      '先確認題目問的是分時系統，重點是多個行程輪流取得 CPU 與保持互動反應。',
+      'FCFS 會讓先到的大工作可能長時間占用 CPU，不利互動。',
+      'SJF 偏向降低平均等待時間，但需要估計執行時間，且可能造成長工作等待。',
+      'PS 若指 Priority Scheduling，可能讓低優先權行程飢餓。',
+      'RR 用固定時間片輪流分派，最符合分時系統需求。'
+    ],
+    optionExplanations: {
+      A: 'FCFS 簡單但可能讓長工作排在前面造成等待，不適合要求互動公平的分時系統。',
+      B: 'SJF 對平均等待時間有利，但不一定公平，也需要知道或預估工作長度。',
+      C: '優先權排程可能讓低優先權行程長期等待，不是分時系統的典型最佳答案。',
+      D: 'RR 以時間片輪流服務各行程，符合分時系統的公平與反應需求。'
+    },
+    keyTakeaways: [
+      '分時系統重視互動反應與公平輪流。',
+      'Round Robin 的核心是固定 time quantum 輪流執行。',
+      'FCFS 與 SJF 不一定能維持互動式系統的公平反應。',
+      '常見陷阱是只看排程演算法是否簡單或平均等待時間，而忽略分時需求。'
+    ],
+    tags: ['scheduling', 'round-robin']
+  },
+  8: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['Thrashing', 'Paging', 'Page Fault', 'Frame'],
+    beginnerExplanation:
+      'Thrashing 的前置觀念是虛擬記憶體用 page 與 frame 管理資料。若行程分到的實體頁框太少，工作集合放不下，就會不停發生 page fault，系統花大量時間在把 page 換入換出，而不是執行真正工作。這個規則適用於分頁錯誤率高且記憶體分頁切換頻繁的情境，常見混淆是把它和飢餓、記憶體洩漏或死結混在一起。',
+    solvingSteps: [
+      '先抓題幹條件：實體記憶體頁框不足。',
+      '頁框不足導致常用 page 無法同時留在記憶體中。',
+      '行程一執行就頻繁 page fault，系統大量做分頁切換。',
+      '這種把時間耗在換頁而非執行的現象稱為 Thrashing。',
+      '因此答案選 A。'
+    ],
+    optionExplanations: {
+      A: 'Thrashing 正是頁框不足造成大量分頁錯誤與換頁的現象。',
+      B: 'Starvation 是長期得不到 CPU 或資源，重點不是分頁切換。',
+      C: 'Memory Leak 是程式未釋放記憶體導致可用記憶體減少，不是頁框不足後的換頁震盪名稱。',
+      D: 'Deadlock 是行程彼此等待資源形成僵局，不等於 page fault 過高。'
+    },
+    keyTakeaways: [
+      'Thrashing 代表系統忙於換頁，真正執行工作變少。',
+      '常見原因是工作集合大於可用頁框。',
+      'Page fault rate 高且大量 page swapping 是判斷訊號。',
+      '常見陷阱是把記憶體管理現象和排程飢餓、死結混淆。'
+    ],
+    tags: ['virtual-memory', 'thrashing']
+  },
+  9: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['Deadlock', '互斥', '占用並等候', '不可強奪', '循環等待'],
+    beginnerExplanation:
+      'Deadlock 的前置觀念是多個行程彼此握著資源又等待別人釋放資源，最後誰都無法繼續。經典必要條件有四個：互斥、占用並等候、不可強奪、循環等待。四者必須同時具備才可能形成死結；程式發生錯誤可能造成當機或例外，但不是死結的必要條件。',
+    solvingSteps: [
+      '先列出死結四個必要條件：mutual exclusion、hold and wait、no preemption、circular wait。',
+      '比對 A：互斥是必要條件。',
+      '比對 B：占用並等候是必要條件。',
+      '比對 D：不可強奪是必要條件。',
+      '比對 C：程式不可預期錯誤不是死結必要條件，因此是有誤項。'
+    ],
+    optionExplanations: {
+      A: '互斥表示某些資源一次只能給一個行程使用，是死結必要條件之一。',
+      B: '占用並等候表示行程握著既有資源又等新資源，也是必要條件。',
+      C: '程式錯誤可能造成例外或崩潰，但不是死結模型的必要條件。',
+      D: '不可強奪表示資源不能被系統強制拿回，是死結必要條件之一。'
+    },
+    keyTakeaways: [
+      '死結四條件是互斥、占用並等候、不可強奪、循環等待。',
+      '必要條件題要背完整清單，再比對哪個不在清單中。',
+      '程式錯誤不等於死結，死結重點是資源等待關係。',
+      '常見陷阱是把任何程式卡住都歸為 deadlock。'
+    ],
+    tags: ['deadlock', 'operating-system']
+  },
+  10: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['Paging', '內部碎裂', '外部碎裂', '固定大小區塊'],
+    beginnerExplanation:
+      'Paging 的前置觀念是把邏輯記憶體切成固定大小 page，實體記憶體切成同樣大小 frame，所以程式可放在不連續的 frame 中。因為 frame 大小固定，最後一個 page 可能用不滿，會產生內部碎裂；但不需要找連續大洞，因此不會有傳統連續配置或 segmentation 常見的外部碎裂。題目問有誤，選說 paging 會有外部碎裂的項目。',
+    solvingSteps: [
+      '先確認 paging 的規則：page 與 frame 大小固定，程式可分散放在不同 frame。',
+      '固定大小區塊可能讓最後一個 frame 未完全使用，因此 A 內部碎裂正確。',
+      '因不要求連續實體空間，所以 paging 避免外部碎裂。',
+      'C 固定區塊大小與 D 不連續載入都符合 paging。',
+      '因此 B 說會有外部碎裂是有誤。'
+    ],
+    optionExplanations: {
+      A: 'Paging 會有內部碎裂，因為最後一頁可能填不滿固定 frame。',
+      B: 'Paging 不需要連續配置，通常可避免外部碎裂，因此這是錯誤敘述。',
+      C: 'Page/frame 大小固定是 paging 的基本規則。',
+      D: '程式頁面可放在不連續 frame 中，這是 paging 的重要優點。'
+    },
+    keyTakeaways: [
+      'Paging 使用固定大小 page 與 frame。',
+      'Paging 可能有內部碎裂，但通常沒有外部碎裂。',
+      '外部碎裂常見於需要連續可變大小空間的配置方式。',
+      '常見陷阱是把內部碎裂和外部碎裂名稱顛倒。'
+    ],
+    tags: ['memory-management', 'paging']
+  },
+  11: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['檔案配置法', '連續配置', '連結配置', '索引配置'],
+    beginnerExplanation:
+      '檔案配置法的前置觀念是檔案資料區塊在磁碟上如何安排。連續配置要求檔案占用一段連續空間，讀取順序快，但檔案變大、插入或刪除時可能需要搬移或重新找一段足夠大的連續空間。連結配置和索引配置較能分散使用空區塊，所以增刪彈性較好。題目問最不具彈性，適用條件就是連續配置。',
+    solvingSteps: [
+      '先找判斷關鍵：增加或刪除檔案時是否容易調整配置。',
+      '連結配置可透過指標串接區塊，增刪時較不需要連續大空間。',
+      '索引配置用索引表記錄區塊位置，也能較彈性地分散配置。',
+      '連續配置要求一整段連續空間，檔案大小變動時容易受外部碎裂與搬移影響。',
+      '因此最不具彈性的是 D 連續配置法。'
+    ],
+    optionExplanations: {
+      A: '連結配置可用指標連到下一區塊，不必維持所有區塊連續，增刪彈性較好。',
+      B: '隨機配置若指分散或任意配置，通常不要求連續空間，不是最僵硬者。',
+      C: '索引配置用索引表管理各區塊位置，增減區塊比連續配置彈性高。',
+      D: '連續配置要求檔案占用連續區塊，檔案增刪時最容易受空間連續性限制。'
+    },
+    keyTakeaways: [
+      '連續配置讀取簡單，但檔案大小變動彈性差。',
+      '連結配置與索引配置可分散使用磁碟區塊。',
+      '增刪彈性題要看是否要求連續空間。',
+      '常見陷阱是只看連續配置讀取快，忽略它對擴充和刪除不友善。'
+    ],
+    tags: ['file-system', 'allocation']
+  },
+  12: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['FORTRAN', '高階程式語言', 'BASIC', 'COBOL', 'PASCAL'],
+    beginnerExplanation:
+      '這題考程式語言歷史。高階語言的前置觀念是它比機器語言或組合語言更接近數學式與人類可讀語法，讓程式不必直接寫硬體指令。FORTRAN 在 1950 年代由 IBM 推出，常被視為第一個被正式採用並長期流傳的高階程式語言，特別用於科學與工程計算。BASIC、COBOL、PASCAL 都重要，但出現時間或定位較晚。',
+    solvingSteps: [
+      '先確認題目問的是「第一個被正式採用並流傳至今」的高階語言。',
+      '比較歷史時間：FORTRAN 早於 COBOL、BASIC、PASCAL。',
+      'FORTRAN 被用於科學計算，且仍有現代版本與既有程式碼使用。',
+      '因此答案選 C。'
+    ],
+    optionExplanations: {
+      A: 'BASIC 是後來為教育與互動式使用設計的語言，時間晚於 FORTRAN。',
+      B: 'COBOL 主要用於商業資料處理，也很重要，但不是本題所問最早者。',
+      C: 'FORTRAN 是早期正式採用且仍流傳的高階語言，符合題意。',
+      D: 'PASCAL 是 1970 年代用於教學與結構化程式設計的語言，時間更晚。'
+    },
+    keyTakeaways: [
+      'FORTRAN 常被視為第一個被正式採用且長期流傳的高階語言。',
+      'COBOL 偏商業資料處理，BASIC 偏教學入門，PASCAL 偏結構化教學。',
+      '語言歷史題要比較出現時間與主要用途。',
+      '常見陷阱是看到 COBOL 或 BASIC 也很早，就忽略 FORTRAN 更早。'
+    ],
+    tags: ['programming-language-history']
+  },
+  13: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['伺服器端動態網頁', 'Client', 'Server', 'HTML', '系統資源'],
+    beginnerExplanation:
+      '伺服器端動態網頁的前置觀念是網頁內容先在 server 端依資料庫、程式邏輯或使用者狀態生成，再把結果 HTML 傳給 client。這樣 client 通常只看到產生後的 HTML，比直接下載伺服器程式碼安全；不同 client 收到的呈現結果也較一致。代價是 server 要執行程式與查資料，因此使用的系統資源通常更多，不是更少。',
+    solvingSteps: [
+      '先確認題目問「有誤」，要找不符合伺服器端動態網頁的敘述。',
+      'A 用戶端看不到伺服器程式碼，安全性相對較佳，可視為合理。',
+      'C 通常下載的是產生後的 HTML，而不是伺服器端原始程式碼。',
+      'D 呈現結果由伺服器產生，跨用戶端較一致。',
+      'B 說使用系統資源較少，忽略伺服器端執行程式與查詢資料的負擔，因此有誤。'
+    ],
+    optionExplanations: {
+      A: '伺服器端程式不直接交給用戶端，能降低原始邏輯外洩風險。',
+      B: '伺服器端動態網頁需要 server 執行程式與查資料，通常不是使用資源較少。',
+      C: '用戶端多半收到產生後的 HTML、CSS、JS 結果，不會下載伺服器端程式碼。',
+      D: '由伺服器統一產生內容，有助於不同用戶端看到一致結果。'
+    },
+    keyTakeaways: [
+      'Server-side dynamic page 在伺服器端產生內容，再傳 HTML 給用戶端。',
+      '優點包含伺服器邏輯較不外露與呈現結果較一致。',
+      '代價是伺服器資源負擔增加。',
+      '常見陷阱是把用戶端負擔較少誤說成整體系統資源較少。'
+    ],
+    tags: ['web', 'server-side']
+  },
+  14: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['Macro', 'inline expansion', 'function call', 'stack'],
+    beginnerExplanation:
+      'Macro 的前置觀念是編譯前或編譯時用文字或語法展開，把巨集呼叫替換成對應程式片段。因為少了函式呼叫的 push/pop 與跳轉成本，執行可能較快；但巨集若被呼叫很多次，程式碼會被展開很多份，通常增加程式碼大小，不會比較省記憶體。題目問有誤，因此要選把巨集重複展開說成省空間的選項。',
+    solvingSteps: [
+      '先辨認 Macro 和一般 function call 的差異：巨集偏展開，函式偏呼叫同一份程式碼。',
+      'A 執行速度快可能成立，因為少了呼叫成本。',
+      'C 編譯器或前處理器以巨集內容取代原敘述，符合巨集概念。',
+      'D 不需函式呼叫堆疊 push/pop，也符合巨集展開的好處。',
+      'B 說被呼叫多次需要的記憶體較少，與重複展開可能增加程式碼大小相反，因此有誤。'
+    ],
+    optionExplanations: {
+      A: '巨集展開後可省去函式呼叫開銷，執行速度可能較快。',
+      B: '巨集被多次使用會展開多份程式碼，通常不會比函式呼叫更省程式碼記憶體。',
+      C: '巨集的核心就是用巨集內容取代原本呼叫或敘述。',
+      D: '巨集不是一般函式呼叫，可避免部分堆疊 push/pop 成本。'
+    },
+    keyTakeaways: [
+      '巨集常以展開換取速度，代價可能是程式碼變大。',
+      '函式呼叫共用同一份程式碼，但有呼叫與堆疊成本。',
+      '看到多次呼叫時，要注意巨集可能造成 code bloat。',
+      '常見陷阱是只記得巨集快，忘了它可能不省空間。'
+    ],
+    tags: ['macro', 'compiler']
+  },
+  15: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['遞迴', 'base case', 'divide and conquer', 'call stack'],
+    beginnerExplanation:
+      '遞迴的前置觀念是函式在解題過程中呼叫自己，並且必須有 base case 停止條件。它常用在可以分解成同型子問題的情境，例如各個擊破法、樹狀結構走訪、排序或搜尋。遞迴不必然節省時間或記憶體，因為每次呼叫都會使用 stack frame；可讀性也視問題而定，對自然遞迴問題反而常更清楚。',
+    solvingSteps: [
+      '先確認題目問遞迴程式的正確敘述。',
+      '各個擊破法會把大問題拆成較小同型問題，適合用遞迴表示。',
+      'B 說可讀性較差過度絕對，許多樹或 divide and conquer 問題用遞迴更清楚。',
+      'C 與 D 說節省記憶體或時間也不一定成立，遞迴常有呼叫堆疊成本。',
+      '因此答案選 A。'
+    ],
+    optionExplanations: {
+      A: '遞迴常用於 divide and conquer，因為子問題和原問題型態相同。',
+      B: '遞迴可讀性視問題而定，對樹與分治問題常更直觀，不能一概說較差。',
+      C: '遞迴需要 call stack，通常不保證節省記憶體。',
+      D: '遞迴有函式呼叫成本，除非搭配特定最佳化，不能保證節省執行時間。'
+    },
+    keyTakeaways: [
+      '遞迴需要遞迴關係與停止條件。',
+      '可拆成同型子問題的題目常適合遞迴。',
+      '遞迴不自動代表更快或更省記憶體。',
+      '常見陷阱是用效能好壞絕對化判斷遞迴。'
+    ],
+    tags: ['recursion', 'divide-and-conquer']
+  },
+  16: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['Black-box testing', 'White-box testing', 'Unit testing', '測試層級'],
+    beginnerExplanation:
+      '黑箱測試的前置觀念是測試者主要看輸入與輸出，不依賴程式內部結構。系統測試、整合測試與壓力測試都可以用黑箱方式從外部觀察行為。單元測試雖然也可以寫成黑箱風格，但在考試分類中常由開發者針對函式、分支與內部邏輯做較細的白箱測試，所以最不適合單純以黑箱運作。',
+    solvingSteps: [
+      '先理解題目問「不適合以黑箱測試運作」，要找最偏內部程式結構的測試。',
+      '系統測試可從使用者需求與外部功能驗證，適合黑箱。',
+      '整合測試可從模組介面輸入輸出驗證，仍可黑箱。',
+      '壓力測試看系統在負載下的外部行為，也可黑箱。',
+      '單元測試常需要掌握程式內部路徑與細節，因此答案選 A。'
+    ],
+    optionExplanations: {
+      A: '單元測試常針對函式內部邏輯與分支設計測例，較常搭配白箱觀點。',
+      B: '系統測試可從外部需求與使用者行為驗證，適合黑箱。',
+      C: '整合測試可檢查模組介面與輸出結果，不一定要看內部實作。',
+      D: '壓力測試主要觀察負載下反應時間、錯誤率等外部指標，可用黑箱方式。'
+    },
+    keyTakeaways: [
+      '黑箱測試重視輸入輸出，不看內部程式碼。',
+      '白箱測試重視程式路徑、分支與內部結構。',
+      '單元測試在傳統分類中較常搭配白箱。',
+      '常見陷阱是以為所有測試層級都只能黑箱或只能白箱；題目問的是最不適合者。'
+    ],
+    tags: ['software-testing', 'black-box']
+  },
+  17: {
+    answerVerification: 'needs-review',
+    answerNote:
+      'PDF 第 2 頁題目前方標記為「一律送分」；acceptedAnswers 依官方標記保留 A-D。若只看 C 程式，sum 初值為 0 且每輪都是 sum *= i，概念輸出會維持 0，但選項沒有 0，因此不可標為普通 verified 單選。',
+    coreTerms: ['C 語言', 'for 迴圈', '整數除法', '一律送分'],
+    beginnerExplanation:
+      '這題必須先分開看「官方給分狀態」與「程式概念」。C 程式中 sum 一開始是 0，迴圈 n 從 2 到 7，每次先算 i = n / 2，再做 sum *= i；只要 sum 是 0，乘上任何 i 後仍是 0。依程式執行結果會印出 0，但四個選項都不是 0，所以 PDF 標記一律送分，資料要保留 A-D 全部可接受並維持 needs-review。',
+    solvingSteps: [
+      '先讀官方答案狀態：題目前方不是單一答案，而是標記一律送分。',
+      '再做程式追蹤：sum 初值為 0，n=2 時 i=1，sum = 0×1 仍是 0。',
+      '之後 n=3 到 7，i 會變成 1、2、2、3、3，但 sum 每次都是 0 乘上 i，仍然是 0。',
+      'printf 會輸出 0；A-D 選項都沒有 0，解釋了為何官方採一律送分。',
+      '因此系統 acceptedAnswers 保留 A、B、C、D，不能改成普通單選。'
+    ],
+    optionExplanations: {
+      A: '12 不是程式實際輸出的 0；但因 PDF 一律送分，仍列為可接受答案。',
+      B: '36 不是追蹤 sum 後的結果；官方一律送分時仍保留為 acceptedAnswers。',
+      C: '72 不是本程式輸出；若誤把 n 或 i 相乘可能會接近此類錯誤推論。',
+      D: '5040 像是把 1 到 7 做階乘的結果，但程式從 sum=0 開始相乘，所以不會得到 5040。'
+    },
+    keyTakeaways: [
+      '一律送分題要保留 A-D 全部 acceptedAnswers。',
+      '程式追蹤時要先看初始值；0 乘任何整數仍為 0。',
+      '官方給分狀態與概念解析要分開呈現。',
+      '常見陷阱是看到 for 迴圈就直接做連乘，忽略 sum 初值。'
+    ],
+    tags: ['c-language', 'program-tracing', 'special-answer']
+  },
+  18: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['C 運算子優先順位', 'unary operator', 'dereference', 'bitwise OR'],
+    beginnerExplanation:
+      'C 語言運算子優先順位的前置觀念是先決定哪些運算先被解析。單元運算子，例如取指標指向的值 *p、取位址 &x、邏輯 NOT，都高於乘除、加減、比較、等式比較與位元 OR。這題四個選項中，加法低於 unary，位元 OR 更低，等式比較也低於加法；因此取指標指向的值優先順位最高。',
+    solvingSteps: [
+      '先把選項分類：加法是 additive，位元 OR 是 bitwise OR，等式比較是 equality，取指標值是 unary。',
+      'C 的 unary operator 優先順位高於加法。',
+      '加法又高於等式比較，等式比較高於位元 OR。',
+      '因此四者中最高的是取指標指向的值。'
+    ],
+    optionExplanations: {
+      A: '加法優先於比較和位元 OR，但低於 unary 的取值運算。',
+      B: '位元 OR 的優先順位很低，低於等式比較與加法。',
+      C: '等式比較低於加法，也低於 unary 運算子。',
+      D: '取指標指向的值屬 unary operator，在四個選項中優先順位最高。'
+    },
+    keyTakeaways: [
+      'C 的 unary operator 優先順位高於加減與比較。',
+      '位元 OR 優先順位低，常要用括號避免誤讀。',
+      '等式比較不是最高優先，會在加法之後才比較。',
+      '常見陷阱是只看符號熟悉度，不回到運算子優先表。'
+    ],
+    tags: ['c-language', 'operator-precedence']
+  },
+  19: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['關聯式資料庫', 'NoSQL', 'MongoDB', 'table'],
+    beginnerExplanation:
+      '關聯式資料庫的前置觀念是資料以 relation/table 表格方式組織，使用 schema、欄位、列、鍵與 SQL 查詢。Microsoft Access、dBase、PostgreSQL 都屬於或支援關聯式資料模型。MongoDB 則是文件導向 NoSQL 資料庫，用 document/collection 儲存資料，不是傳統關聯式資料庫。',
+    solvingSteps: [
+      '先判斷題目問「非屬關聯式資料庫」，要找不是 table/relation 模型的選項。',
+      'Microsoft Access 是桌面關聯式資料庫。',
+      'dBase 是早期資料庫系統，常被列入關聯式或表格型資料庫脈絡。',
+      'PostgreSQL 是典型開源關聯式資料庫。',
+      'MongoDB 是 document-oriented NoSQL，因此答案選 D。'
+    ],
+    optionExplanations: {
+      A: 'Microsoft Access 使用資料表、查詢與關聯設計，屬關聯式資料庫脈絡。',
+      B: 'dBase 是表格型資料庫系統，考題通常歸在關聯式或傳統資料庫類型。',
+      C: 'PostgreSQL 是典型 RDBMS，支援 SQL 與關聯模型。',
+      D: 'MongoDB 是文件導向 NoSQL 資料庫，不屬傳統關聯式資料庫。'
+    },
+    keyTakeaways: [
+      '關聯式資料庫以 table/relation、schema、key 與 SQL 為核心。',
+      'MongoDB 的核心是 document 與 collection，屬 NoSQL。',
+      '非屬題要找分類外的選項。',
+      '常見陷阱是看到資料庫產品就全當成關聯式。'
+    ],
+    tags: ['database', 'nosql']
+  },
+  20: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['資料庫模型', '階層式', '網狀式', '物件導向式', '關聯式'],
+    beginnerExplanation:
+      '資料庫類型的技術門檻可從資料模型複雜度與和程式設計模型整合程度判斷。階層式與網狀式是早期模型，結構固定或連結複雜；關聯式以表格與 SQL 為主，工具與理論成熟。物件導向式資料庫要處理物件、類別、繼承、封裝、物件識別與持久化，和一般表格模型差異較大，在考題語境中技術門檻最高。',
+    solvingSteps: [
+      '先把題目理解為比較資料庫類型的設計與實作複雜度。',
+      '階層式以樹狀父子關係為主，模型較固定。',
+      '網狀式可有多對多連結，但屬早期資料模型。',
+      '關聯式理論與工具成熟，使用表格與 SQL。',
+      '物件導向式需支援物件特性與資料持久化整合，因此在選項中門檻最高。'
+    ],
+    optionExplanations: {
+      A: '階層式資料庫結構像樹，限制多但概念相對單純，不是本題最高門檻。',
+      B: '網狀式資料庫連結較複雜，但仍是早期資料模型。',
+      C: '物件導向式資料庫要處理類別、繼承、物件識別與持久化，技術門檻最高。',
+      D: '關聯式資料庫理論成熟、工具普遍，通常不是此題所問最高門檻。'
+    },
+    keyTakeaways: [
+      '物件導向式資料庫要把物件模型與資料持久化結合。',
+      '關聯式資料庫成熟且標準化程度高。',
+      '階層式與網狀式是較早期資料模型。',
+      '常見陷阱是只看是否常用，而不是看實作與模型複雜度。'
+    ],
+    tags: ['database-model']
+  },
+  21: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['時間複雜度', 'O(n!)', 'O(2^n)', '多項式', '對數'],
+    beginnerExplanation:
+      '時間複雜度的前置觀念是比較 n 變大時函式成長速度。常見大小順序是 O(log n) 小於 O(n) 或 O(n^k)，多項式通常小於指數 O(2^n)，而階乘 O(n!) 成長又比固定底數指數更快。題目選項即使把 O(2n) 視為 O(2^n)，O(n!) 仍最高；若按字面 O(2n) 更只是線性，更不可能超過階乘。',
+    solvingSteps: [
+      '先確認題目問時間複雜度最高，也就是成長最快。',
+      'O(log n) 是對數成長，最慢。',
+      'O(n3) 若表示 O(n^3)，是多項式，快於對數但慢於指數與階乘。',
+      'O(2n) 在常見考題可能表示 O(2^n)，仍慢於 O(n!)。',
+      '因此最高的是 O(n!)。'
+    ],
+    optionExplanations: {
+      A: 'O(n!) 是階乘成長，在這些選項中成長最快。',
+      B: 'O(2n) 若是線性則遠小於階乘；若題意為 O(2^n)，也通常小於 O(n!)。',
+      C: 'O(n3) 可理解為 O(n^3)，屬多項式成長，低於指數與階乘。',
+      D: 'O(log n) 是對數成長，在選項中最低。'
+    },
+    keyTakeaways: [
+      '常見成長順序：log n < n^k < a^n < n!。',
+      '階乘複雜度通常代表非常高的計算成本。',
+      '比較 Big-O 時看 n 趨近很大時的成長率。',
+      '常見陷阱是被選項排版 O(2n) 迷惑；無論線性或指數都不高於 n!。'
+    ],
+    tags: ['algorithm', 'time-complexity']
+  },
+  22: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['穩定排序', 'Bubble Sort', 'Quick Sort', 'Selection Sort', 'Heap Sort'],
+    beginnerExplanation:
+      '穩定排序的前置觀念是：若兩筆資料的排序鍵相等，排序後它們的相對先後順序仍與原來相同。Bubble Sort 在標準實作中只交換相鄰且順序錯誤的元素，遇到相等元素不交換，因此可保持穩定。Quick Sort、Selection Sort、Heap Sort 的典型實作可能讓相等元素跨越彼此，所以通常不列為穩定排序。',
+    solvingSteps: [
+      '先把穩定排序定義套入：相等 key 的原相對順序是否保留。',
+      '快速排序的 partition 可能移動相等元素，典型版本不穩定。',
+      '選擇排序每輪把最小值換到前面，可能把相等元素順序打亂。',
+      '堆積排序會透過 heap 調整位置，也通常不穩定。',
+      '氣泡排序只在相鄰元素逆序時交換，標準版本保持相等元素順序，因此選 B。'
+    ],
+    optionExplanations: {
+      A: '快速排序典型 partition 過程可能讓相等鍵跨越，不保證穩定。',
+      B: '氣泡排序標準實作不交換相等元素，因此能維持相對順序。',
+      C: '選擇排序的交換可能把後面的相等元素換到前面，通常不穩定。',
+      D: '堆積排序建堆與取出最大/最小的過程會大幅移動元素，通常不穩定。'
+    },
+    keyTakeaways: [
+      '穩定排序保留相等鍵資料的原相對順序。',
+      'Bubble Sort 與 Merge Sort 常是穩定排序代表。',
+      'Quick、Selection、Heap 的典型版本通常不穩定。',
+      '常見陷阱是把時間複雜度好壞和穩定性混在一起。'
+    ],
+    tags: ['sorting', 'stable-sort']
+  },
+  23: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['Linked List', 'Node', 'Pointer', '插入', '索引存取'],
+    beginnerExplanation:
+      '鏈結串列的前置觀念是資料存在一個個 node 中，每個 node 透過 pointer 或 reference 指向下一個節點。它不像陣列有連續記憶體與 O(1) 索引存取；要找第 k 個元素通常要從頭走訪。但一旦已經找到插入位置，插入或刪除只要改指標，不必像陣列大量搬移資料，所以插入資料速度快是其典型優點。',
+    solvingSteps: [
+      '先比較 linked list 與 array：linked list 不靠連續位置和索引直接存取。',
+      'A 實作簡單不一定成立，因為要處理 node、pointer 與邊界情況。',
+      'B 插入時只需調整前後指標，若位置已知可很快完成。',
+      'C 利用索引存取資料是陣列優點，不是 linked list 特點。',
+      'D 存取資料時間固定也是陣列隨機存取特性，linked list 需走訪。',
+      '因此答案選 B。'
+    ],
+    optionExplanations: {
+      A: '鏈結串列要管理節點與指標，實作不一定比陣列簡單。',
+      B: '在已知位置時，插入資料通常只要改指標，不需搬移大量元素。',
+      C: '鏈結串列通常不能用索引 O(1) 直接存取，需逐節點走訪。',
+      D: '存取第 k 個節點時間會隨位置變動，不是固定時間。'
+    },
+    keyTakeaways: [
+      'Linked list 的節點透過指標串接，不要求連續記憶體。',
+      '插入刪除在位置已知時很快，存取第 k 個元素通常較慢。',
+      '陣列擅長索引存取，鏈結串列擅長局部插入刪除。',
+      '常見陷阱是把陣列的索引優點套到鏈結串列。'
+    ],
+    tags: ['data-structure', 'linked-list']
+  },
+  24: {
+    answerVerification: 'needs-review',
+    answerNote:
+      'PDF 答案為 C。Dijkstra 在許多演算法教材中歸為貪婪法；本題四選一以最短路徑具有最佳子結構、距離表逐步鬆弛的語境接受 C。教學時應提醒學生依題庫標記作答並知道嚴格分類可能有差異。',
+    coreTerms: ['動態規劃', '最佳子結構', 'Dijkstra', '最短路徑', '貪婪法'],
+    beginnerExplanation:
+      '動態規劃的前置觀念是把問題拆成重疊子問題，利用已求得的子問題結果組出大問題答案，常見條件包含最佳子結構與可記錄中間結果。本題官方把 Dijkstra 放在這個脈絡中，因為最短路徑會維護各節點目前最短距離並反覆更新。不過要注意，嚴格演算法分類常把 Dijkstra 稱為 greedy algorithm；本題是依 PDF 答案與四選一語境保留 needs-review。',
+    solvingSteps: [
+      '先辨認題目問「屬於動態規劃法」且 PDF 標記答案 C。',
+      'Prim 與 Kruskal 是最小生成樹常見演算法，典型分類為貪婪法。',
+      '快速排序是 divide and conquer，重點是 partition 後遞迴排序。',
+      'Dijkstra 處理最短路徑，利用目前距離表與鬆弛更新，官方在本題中視為最接近動態規劃語境的選項。',
+      '因此依題庫答案選 C，同時保留分類差異提醒。'
+    ],
+    optionExplanations: {
+      A: 'Prim 是最小生成樹演算法，典型分類為貪婪法，不是本題答案。',
+      B: 'Kruskal 也是最小生成樹貪婪演算法，依邊權重逐步選邊。',
+      C: 'Dijkstra 在本題官方答案中被接受；它使用距離表與鬆弛更新最短路徑，但嚴格分類常稱為貪婪法。',
+      D: '快速排序是分治法代表，透過 partition 拆成子陣列遞迴排序。'
+    },
+    keyTakeaways: [
+      '動態規劃重點是最佳子結構、重疊子問題與保存中間結果。',
+      'Prim、Kruskal 常歸為貪婪法；Quick Sort 常歸為分治法。',
+      'Dijkstra 在嚴格分類中常是貪婪法，本題依官方答案保留 C。',
+      '常見陷阱是不同教材分類用語不一致，遇到爭議題要保留題庫標記與複核註記。'
+    ],
+    tags: ['algorithm', 'dynamic-programming', 'shortest-path']
+  },
+  25: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['Hashing', 'Hash Function', 'Collision', 'O(1) lookup'],
+    beginnerExplanation:
+      '雜湊法的前置觀念是用 hash function 把 key 映射到表格位置，目標是快速查找、插入或比對。它不要求資料先排序，這正是和二分搜尋或排序後查找不同的地方。雜湊也可能用於摘要、壓縮成固定長度表示或密碼雜湊等安全脈絡；但資料結構題最核心的規則是無碰撞或溢位時，理想上讀取一次即可定位。',
+    solvingSteps: [
+      '先確認題目問雜湊法敘述何者有誤。',
+      '雜湊查找靠 hash function 計算位置，不靠資料排序。',
+      '若沒有碰撞或溢位，查找可在一次定位中完成。',
+      '雜湊可把任意長資料映成較短摘要，也可用於保護密碼等安全用途。',
+      '因此 A 說資料需排序過是有誤。'
+    ],
+    optionExplanations: {
+      A: '雜湊法不要求資料先排序，這是本題錯誤敘述。',
+      B: '在密碼雜湊等安全用途下，雜湊可協助不直接保存原文，具保護效果。',
+      C: '雜湊函式可把輸入映成固定長度摘要，可視為壓縮表示。',
+      D: '理想無碰撞或溢位時，雜湊查找可一次定位資料。'
+    },
+    keyTakeaways: [
+      '雜湊法靠 hash function 定位，不靠排序。',
+      '碰撞 collision 是雜湊表必須處理的常見問題。',
+      '無碰撞理想情況下查找可接近 O(1)。',
+      '常見陷阱是把雜湊查找和排序後二分搜尋混淆。'
+    ],
+    tags: ['hashing', 'data-structure']
+  },
+  26: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['HTTP', 'HTTPS', 'TCP', 'Port 80', '無狀態'],
+    beginnerExplanation:
+      'HTTP 的前置觀念是 HyperText Transfer Protocol，是 Web 用戶端與伺服器交換請求與回應的應用層協定。HTTP 本身是無狀態協定，通常使用 TCP 傳輸，預設 port 是 80。加密傳輸是 HTTPS 透過 TLS 提供的特性，不是一般 HTTP 傳輸過程本身就加密。',
+    solvingSteps: [
+      '先找題目關鍵「有誤」，要找不符合 HTTP 的敘述。',
+      'A HTTP 無狀態是正確的，每次 request 本身不自帶前一次狀態。',
+      'C HTTP 通常跑在 TCP 上，正確。',
+      'D HTTP 預設 port 80，正確。',
+      'B 說 HTTP 傳輸資料是加密的，這應是 HTTPS/TLS 的特性，因此有誤。'
+    ],
+    optionExplanations: {
+      A: 'HTTP 是無狀態協定，若要維持狀態常靠 cookie、session 等機制。',
+      B: '一般 HTTP 不加密；加密的是 HTTPS 搭配 TLS，因此這是錯誤敘述。',
+      C: 'HTTP 常使用 TCP 作為傳輸層協定。',
+      D: 'HTTP 預設連接埠是 80，HTTPS 常用 443。'
+    },
+    keyTakeaways: [
+      'HTTP 本身無狀態且通常使用 TCP port 80。',
+      'HTTPS 是 HTTP over TLS，才提供加密與伺服器身分驗證。',
+      '無狀態不代表無法登入；狀態可由 cookie/session 補上。',
+      '常見陷阱是把 HTTP 和 HTTPS 的安全性混為一談。'
+    ],
+    tags: ['http', 'networking']
+  },
+  27: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['LAN', 'Ethernet', 'Bluetooth', 'LTE', 'ADSL'],
+    beginnerExplanation:
+      'LAN 區域網路的前置觀念是範圍通常在家庭、辦公室、校園或機房內，重點是本地設備互連。Ethernet 是最常見的有線 LAN 標準，包含 IEEE 802.3 相關規範。Bluetooth 偏個人區域網路，LTE 是行動廣域網路，ADSL 是接入網路技術，因此不屬於 LAN 常用標準的最佳答案。',
+    solvingSteps: [
+      '先把 LAN 定位為本地區域內的網路。',
+      'Ethernet 是有線區域網路最典型標準。',
+      'Bluetooth 範圍較小，偏 PAN。',
+      'LTE 是蜂巢式行動網路，範圍與用途不是 LAN。',
+      'ADSL 是寬頻接入技術，用於連上 ISP，不是 LAN 標準。',
+      '因此答案選 A。'
+    ],
+    optionExplanations: {
+      A: 'Ethernet 是區域網路最常見的有線標準，符合 LAN 題意。',
+      B: 'Bluetooth 偏短距離個人區域網路，不是 LAN 常用主標準。',
+      C: 'LTE 是行動通訊網路技術，不是區域網路標準。',
+      D: 'ADSL 是寬頻接入技術，重點在用戶端連到電信網路。'
+    },
+    keyTakeaways: [
+      'Ethernet 是 LAN 的典型有線標準。',
+      'Bluetooth 偏 PAN，LTE 偏行動廣域，ADSL 偏接入網路。',
+      '分類題要看網路範圍與用途。',
+      '常見陷阱是看到都是通訊技術就忽略 LAN 定義。'
+    ],
+    tags: ['lan', 'ethernet']
+  },
+  28: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['SSL', 'TLS', 'HTTPS', 'Port 443'],
+    beginnerExplanation:
+      'SSL/TLS 的前置觀念是為應用層通訊提供加密、完整性與身分驗證。Web 上常見的 HTTPS 使用 TLS 保護 HTTP，標準預設通訊埠是 TCP 443。題目雖寫 SSL，現代多稱 TLS，但考試通常把 SSL/TLS 與 HTTPS port 443 對應起來。',
+    solvingSteps: [
+      '先辨認題目問 SSL 使用的通訊埠，在 Web 語境通常指 HTTPS。',
+      'HTTP 未加密預設 port 是 80。',
+      'HTTPS over SSL/TLS 預設 port 是 443。',
+      '四個選項中只有 C 是 443，因此選 C。'
+    ],
+    optionExplanations: {
+      A: '441 不是 HTTPS/SSL/TLS 的標準預設 port。',
+      B: '442 也不是常見 SSL/TLS Web port。',
+      C: '443 是 HTTPS 使用 SSL/TLS 時的標準預設 port。',
+      D: '444 不是本題標準答案，容易和 443 記錯。'
+    },
+    keyTakeaways: [
+      'HTTPS 預設使用 TCP port 443。',
+      'HTTP 預設使用 TCP port 80。',
+      'SSL 是舊稱，現代安全通訊多使用 TLS。',
+      '常見陷阱是把 443 記成鄰近數字。'
+    ],
+    tags: ['tls', 'port']
+  },
+  29: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['Port Security', 'Switch', 'MAC address', '未授權設備'],
+    beginnerExplanation:
+      '防止未授權設備接入網路的前置觀念是先控制接入點，尤其是交換器埠。Port security 可限制某個 switch port 允許的 MAC address 數量或清單，若陌生設備接上就阻擋或告警。防火牆、NAT、加密雖然是安全措施，但它們主要處理邊界流量、位址轉換或資料保密，不是直接限制設備插入交換器。',
+    solvingSteps: [
+      '先抓題目關鍵：防止未授權設備接入網路。',
+      '這是接入控制問題，常發生在交換器埠或無線接入點。',
+      'Port security 可以把 port 綁定允許的 MAC 或限制可接入設備數量。',
+      '防火牆與 NAT 不一定能阻止設備先接進 LAN，加密也不等於接入控制。',
+      '因此答案選 C。'
+    ],
+    optionExplanations: {
+      A: '防火牆可過濾流量，但不一定防止陌生設備接上內部交換器。',
+      B: 'NAT 主要做位址轉換，不是設備接入管制機制。',
+      C: 'Port security 可限制 switch port 可使用的 MAC 或設備數，是防未授權接入的直接作法。',
+      D: '加密保護資料內容，但設備仍可能物理或邏輯接入網路。'
+    },
+    keyTakeaways: [
+      '未授權設備接入問題常用接入控制思路處理。',
+      'Switch port security 可限制 MAC 或違規設備。',
+      '防火牆、NAT、加密各有用途，但不是此題最直接答案。',
+      '常見陷阱是看到安全措施就選防火牆，忽略題目問的是設備接入。'
+    ],
+    tags: ['network-security', 'port-security']
+  },
+  30: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['MPLS', 'Label Switching', 'IP forwarding', '標籤交換'],
+    beginnerExplanation:
+      'MPLS 的前置觀念是 Multi-Protocol Label Switching，核心是封包進入 MPLS 網路時被加上 label，後續設備主要依 label 轉發，而不是每一跳都完整依目的 IP 做傳統路由查表。它可和現有 IP 網路共存，也常用於服務提供者網路、VPN 與流量工程，不只限於 LAN。',
+    solvingSteps: [
+      '先辨認 MPLS 名稱中的 Label Switching，重點是標籤轉發。',
+      'A 說主要依賴目標 IP 位址轉發，這比較像傳統 IP routing。',
+      'B 說可基於標籤進行資料轉發，正是 MPLS 核心。',
+      'C 說無法與 IP 共存錯誤，MPLS 常與 IP 網路整合。',
+      'D 說只適用區域網路也太狹窄。',
+      '因此答案選 B。'
+    ],
+    optionExplanations: {
+      A: 'MPLS 不是每一跳都只靠目的 IP 查表；它的特色是 label switching。',
+      B: 'MPLS 依標籤做轉發決策，符合其名稱與運作核心。',
+      C: 'MPLS 可與 IP 網路共存，常部署在 IP backbone 上。',
+      D: 'MPLS 常用於營運商或廣域網路場景，不只適用 LAN。'
+    },
+    keyTakeaways: [
+      'MPLS 的核心是以 label 做快速轉發。',
+      'MPLS 可和 IP 網路整合，並支援 VPN、流量工程等應用。',
+      '傳統 IP routing 主要看目的 IP；MPLS 轉發看 label。',
+      '常見陷阱是把 MPLS 當成只屬某一種區域網路技術。'
+    ],
+    tags: ['mpls', 'label-switching']
+  },
+  31: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['TCP three-way handshake', 'SYN Flood', 'DoS', '半開連線'],
+    beginnerExplanation:
+      'TCP 三向交握的前置觀念是 client 送 SYN、server 回 SYN-ACK、client 再回 ACK 建立連線。SYN Flood 攻擊會大量送出 SYN，讓伺服器配置半開連線資源等待最後 ACK；若攻擊流量太大，伺服器連線佇列與資源被耗盡，正常使用者就難以連線。題目明確提到利用 TCP 三向交握耗盡資源，所以對應 SYN Flood。',
+    solvingSteps: [
+      '先抓題幹關鍵：TCP 三向交握與耗盡伺服器資源。',
+      'SYN Flood 正是大量送 SYN 讓伺服器維持半開連線。',
+      'DDoS 是分散式阻斷服務的總稱，不一定特指三向交握。',
+      'MITM 重點是攔截或竄改通訊，ARP Spoofing 重點是區域網路位址欺騙。',
+      '因此最精確答案是 B。'
+    ],
+    optionExplanations: {
+      A: 'DDoS 是較大的攻擊類別，可能包含 SYN Flood，但題目問特定三向交握機制。',
+      B: 'SYN Flood 利用 TCP SYN 半開連線耗盡伺服器資源，完全符合題幹。',
+      C: 'Man-in-the-Middle 攻擊重點是置於通訊雙方中間攔截或修改資料。',
+      D: 'ARP Spoofing 是 LAN 中偽造 ARP 對應關係，不是 TCP 三向交握耗資源。'
+    },
+    keyTakeaways: [
+      'TCP 建立連線需要 SYN、SYN-ACK、ACK。',
+      'SYN Flood 讓伺服器卡在等待 ACK 的半開狀態。',
+      'DDoS 是大類，SYN Flood 是具體技術。',
+      '常見陷阱是看到耗盡資源就只選 DDoS，忽略題目指定三向交握。'
+    ],
+    tags: ['tcp', 'syn-flood']
+  },
+  32: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['Ethernet', 'CSMA/CD', 'full-duplex', 'switch'],
+    beginnerExplanation:
+      'Ethernet 的前置觀念是早期共享媒介半雙工環境會用 CSMA/CD 偵測碰撞；但現代乙太網路多使用交換器與全雙工點對點連線，碰撞域被消除，CSMA/CD 不再廣泛用於所有環境。乙太網路確實包含多種物理層速率與技術，也常見 100 Mbps、1 Gbps 等速率。題目問有誤，所以要選把 CSMA/CD 說成現代所有環境仍廣泛使用的敘述。',
+    solvingSteps: [
+      '先確認題目問 Ethernet 敘述何者有誤。',
+      'A 描述 CSMA/CD 是乙太網路早期碰撞偵測機制，合理。',
+      'B 100 Mbps 與 1 Gbps 都是常見 Ethernet 速率。',
+      'C Ethernet 標準包含多種實體層媒介與技術。',
+      'D 說現代所有網路環境仍廣泛使用 CSMA/CD，忽略全雙工交換式 Ethernet，因此有誤。'
+    ],
+    optionExplanations: {
+      A: 'CSMA/CD 是傳統半雙工共享式 Ethernet 的碰撞偵測機制。',
+      B: '100 Mbps 和 1 Gbps 都是常見乙太網路速率。',
+      C: 'Ethernet 標準涵蓋多種實體層，例如不同線材、光纖與速率。',
+      D: '現代交換器全雙工環境通常不需要 CSMA/CD，不能說廣泛使用於所有環境。'
+    },
+    keyTakeaways: [
+      'CSMA/CD 屬於共享式半雙工 Ethernet 的碰撞處理機制。',
+      '交換器全雙工連線消除碰撞域，通常不再使用 CSMA/CD。',
+      'Ethernet 包含多種物理層規格與速率。',
+      '常見陷阱是把早期乙太網路機制套到所有現代乙太網路。'
+    ],
+    tags: ['ethernet', 'csma-cd']
+  },
+  33: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['TCP flow control', 'zero window', 'receiver window', 'window update'],
+    beginnerExplanation:
+      'TCP 流量控制的前置觀念是接收方用 receiver window 告訴發送方自己還能收多少資料。當窗口大小為 0，代表接收緩衝區暫時沒有空間；發送方必須停止傳送一般資料，等收到窗口更新後再繼續。實作上可能送 zero-window probe 探測，但不會持續大量傳資料到接收方滿載。',
+    solvingSteps: [
+      '先辨認接收方窗口大小為 0 的含義：接收端暫時沒有可用緩衝空間。',
+      'TCP 的流量控制要求發送方尊重 receiver window。',
+      '因此發送方停止傳送一般資料，等待窗口更新。',
+      'B 持續傳送會違反流量控制，C/D 自動關閉或重設也不是標準行為。',
+      '所以答案選 A。'
+    ],
+    optionExplanations: {
+      A: '窗口為 0 時，發送方應停止一般資料傳送，直到接收方更新窗口。',
+      B: '持續傳送會讓接收端更滿，違反 TCP flow control。',
+      C: '窗口為 0 不代表連線必須自動關閉。',
+      D: '重設連線不是 zero window 的正常處理方式。'
+    },
+    keyTakeaways: [
+      'TCP receiver window 用來做流量控制。',
+      'Zero window 表示接收端暫時無法再收一般資料。',
+      '發送方要等 window update，可能只做探測而非大量傳送。',
+      '常見陷阱是把流量控制和連線錯誤處理混淆。'
+    ],
+    tags: ['tcp', 'flow-control']
+  },
+  34: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['DDoS', 'IPS', 'IDS', '流量偵測', '防禦'],
+    beginnerExplanation:
+      'DDoS 防禦的前置觀念是要偵測大量異常流量、攻擊特徵或行為模式，並能告警、阻擋或聯動清洗。IDS 偏偵測與告警，IPS 可在流量路徑上阻擋可疑活動；考題把 IPS/IDS 合在一起時，通常視為比一般 NAT、防毒或單純防火牆更貼近入侵與攻擊流量偵測防護。嚴格實務上 DDoS 還常需流量清洗、CDN 或上游防護，但選項中 B 最符合。',
+    solvingSteps: [
+      '先判斷題目問能有效防禦 DDoS 的技術，而不是一般主機防毒。',
+      '防火牆可過濾規則，但面對大量分散流量可能不足。',
+      'IPS/IDS 可偵測攻擊型態與異常流量，IPS 還可阻擋。',
+      'NAT 是位址轉換，防毒軟體是端點惡意程式防護，都不是 DDoS 主要解法。',
+      '因此在四個選項中選 B。'
+    ],
+    optionExplanations: {
+      A: '防火牆能做基本過濾，但不一定足以偵測與處理 DDoS 大量分散流量。',
+      B: 'IPS/IDS 可偵測攻擊特徵或異常流量，IPS 可進一步阻擋，最貼近題意。',
+      C: 'NAT 做私有與公有位址轉換，不能作為 DDoS 防禦核心。',
+      D: '防毒軟體防端點惡意程式，無法處理網路層大量流量攻擊。'
+    },
+    keyTakeaways: [
+      'DDoS 防禦重點是偵測、阻擋或清洗大量異常流量。',
+      'IDS 偵測，IPS 可在路徑上阻擋。',
+      'NAT 與防毒不是 DDoS 核心防禦。',
+      '常見陷阱是把所有安全產品都視為同一種防護。'
+    ],
+    tags: ['ddos', 'ips-ids']
+  },
+  35: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['SNMP', 'Network Management', 'FTP', 'SMTP', 'NAT'],
+    beginnerExplanation:
+      '網路設備遠程管理的前置觀念是管理者需要監看或設定路由器、交換器、伺服器等設備狀態。SNMP 是 Simple Network Management Protocol，設計目的就是讓管理站讀取或接收設備狀態資訊，例如流量、介面狀態、錯誤計數與告警。FTP 是檔案傳輸，SMTP 是郵件傳送，NAT 是位址轉換，都不是網路設備管理協定。',
+    solvingSteps: [
+      '先找題幹關鍵：網路設備遠程管理。',
+      'SNMP 名稱中就包含 Network Management，對應管理用途。',
+      'FTP 處理檔案傳輸，不是設備狀態管理。',
+      'SMTP 處理電子郵件傳送。',
+      'NAT 處理位址轉換。',
+      '因此答案選 D。'
+    ],
+    optionExplanations: {
+      A: 'FTP 是 File Transfer Protocol，用於檔案傳輸。',
+      B: 'NAT 是 Network Address Translation，用於位址轉換。',
+      C: 'SMTP 是 Simple Mail Transfer Protocol，用於寄送電子郵件。',
+      D: 'SNMP 是網路管理協定，用於監控與管理網路設備。'
+    },
+    keyTakeaways: [
+      'SNMP 專門用於網路設備監控與管理。',
+      'FTP 管檔案，SMTP 管郵件，NAT 管位址轉換。',
+      '協定題可先從縮寫全名判斷用途。',
+      '常見陷阱是看到 remote 就想到 FTP，忽略題目問設備管理。'
+    ],
+    tags: ['snmp', 'network-management']
+  },
+  36: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['STP', 'Ethernet loop', 'Bridge', 'Broadcast storm'],
+    beginnerExplanation:
+      '乙太網路迴圈的前置觀念是交換器轉送 frame 時，若拓樸形成迴圈，廣播或未知目的流量可能在網路中不斷循環，造成 broadcast storm。STP 是 Spanning Tree Protocol，規則是讓橋接或交換網路邏輯上形成無迴圈的樹狀拓樸，必要時阻塞部分連結，避免封包無限重複傳輸。',
+    solvingSteps: [
+      '先抓題幹關鍵：以太網中的循環避免與防止數據包無限重複。',
+      'ARP 是位址解析，不是拓樸防迴圈。',
+      'VTP 管 VLAN 資訊傳遞，不是防止二層迴圈的核心協定。',
+      'STP 專門用於防止橋接/交換網路迴圈。',
+      'MPLS 是標籤交換，不是 Ethernet loop prevention。',
+      '因此答案選 C。'
+    ],
+    optionExplanations: {
+      A: 'ARP 將 IP 位址解析成 MAC 位址，不能防止交換器拓樸迴圈。',
+      B: 'VTP 用於 VLAN 設定傳播，不是避免封包循環的協定。',
+      C: 'STP 會建立無迴圈的 spanning tree，避免二層封包無限循環。',
+      D: 'MPLS 是標籤交換技術，與乙太網路二層 loop prevention 不同。'
+    },
+    keyTakeaways: [
+      'STP 的目的就是避免二層交換網路形成迴圈。',
+      'Ethernet loop 可能造成 broadcast storm。',
+      'STP 會阻塞部分連結，讓邏輯拓樸成為樹。',
+      '常見陷阱是把 ARP、VTP、MPLS 等網路名詞混成防迴圈技術。'
+    ],
+    tags: ['stp', 'ethernet']
+  },
+  37: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['IPsec', 'ESP', 'confidentiality', 'integrity', 'authentication'],
+    beginnerExplanation:
+      'IPsec 的 ESP 前置觀念是 Encapsulating Security Payload，主要用於保護 IP 封包內容。ESP 可提供機密性，也就是加密 payload；此外也可提供資料來源認證與完整性保護，讓接收端知道封包未被竄改且來源可信。路徑選擇、壓縮與負載均衡不是 ESP 的主要安全功能。',
+    solvingSteps: [
+      '先看題目問 ESP 除了加密封包內容，另可提供什麼功能。',
+      'ESP 是 IPsec 的安全封裝機制，安全屬性包含 confidentiality、integrity、authentication。',
+      '路徑選擇屬路由功能，壓縮與負載均衡也不是 ESP 核心。',
+      '因此答案是認證與完整性保護。'
+    ],
+    optionExplanations: {
+      A: 'ESP 可提供資料來源認證與完整性檢查，符合題意。',
+      B: '路徑選擇是 routing 功能，不是 ESP 的安全保護功能。',
+      C: '壓縮數據不是 ESP 的主要目的。',
+      D: '負載均衡是流量分配機制，不是 IPsec ESP 提供的安全屬性。'
+    },
+    keyTakeaways: [
+      'ESP 可提供加密、完整性與來源認證。',
+      'IPsec 主要處理 IP 層安全保護。',
+      '安全屬性題要分清 confidentiality、integrity、authentication。',
+      '常見陷阱是把網路效能或路由功能混入安全協定功能。'
+    ],
+    tags: ['ipsec', 'esp']
+  },
+  38: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['CSMA/CA', 'CSMA/CD', 'Wi-Fi', 'collision avoidance'],
+    beginnerExplanation:
+      '無線網路的前置觀念是無線設備不容易像有線乙太網路那樣同時傳送並偵測碰撞，因為發送時可能聽不到遠端碰撞，還有隱藏節點問題。所以 Wi-Fi 使用 CSMA/CA，也就是 Carrier Sense Multiple Access with Collision Avoidance，先聽通道、等待隨機退避，必要時配合 RTS/CTS 來避免碰撞。CSMA/CD 則是有線乙太網路早期的碰撞偵測。',
+    solvingSteps: [
+      '先抓題幹關鍵：無線網路、避免碰撞、共享同一無線頻譜。',
+      'CSMA/CD 是碰撞偵測，較適用早期有線乙太網路。',
+      'CSMA/CA 是碰撞避免，正是 Wi-Fi 使用的媒體存取方法。',
+      'STP 防二層迴圈，VLAN 做虛擬區域網路分割，與無線碰撞避免不同。',
+      '因此答案選 B。'
+    ],
+    optionExplanations: {
+      A: 'CSMA/CD 是 collision detection，無線環境不適合作為主要碰撞處理方式。',
+      B: 'CSMA/CA 透過聽通道與退避等方式避免碰撞，是無線網路常用技術。',
+      C: 'STP 用於避免交換網路迴圈，不是無線媒體存取方法。',
+      D: 'VLAN 用於邏輯分割網路，不處理無線頻譜碰撞避免。'
+    },
+    keyTakeaways: [
+      'Wi-Fi 使用 CSMA/CA，而早期半雙工 Ethernet 使用 CSMA/CD。',
+      'CA 是 collision avoidance，CD 是 collision detection。',
+      '無線有隱藏節點與碰撞偵測困難問題。',
+      '常見陷阱是把 CSMA/CD 套到無線網路。'
+    ],
+    tags: ['wifi', 'csma-ca']
+  },
+  39: {
+    answerVerification: 'suspected-error',
+    answerNote:
+      'PDF 答案為 C。依一般網路安全概念，URL 出現 https 主要表示使用 HTTP over TLS/SSL；憑證未獲信任通常會造成瀏覽器警告，不是 https 字樣本身必然代表的狀況。此題保留官方答案並標為 suspected-error 以待人工複核。',
+    coreTerms: ['HTTPS', 'TLS', 'SSL certificate', '瀏覽器警告'],
+    beginnerExplanation:
+      'HTTPS 的前置觀念是 HTTP 透過 TLS/SSL 建立加密通道，常用來保護傳輸中的機密性與完整性，並透過憑證協助驗證伺服器身分。正常情況下，網址列出現 https 通常代表瀏覽器嘗試或已使用 TLS 連線；若憑證未受信任、過期或名稱不符，瀏覽器通常會警告。PDF 官方答案選 C，但 C 的文字和一般觀念有落差，所以解析保留官方標記並提醒這是需複核題。',
+    solvingSteps: [
+      '先讀官方答案狀態：PDF 題目前方標記為 C。',
+      '再用一般規則理解：https 表示 HTTP over TLS/SSL，不等於網站在黑名單、伺服器連線異常或拒絕 https。',
+      '若題庫把 https 與 SSL 憑證狀態連結，四個選項中 C 最接近憑證相關敘述。',
+      '但嚴格而言，https 本身不代表憑證未獲得認證；未受信任憑證會另出現警告。',
+      '因此系統保留 acceptedAnswers 為 C，answerVerification 用 suspected-error 提醒複核。'
+    ],
+    optionExplanations: {
+      A: 'https 不代表網站在黑名單；黑名單是瀏覽器、DNS 或安全服務的額外判斷。',
+      B: 'https 不表示伺服器連線異常；連線異常通常會有錯誤訊息而不是正常顯示 URL。',
+      C: 'C 是 PDF 官方答案，且和 SSL 憑證有關；但文字說未獲得認證與一般 https 概念不完全相符。',
+      D: '若網站拒絕 client 使用 https，通常不會正常以 https URL 瀏覽成功。'
+    },
+    keyTakeaways: [
+      'HTTPS 表示 HTTP over TLS/SSL，主要提供加密、完整性與身分驗證。',
+      '憑證未受信任通常會造成瀏覽器警告，不是 https 字樣本身的必然含義。',
+      '遇到官方答案與實務概念衝突時，要保留題庫答案並註記複核。',
+      '常見陷阱是把 URL scheme、憑證信任狀態與瀏覽器安全警告混在一起。'
+    ],
+    tags: ['https', 'tls', 'certificate']
+  },
+  40: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['Password salting', 'Hashing', 'Salt', 'rainbow table'],
+    beginnerExplanation:
+      '密碼 salting 的前置觀念是密碼通常不應直接明文保存，而是經過雜湊後保存。若兩個使用者密碼相同，單純 hash 會得到相同摘要，攻擊者也可用 rainbow table 預先查表。Salt 是在密碼旁加入隨機字串後再 hash，讓相同密碼也產生不同結果，增加預先計算攻擊成本。題幹說在密文裡額外添加隨機字串，對應 Password salting。',
+    solvingSteps: [
+      '先抓題幹關鍵：額外添加一串隨機字串。',
+      '這個隨機字串稱為 salt，通常與密碼一起進入 hash 流程。',
+      '它的目的不是單純 hash，也不是 key hash，而是防止相同密碼與預先表攻擊。',
+      '因此答案是 Password salting。'
+    ],
+    optionExplanations: {
+      A: 'Password salting 就是在密碼雜湊時加入隨機 salt，符合題幹。',
+      B: 'Password hashing 是把密碼做雜湊的總稱，但題幹特別提到額外隨機字串，應選 salting。',
+      C: 'Key hashing 偏對金鑰或資料做 hash，不是密碼加隨機 salt 的標準名稱。',
+      D: 'Password vinegar 不是常見標準資安術語，是用來混淆 salt 的干擾選項。'
+    },
+    keyTakeaways: [
+      'Salt 是每筆密碼旁的隨機值，用來讓相同密碼產生不同 hash。',
+      'Password hashing 是保存密碼的基本做法，salting 是加強做法。',
+      'Salting 能增加 rainbow table 與批量破解成本。',
+      '常見陷阱是只看到 hash 就選 hashing，忽略題目提到隨機字串。'
+    ],
+    tags: ['password-security', 'salting']
+  },
+  41: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['XSS', 'document.write', '未過濾輸入', 'HTML injection'],
+    beginnerExplanation:
+      'XSS 的前置觀念是網頁把使用者可控制的內容當成 HTML 或 script 輸出，攻擊者就可能注入惡意腳本，在其他使用者瀏覽器中執行。題目程式從 URL 參數取得 user，接著直接用 document.write 拼進 h1 標籤，沒有做輸出編碼或過濾。這個適用條件正是反射型或 DOM 型 XSS 的典型風險，常見混淆是把任何跨站問題都叫 CSRF。',
+    solvingSteps: [
+      '先讀程式：user 來自 getUrlParameter，代表攻擊者可能透過網址控制內容。',
+      'document.write 直接把 user 拼進 HTML，沒有 escape 或 sanitize。',
+      '若 user 帶入 script 或事件屬性，就可能在瀏覽器執行惡意程式。',
+      '這是跨站腳本 XSS，而不是偽造請求 CSRF。',
+      '因此答案選 A。'
+    ],
+    optionExplanations: {
+      A: 'XSS 正是未過濾使用者輸入被輸出成 HTML/Script 的風險。',
+      B: 'CSRF 是誘使已登入使用者送出未授權請求，題幹沒有跨站請求偽造流程。',
+      C: 'Html Scripting 不是標準 OWASP 風險名稱，且不如 XSS 精確。',
+      D: 'Broken Access Control 是授權檢查不足，與此處輸出未過濾參數不同。'
+    },
+    keyTakeaways: [
+      '使用者輸入輸出到 HTML 前必須做適當編碼或清理。',
+      'document.write 直接拼接 URL 參數是 XSS 高風險模式。',
+      'XSS 重點是腳本在受害者瀏覽器執行；CSRF 重點是偽造已登入請求。',
+      '常見陷阱是看到 web 攻擊就把 XSS、CSRF、存取控制混在一起。'
+    ],
+    tags: ['xss', 'web-security']
+  },
+  42: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['SSH', 'OpenSSH', 'PermitRootLogin', 'fail2ban', 'ChrootDirectory'],
+    beginnerExplanation:
+      '安全使用 SSH 的前置觀念是降低暴力登入、帳號濫用與權限追蹤困難。公私鑰或憑證登入通常比只靠密碼安全，fail2ban 可依失敗登入紀錄自動封鎖來源，sftp 專用帳號可配合 ChrootDirectory 限制可存取目錄。root 直接登入則通常應停用或嚴格限制，因為每次都用 root 會降低責任追蹤並擴大攻擊成功後的權限；PermitRootLogin 設為 yes 不是安全建議。',
+    solvingSteps: [
+      '先確認題目問「有誤」，要找不安全或不符合 OpenSSH 建議的敘述。',
+      'A 使用憑證登入比高強度密碼更安全，合理。',
+      'B fail2ban 可降低暴力登入嘗試，合理。',
+      'D 建立 sftp 專用帳號並用 ChrootDirectory 限制目錄，也合理。',
+      'C 說 PermitRootLogin 應設為 yes，反而允許 root 直接登入，增加風險，因此有誤。'
+    ],
+    optionExplanations: {
+      A: '憑證或金鑰登入能降低密碼猜測風險，通常比單靠密碼安全。',
+      B: 'fail2ban 可依失敗登入紀錄封鎖來源，是常見防暴力登入措施。',
+      C: 'PermitRootLogin 設為 yes 允許 root 直接登入，不利追蹤且風險高，因此是錯誤敘述。',
+      D: 'sftp 專用帳號搭配 ChrootDirectory 可限制檔案存取範圍，符合最小權限思路。'
+    },
+    keyTakeaways: [
+      'SSH 安全設定常包含金鑰登入、限制 root 登入、封鎖暴力登入與最小權限。',
+      'PermitRootLogin 通常不應設為 yes。',
+      'ChrootDirectory 可限制 sftp 帳號可見目錄。',
+      '常見陷阱是以為直接 root 登入方便就安全；安全管理更重視權限控管與可追蹤性。'
+    ],
+    tags: ['ssh', 'linux-security']
+  },
+  43: {
+    answerVerification: 'needs-review',
+    answerNote:
+      'PDF 第 4 頁題目前方答案標記為「B、C」。/27 共有 32 個位址，扣除網路位址與廣播位址後有 30 個可用 host 位址；若再扣掉路由器介面自身使用的一個位址，留給電腦的是 29 個。因此保留 B、C 多答案並不標為普通 verified 單選。',
+    coreTerms: ['CIDR', '/27', '可用主機位址', '網路位址', '廣播位址'],
+    beginnerExplanation:
+      '子網路計算的前置觀念是 CIDR /27 代表前 27 bit 是網路部分，剩下 5 bit 給主機部分，所以一個子網共有 2^5 = 32 個位址。一般可指派給主機的位址要扣掉全 0 的 network address 和全 1 的 broadcast address，因此是 30 個。題目又說路由器的一個介面位址已是 192.168.192.10/27，若問「讓該區域網路之電腦使用」，可再扣掉路由器介面自身占用的 1 個，得到 29；若只問此子網可用 host 數，則是 30，所以官方接受 B、C。',
+    solvingSteps: [
+      '先由 /27 算主機位元：32 - 27 = 5 bit。',
+      '總位址數為 2^5 = 32。',
+      '扣除 network address 與 broadcast address，子網可用 host 位址為 32 - 2 = 30。',
+      '題幹已指定路由器介面也在此 LAN 中，若只算可留給電腦的位址，要再扣掉路由器介面 1 個，得到 29。',
+      '因此 C 對應一般 host 可用數，B 對應扣掉路由器介面後給電腦的數量，PDF 保留 B、C。'
+    ],
+    optionExplanations: {
+      A: '13 沒有對應 /27 的 5 個主機位元計算，通常是把遮罩或扣除數算錯。',
+      B: '29 是 30 個可用 host 位址再扣掉路由器介面自身占用後，留給電腦的數量。',
+      C: '30 是 /27 子網扣掉 network 與 broadcast 後的一般可用 host 位址數。',
+      D: '31 只扣掉一個位址，忽略 network 與 broadcast 不能都拿給主機使用。'
+    },
+    keyTakeaways: [
+      '/27 剩 5 個主機位元，所以總位址數是 32。',
+      '一般可用 host 位址數公式是 2^h - 2。',
+      '若題目指定路由器介面已占用一個 host 位址，留給電腦的數量可再減 1。',
+      '多答案題要保留官方 acceptedAnswers，不能強改成單選。'
+    ],
+    tags: ['subnetting', 'cidr', 'special-answer']
+  },
+  44: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['Extranet', 'Intranet', 'Internet', 'VPN', '電子商務'],
+    beginnerExplanation:
+      '企業網路分類的前置觀念是看使用者範圍。Intranet 是企業內部私有網路，主要供員工使用；Internet 是公開全球網路；VPN 是一種安全連線技術，不是依使用族群命名的商務網路類型。Extranet 則是把企業內部部分資源開放給外部合作夥伴、上下游廠商或客戶，正符合電子商務中企業與上下游廠商互連的情境。',
+    solvingSteps: [
+      '先抓題幹關鍵：企業與上下游廠商之間使用。',
+      '這不是完全公開的 Internet，也不是只供企業內部員工的 Intranet。',
+      'VPN 可以是建立安全通道的工具，但題目問網路類型。',
+      'Extranet 專門描述企業對外部合作夥伴開放的延伸私有網路。',
+      '因此答案選 D。'
+    ],
+    optionExplanations: {
+      A: 'VPN 是安全通道技術，可用來實作連線，但不是此題問的企業夥伴網路類型。',
+      B: 'Internet 是公開網路，範圍太廣，不特指企業與合作夥伴間的受控網路。',
+      C: 'Intranet 是企業內部網路，主要給組織內部使用。',
+      D: 'Extranet 是企業延伸給外部合作夥伴或上下游廠商使用的網路。'
+    },
+    keyTakeaways: [
+      'Intranet 面向企業內部，Extranet 面向受控的外部合作夥伴。',
+      'Internet 是公開網路，VPN 是安全連線技術。',
+      '電子商務上下游廠商互連常對應 Extranet。',
+      '常見陷阱是看到安全連線就選 VPN，忽略題目問網路型態。'
+    ],
+    tags: ['extranet', 'e-commerce']
+  },
+  45: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['FCAPS', '效能管理', '流量管理', '網路壅塞'],
+    beginnerExplanation:
+      '網路管理常用 FCAPS 分類：Fault 錯誤、Configuration 組態、Accounting 計費或帳務、Performance 效能、Security 安全。題幹說管理網路內流量及處理網路壅塞，重點是監控 throughput、延遲、利用率、瓶頸與資源配置，這些都屬於 Performance Management 效能管理。組態管理處理設定，安全管理處理存取與攻擊，錯誤管理處理故障。',
+    solvingSteps: [
+      '先把題幹關鍵字流量、壅塞、利用率對應到網路效能。',
+      '組態管理是設定設備參數，不是主要處理流量壅塞。',
+      '安全管理關注認證、授權、攻擊與政策。',
+      '錯誤管理關注故障偵測、隔離與修復。',
+      '效能管理關注流量、延遲、壅塞與資源使用，因此選 D。'
+    ],
+    optionExplanations: {
+      A: '組態管理負責設備設定與變更，不是流量與壅塞的主要分類。',
+      B: '安全管理處理存取控制、攻擊防護與安全政策。',
+      C: '錯誤管理處理故障、告警與修復。',
+      D: '效能管理處理流量、延遲、壅塞、吞吐量與資源利用率，符合題意。'
+    },
+    keyTakeaways: [
+      'FCAPS 中 Performance 對應效能、流量與壅塞。',
+      'Configuration 管設定，Fault 管故障，Security 管安全。',
+      '看到 throughput、latency、congestion，優先聯想到效能管理。',
+      '常見陷阱是把壅塞當成錯誤；壅塞通常是效能問題。'
+    ],
+    tags: ['network-management', 'fcaps']
+  },
+  46: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['UTP', 'EIA/TIA-568B', 'RJ-45', '線序'],
+    beginnerExplanation:
+      'EIA/TIA-568B 線序的前置觀念是 RJ-45 八個腳位要依標準排列雙絞線顏色。568B 從第 1 到第 8 腳依序是白橙、橙、白綠、藍、白藍、綠、白棕、棕。題目選項用「橙白」表示白橙、「綠白」表示白綠，因此要找橙白、橙、綠白、藍、藍白、綠、棕白、棕。',
+    solvingSteps: [
+      '先背或列出 568B 標準線序：白橙、橙、白綠、藍、白藍、綠、白棕、棕。',
+      '把題目用語對應：橙白等於白橙，藍白等於白藍。',
+      '逐一比對選項，只有 D 在第 1 到第 8 腳完全符合。',
+      'A、B、C 都把色對順序或藍綠橙位置放錯。',
+      '因此答案選 D。'
+    ],
+    optionExplanations: {
+      A: 'A 從藍白、藍開始，不是 568B 的前兩腳白橙、橙。',
+      B: 'B 從棕白、棕開始，明顯不是 568B 腳位順序。',
+      C: 'C 的前四腳橙白、橙、綠白、綠，把第 4 腳藍與第 6 腳綠位置弄錯。',
+      D: 'D 的橙白、橙、綠白、藍、藍白、綠、棕白、棕正是 568B 線序。'
+    },
+    keyTakeaways: [
+      'T568B 線序是白橙、橙、白綠、藍、白藍、綠、白棕、棕。',
+      '白色條紋常在題目中寫成橙白、綠白、藍白、棕白。',
+      'T568A 與 T568B 的橙綠對位置不同，容易混淆。',
+      '常見陷阱是把第 4、5 腳藍對與第 3、6 腳綠對位置寫錯。'
+    ],
+    tags: ['cabling', 't568b']
+  },
+  47: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['FTP', 'Port 20', 'Port 21', 'control connection', 'data connection'],
+    beginnerExplanation:
+      'FTP 的前置觀念是它傳統上分成控制連線與資料連線。控制連線用來傳送登入、切換目錄、列檔等命令，預設使用 TCP port 21；資料連線用來傳送檔案內容或目錄資料，傳統 active mode 中 server 端資料連線使用 TCP port 20。題目考的是預設 port 對應，所以要選 port 21 控制、port 20 資料。',
+    solvingSteps: [
+      '先分清 FTP 有 control connection 與 data connection。',
+      '控制連線預設 TCP port 21。',
+      '資料連線在傳統預設描述中使用 TCP port 20。',
+      '逐一比對選項，只有 D 把 21 對控制、20 對資料寫對。',
+      '因此答案選 D。'
+    ],
+    optionExplanations: {
+      A: '把 port 20 同時當資料與控制連線錯誤，控制連線應是 21。',
+      B: '把 port 21 同時當資料與控制連線錯誤，資料連線傳統描述為 20。',
+      C: '把 21 當資料、20 當控制正好顛倒。',
+      D: 'FTP 預設 port 21 作控制連線，port 20 作資料連線，符合題意。'
+    },
+    keyTakeaways: [
+      'FTP 控制連線預設 port 21。',
+      'FTP 傳統資料連線常考 port 20。',
+      '控制連線傳命令，資料連線傳檔案內容。',
+      '常見陷阱是把 20 和 21 的用途顛倒。'
+    ],
+    tags: ['ftp', 'ports']
+  },
+  48: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['ping', 'Windows ping -t', 'ICMP Echo', '連續測試'],
+    beginnerExplanation:
+      'ping 的前置觀念是透過 ICMP Echo Request/Reply 測試目標是否可達與回應時間。在 Windows ping 指令中，-t 參數代表持續 ping 指定主機，直到使用者中止；這常用於觀察連線是否間歇性中斷。解析主機名稱、timeout、路由區間識別都不是 -t 的意義。',
+    solvingSteps: [
+      '先看指令是 ping 192.168.1.1 -t。',
+      'Windows ping 的 -t 代表連續送出 Echo Request。',
+      '若沒有 -t，ping 通常送固定次數後停止。',
+      'B、C、D 分別是其他工具或其他參數概念，不符合 -t。',
+      '因此答案選 A。'
+    ],
+    optionExplanations: {
+      A: '-t 在 Windows ping 中表示持續 ping，直到手動停止。',
+      B: '將位址解析為主機名稱不是 -t 的功能，較接近其他參數或 DNS 查詢概念。',
+      C: '-t 不是設定 timeout 旗標；timeout 會用其他參數控制。',
+      D: '路由區間識別碼不是 ping -t 的用途。'
+    },
+    keyTakeaways: [
+      'Windows ping -t 代表持續 ping。',
+      'ping 使用 ICMP Echo 測可達性與延遲。',
+      '連續 ping 常用來觀察網路是否間歇不穩。',
+      '常見陷阱是把 -t 和 timeout 或 traceroute 類參數混淆。'
+    ],
+    tags: ['ping', 'icmp']
+  },
+  49: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['ICMP', '錯誤報告訊息', 'Redirect', 'Destination Unreachable', 'Time Exceeded'],
+    beginnerExplanation:
+      'ICMP 的前置觀念是它包含錯誤報告訊息與查詢/診斷訊息。錯誤報告常見有 Destination Unreachable 無法到達目的地、Redirect 轉址、Time Exceeded 時間超過、Parameter Problem 等。Echo Request/Reply 類訊息用於 ping 診斷，不屬於錯誤報告。題目問非屬 ICMP 錯誤報告訊息，因此要選暫停回應要求這類查詢/回應而非錯誤。',
+    solvingSteps: [
+      '先把 ICMP 訊息分成錯誤報告與查詢診斷。',
+      '轉址 Redirect 是錯誤或控制報告類訊息。',
+      '無法到達目的地 Destination Unreachable 是錯誤報告。',
+      '時間超過 Time Exceeded 也是錯誤報告。',
+      '暫停回應要求不是標準錯誤報告類型，較接近 echo request/response 干擾項，因此選 D。'
+    ],
+    optionExplanations: {
+      A: '轉址 Redirect 屬 ICMP 控制/錯誤報告相關訊息。',
+      B: '無法到達目的地 Destination Unreachable 是典型 ICMP 錯誤報告。',
+      C: '時間超過 Time Exceeded 是 TTL 歸零等情境的錯誤報告。',
+      D: '暫停回應要求不是常見 ICMP 錯誤報告訊息，因此是非屬選項。'
+    },
+    keyTakeaways: [
+      'ICMP 錯誤報告包含 Destination Unreachable、Redirect、Time Exceeded 等。',
+      'Ping 相關 Echo Request/Reply 偏查詢診斷，不是錯誤報告。',
+      '非屬題要先列出標準分類，再排除分類外名詞。',
+      '常見陷阱是把所有 ICMP 訊息都當成錯誤報告。'
+    ],
+    tags: ['icmp', 'network-layer']
+  },
+  50: {
+    answerVerification: 'verified',
+    answerNote: null,
+    coreTerms: ['VPN', 'IPsec', 'confidentiality', 'authentication', 'integrity'],
+    beginnerExplanation:
+      'VPN 的前置觀念是透過公用或不受信任網路建立邏輯上的安全通道，常提供保密、認證與完整性等安全特性。IPsec 是常見 VPN 技術之一，但它主要在網路層保護 IP 封包，不屬於 TCP 或 UDP 的傳輸層協定。題目問 VPN 不具有何種特點，A、B、D 都是 VPN 常見安全目標，C 把 IPsec 分層說錯。',
+    solvingSteps: [
+      '先列出 VPN 常見特性：保密、認證、完整性與安全通道。',
+      'A 保密是 VPN 的核心安全目標。',
+      'B 認證可驗證對端或使用者，也是常見特性。',
+      'D 保持封包完整性可防止傳輸中被竄改，也是 VPN 目標。',
+      'C 說 IPsec 屬 TCP/UDP 協定層級，分層錯誤；IPsec 是網路層安全協定，因此選 C。'
+    ],
+    optionExplanations: {
+      A: 'VPN 通常透過加密提供保密性，這是它的特點。',
+      B: 'VPN 常需要使用者、設備或對端認證，也是特點。',
+      C: 'IPsec 主要屬網路層安全協定，不是 TCP/UDP 傳輸層協定，因此是錯誤特點。',
+      D: 'VPN 可提供完整性保護，避免封包內容被未偵測地竄改。'
+    },
+    keyTakeaways: [
+      'VPN 常見安全目標包含保密、認證與完整性。',
+      'IPsec 主要保護 IP 層封包，不屬於 TCP/UDP 層級。',
+      'TCP/UDP 是傳輸層協定，IPsec 是網路層安全機制。',
+      '常見陷阱是看到 IPsec 也和網路傳輸有關，就把它歸到 TCP/UDP。'
+    ],
+    tags: ['vpn', 'ipsec']
+  }
+} satisfies QuestionTeachingReviewMap;

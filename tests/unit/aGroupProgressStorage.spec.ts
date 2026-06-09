@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { A_GROUP_YEARS } from '@/modules/examGroups/aGroup/data/yearSummaries';
 import {
   A_GROUP_PROGRESS_STORAGE_KEY,
   readAGroupProgressSnapshot,
@@ -64,6 +65,31 @@ describe('A group progress storage', () => {
 
     expect(removed.completedYears).toEqual([]);
     expect(readAGroupProgressSnapshot().completedYears).toEqual([]);
+  });
+
+  it('persists completed status for every complete A group year from 107 through 114', () => {
+    for (const year of A_GROUP_YEARS) {
+      setAGroupYearCompletion(year, true, {
+        now: () => `2026-06-09T11:${year.slice(1)}:00.000Z`
+      });
+    }
+
+    expect(readAGroupProgressSnapshot().completedYears).toEqual([...A_GROUP_YEARS]);
+  });
+
+  it('bookmarks historical complete years from 107 through 113', () => {
+    setAGroupYearBookmark('107', {
+      now: () => '2026-06-09T13:00:00.000Z'
+    });
+    const replaced = setAGroupYearBookmark('113', {
+      now: () => '2026-06-09T13:05:00.000Z'
+    });
+
+    expect(replaced.bookmark).toEqual({
+      year: '113',
+      updatedAt: '2026-06-09T13:05:00.000Z'
+    });
+    expect(readAGroupProgressSnapshot().bookmark?.year).toBe('113');
   });
 
   it('clears the bookmark when the bookmarked year is completed', () => {

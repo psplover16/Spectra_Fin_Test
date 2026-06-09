@@ -96,6 +96,62 @@ Questions with PDF extraction risks SHALL remain traceable until their original 
 | 112 | 33 | repeated or misplaced text requires manual confirmation |
 | 113 | 41, 42 | code question formatting requires manual preservation |
 
+### Requirement: Sampled Human QA Acceptance Covers Ten Questions Per Year
+The A group historical analysis acceptance SHALL include a fixed manual QA sample of exactly 10 questions per year from 107 through 113 before the change is archived.
+
+#### Scenario: Define fixed ten-question yearly sample
+- **WHEN** the change is prepared for archive
+- **THEN** the sampled QA set contains exactly 10 unique question numbers for each year from 107 through 113
+- **THEN** every sampled question number is between 1 and 50
+- **THEN** every yearly sample includes at least one early question from 1-15, at least one middle question from 16-35, and at least one late question from 36-50
+- **THEN** the yearly sample includes known special-answer or risky-extraction questions from the PDF inventory where those questions exist
+
+##### Example: Fixed sampled QA set
+| Year | Sampled questions | Coverage notes |
+| ----- | ----- | ----- |
+| 107 | 1, 7, 13, 20, 25, 31, 37, 43, 49, 50 | includes multi-answer questions 13 and 49 |
+| 108 | 3, 7, 9, 15, 22, 27, 31, 38, 44, 50 | includes formula, code, table, repeated-text, and normalized-answer risks |
+| 109 | 1, 10, 18, 25, 30, 38, 40, 44, 47, 50 | includes suspected-answer, binary-tree, routing-table, and same-line-option risks |
+| 110 | 1, 9, 15, 22, 29, 37, 40, 45, 48, 50 | includes overline, all-awarded, and arrow-glyph risks |
+| 111 | 1, 11, 16, 22, 28, 33, 37, 41, 46, 50 | includes code-format, same-line-option, and numbered-clause risks |
+| 112 | 1, 8, 10, 16, 21, 27, 32, 33, 44, 50 | includes multi-answer, all-awarded, and repeated-text risks |
+| 113 | 1, 8, 17, 24, 31, 39, 41, 42, 43, 50 | includes all-awarded, needs-review, suspected-error, code-format, and multi-answer risks |
+
+#### Scenario: Sampled question passes manual QA
+- **WHEN** a reviewer checks any sampled question from the fixed QA set
+- **THEN** the source baseline matches the PDF page, original stem, A-D options, and official answer marker
+- **THEN** the rendered question card shows the same stem, accepted answer state, answer note, and four options as the reviewed analysis record
+- **THEN** `beginnerExplanation`, `solvingSteps`, `optionExplanations`, and `keyTakeaways` meet the systematic novice teaching rubric
+- **THEN** any sampled mismatch blocks archive until the content is corrected or the question is explicitly marked with `needs-review` or `suspected-error` and a non-empty `answerNote`
+
+### Requirement: Residual Full QA Covers Non-Sampled Questions
+The A group historical analysis acceptance SHALL include every non-sampled question from 107 through 113 after the fixed ten-question yearly sample is complete.
+
+#### Scenario: Define residual full QA coverage
+- **WHEN** the change is prepared for archive after sampled QA
+- **THEN** the residual QA set contains exactly 40 unique non-sampled question numbers for each year from 107 through 113
+- **THEN** the residual QA set excludes every question listed in `Sampled Human QA Acceptance Covers Ten Questions Per Year`
+- **THEN** the union of sampled QA and residual QA contains exactly question numbers 1 through 50 for each year from 107 through 113
+
+##### Example: Residual QA set
+| Year | Residual questions |
+| ----- | ----- |
+| 107 | 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 30, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 44, 45, 46, 47, 48 |
+| 108 | 1, 2, 4, 5, 6, 8, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 28, 29, 30, 32, 33, 34, 35, 36, 37, 39, 40, 41, 42, 43, 45, 46, 47, 48, 49 |
+| 109 | 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 39, 41, 42, 43, 45, 46, 48, 49 |
+| 110 | 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 30, 31, 32, 33, 34, 35, 36, 38, 39, 41, 42, 43, 44, 46, 47, 49 |
+| 111 | 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 29, 30, 31, 32, 34, 35, 36, 38, 39, 40, 42, 43, 44, 45, 47, 48, 49 |
+| 112 | 2, 3, 4, 5, 6, 7, 9, 11, 12, 13, 14, 15, 17, 18, 19, 20, 22, 23, 24, 25, 26, 28, 29, 30, 31, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 45, 46, 47, 48, 49 |
+| 113 | 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 36, 37, 38, 40, 44, 45, 46, 47, 48, 49 |
+
+#### Scenario: Residual question passes full QA
+- **WHEN** a reviewer checks any residual QA question
+- **THEN** the source baseline matches the PDF page, original stem, A-D options, and official answer marker
+- **THEN** the rendered question card shows the same stem, accepted answer state, answer note, and four options as the reviewed analysis record
+- **THEN** verified questions with reviewed analysis do not display fallback pending answer-note text
+- **THEN** special-answer, needs-review, and suspected-error questions include a non-empty `answerNote`
+- **THEN** `beginnerExplanation`, `solvingSteps`, `optionExplanations`, and `keyTakeaways` meet the systematic novice teaching rubric
+
 ## MODIFIED Requirements
 
 ### Requirement: Question Analysis Uses Verified Data Shape

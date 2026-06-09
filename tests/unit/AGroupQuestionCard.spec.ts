@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 import AGroupQuestionCard from '@/modules/examGroups/aGroup/components/AGroupQuestionCard.vue';
+import { questions as questions107 } from '@/modules/examGroups/aGroup/data/years/107';
 import type { AnswerVerification, ExamQuestionAnalysis } from '@/modules/examGroups/aGroup/types/questionAnalysis';
 
 const question: ExamQuestionAnalysis = {
@@ -138,5 +139,24 @@ describe('AGroupQuestionCard', () => {
     expect(source.text()).toContain('114 年');
     expect(source.text()).toContain('114.pdf');
     expect(source.text()).toContain('第 1 頁');
+  });
+
+  it('renders a 107 historical question while keeping source content and teaching analysis separate', () => {
+    const historicalQuestion = questions107[0];
+    const wrapper = mount(AGroupQuestionCard, {
+      props: { question: historicalQuestion }
+    });
+    const originalSection = wrapper.find('[data-testid="original-exam-section"]');
+    const teachingSection = wrapper.find('[data-testid="teaching-analysis-section"]');
+    const source = wrapper.find('[data-testid="source-traceability"]');
+
+    expect(originalSection.text()).toContain(historicalQuestion.originalStem);
+    expect(originalSection.text()).toContain(`官方答案：${historicalQuestion.acceptedAnswers.join('、')}`);
+    expect(originalSection.text()).toContain(`A. ${historicalQuestion.options.A}`);
+    expect(originalSection.text()).toContain(`D. ${historicalQuestion.options.D}`);
+    expect(teachingSection.text()).toContain(historicalQuestion.beginnerExplanation.split('\n')[0]);
+    expect(teachingSection.text()).not.toContain(historicalQuestion.originalStem);
+    expect(source.text()).toContain('107 年');
+    expect(source.text()).toContain('107.pdf');
   });
 });

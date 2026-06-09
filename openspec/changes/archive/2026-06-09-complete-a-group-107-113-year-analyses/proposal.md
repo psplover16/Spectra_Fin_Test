@@ -8,6 +8,8 @@
 - 將 107-113 年 `/a-group/:year` 從 pending 頁改為完整解析頁，並讓年度列表顯示 107-114 皆為可學習內容。
 - 為每年新增 PDF 來源基準、官方答案檢查、逐題內容審查與測試。
 - 擴充內容審查，要求多答案、送分、needs-review、suspected-error 不得被硬標為 verified。
+- 新增 107-113 每年 10 題固定抽樣人工 QA，作為 archive 前驗收條件，樣本需涵蓋一般題、特殊答案與 PDF 抽取風險題。
+- 新增排除固定抽樣後的剩餘 280 題全量驗收，確保 107-113 每一題都曾對照 PDF、題卡資料與新手教學 rubric。
 - 更新 `PROJECT_ARCHITECTURE.md`、`TEST_MATRIX.md` 與相關 specs。
 
 ## Non-Goals
@@ -31,6 +33,7 @@
 ## Impact
 
 - Affected specs: a-group-question-analysis, exam-group-routing, a-group-year-progress
+- Affected Spectra artifacts: proposal.md, design.md, specs/a-group-question-analysis/spec.md, tasks.md
 - Affected code:
   - New: src/modules/examGroups/aGroup/data/years/107.ts through src/modules/examGroups/aGroup/data/years/113.ts, src/modules/examGroups/aGroup/data/years/107SourceBaseline.ts through src/modules/examGroups/aGroup/data/years/113SourceBaseline.ts, src/modules/examGroups/aGroup/data/years/107ReviewedAnalyses.ts through src/modules/examGroups/aGroup/data/years/113ReviewedAnalyses.ts, tests/unit/aGroup107QuestionContent.spec.ts through tests/unit/aGroup113QuestionContent.spec.ts, tests/unit/aGroup107SourceBaseline.spec.ts through tests/unit/aGroup113SourceBaseline.spec.ts, tests/unit/aGroup107ContentReview.spec.ts through tests/unit/aGroup113ContentReview.spec.ts
   - Modified: src/modules/examGroups/aGroup/composables/useAGroupYearQuestions.ts, src/modules/examGroups/aGroup/data/yearSummaries.ts, src/modules/examGroups/aGroup/data/years/114ContentReview.ts, src/modules/examGroups/aGroup/types/questionAnalysis.ts, src/modules/examGroups/aGroup/views/AGroupYearView.vue, tests/unit/aGroupYearQuestionLoader.spec.ts, tests/unit/aGroupYearSummaries.spec.ts, tests/unit/AGroupYearView.spec.ts, tests/e2e/group-routes.spec.ts, PROJECT_ARCHITECTURE.md, TEST_MATRIX.md

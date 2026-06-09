@@ -63,6 +63,8 @@ describe('114 A group content review checklist', () => {
       { label: '50 題題號唯一且連續', passed: true },
       { label: '每題皆有 A 至 D 原始選項與四份選項辨析', passed: true },
       { label: '每題皆有非空 tags、PDF sourceRef 與官方答案狀態', passed: true },
+      { label: '多答案與送分題皆保留人工複核註記', passed: true },
+      { label: '風險 PDF 抽取題保留人工確認狀態', passed: true },
       { label: '每題皆有專業教學解析、解題步驟與重點整理', passed: true },
       { label: systematicNoviceTeachingLabel, passed: true }
     ]);

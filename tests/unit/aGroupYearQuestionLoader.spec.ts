@@ -4,39 +4,46 @@ import { loadAGroupYearQuestions } from '@/modules/examGroups/aGroup/composables
 import { hasQuestionAnalysisShape } from '@/modules/examGroups/aGroup/types/questionAnalysis';
 
 describe('A group year question loader', () => {
-  it('returns pending state for unfinished valid years without loading the 114 module', async () => {
+  it('returns an empty complete state when an injected loader is missing', async () => {
     const load114 = vi.fn().mockResolvedValue({ questions: [] });
     const loader = createAGroupYearQuestionLoader({
       '114': load114
     });
 
     await expect(loader.load('113')).resolves.toEqual({
-      status: 'pending',
+      status: 'complete',
       year: '113',
       questions: []
     });
     expect(load114).not.toHaveBeenCalled();
   });
 
-  it('loads the requested 114 year module only when year 114 is requested', async () => {
+  it('loads only the requested injected year module', async () => {
+    const load113 = vi.fn().mockResolvedValue({ questions: [] });
     const load114 = vi.fn().mockResolvedValue({ questions: [] });
     const loader = createAGroupYearQuestionLoader({
+      '113': load113,
       '114': load114
     });
 
-    await expect(loader.load('114')).resolves.toEqual({
+    await expect(loader.load('113')).resolves.toEqual({
       status: 'complete',
-      year: '114',
+      year: '113',
       questions: []
     });
-    expect(load114).toHaveBeenCalledTimes(1);
+    expect(load113).toHaveBeenCalledTimes(1);
+    expect(load114).not.toHaveBeenCalled();
   });
 
-  it('loads exactly 50 year 114 question analysis records', async () => {
-    const state = await loadAGroupYearQuestions('114');
+  it.each(['107', '108', '109', '110', '111', '112', '113', '114'] as const)(
+    'loads exactly 50 year %s question analysis records',
+    async (year) => {
+      const state = await loadAGroupYearQuestions(year);
 
-    expect(state.status).toBe('complete');
-    expect(state.questions).toHaveLength(50);
-    expect(state.questions.every(hasQuestionAnalysisShape)).toBe(true);
-  });
+      expect(state.status).toBe('complete');
+      expect(state.year).toBe(year);
+      expect(state.questions).toHaveLength(50);
+      expect(state.questions.every(hasQuestionAnalysisShape)).toBe(true);
+    }
+  );
 });

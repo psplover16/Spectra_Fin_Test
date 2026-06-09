@@ -2,7 +2,7 @@
 
 ## 變更：rebuild-exam-pwa-group-year-analysis
 
-本專案目前是國營資訊職員考試講義 PWA。公開導覽已從舊科目路由改成組別導向：`/a-group`、`/b-group`、`/language`，其中 A 組第一批完成 114 年 50 題逐題解析；107 至 113 年保留年度入口並顯示 pending 狀態，等版型確認後再擴充完整解析。
+本專案目前是國營資訊職員考試講義 PWA。公開導覽已從舊科目路由改成組別導向：`/a-group`、`/b-group`、`/language`，其中 A 組支援 107 至 114 年完整年度入口；各年度維持 50 題資料、PDF 來源基準、逐題解析資料、內容審查與離線 PWA 路由。
 
 ## `src/app`
 
@@ -14,24 +14,25 @@
 
 ## `src/modules/examGroups/`
 
-- `src/modules/examGroups/aGroup/` 是 A 組 feature module，包含年度摘要、localStorage 進度、年度 loader、114 年資料、解析頁與題卡元件。
-- `src/modules/examGroups/aGroup/data/yearSummaries.ts` 定義 114 至 107 年清單與 route path，`/a-group` 依序顯示八個年度。
+- `src/modules/examGroups/aGroup/` 是 A 組 feature module，包含年度摘要、localStorage 進度、年度 loader、107 至 114 年資料、解析頁與題卡元件。
+- `src/modules/examGroups/aGroup/data/yearSummaries.ts` 定義 114 至 107 年清單與 route path，`/a-group` 依序顯示八個 complete 年度。
 - `src/modules/examGroups/aGroup/storage/aGroupProgressStorage.ts` 使用 versioned localStorage snapshot 保存 completed years 與單一 bookmark；壞 JSON、缺欄位或不支援版本會 fail safe。
-- `src/modules/examGroups/aGroup/composables/useAGroupYearQuestions.ts` lazy load 年度內容；114 年載入完整題庫，107 至 113 年回傳 pending 狀態。
-- `src/modules/examGroups/aGroup/data/years/114.ts` 組合來源基準與審查後解析，交付 114 年 50 題完整 `ExamQuestionAnalysis`。
-- `src/modules/examGroups/aGroup/data/years/114SourceBaseline.ts` 保留原題、A-D 選項、官方答案與 PDF sourceRef 對照。
-- `src/modules/examGroups/aGroup/data/years/114ReviewedAnalyses.ts` 放置逐題教學解析、核心術語、解題步驟、選項辨析、重點整理與 tags；114 年解析採用新手系統教學標準。
-- `src/modules/examGroups/aGroup/data/years/114ContentReview.ts` 定義 114 年內容審查 rubric，檢查來源基準、資料 shape、逐選項辨析、疑義題註記與新手系統教學標準。
+- `src/modules/examGroups/aGroup/composables/useAGroupYearQuestions.ts` 以年度動態 import lazy load 107 至 114 年內容，避免初始頁一次載入全部題庫。
+- `src/modules/examGroups/aGroup/data/years/{year}.ts` 組合 PDF 來源基準與 `{year}ReviewedAnalyses.ts`，交付每年 50 題 `ExamQuestionAnalysis`。
+- `src/modules/examGroups/aGroup/data/years/{year}SourceBaseline.ts` 保留原題、A-D 選項、官方答案與 PDF sourceRef 對照；107 至 113 年共用 `sourceBaselineReview.ts` 進行缺題、缺選項、錯頁碼檢查。
+- `src/modules/examGroups/aGroup/data/years/{year}ReviewedAnalyses.ts` 放置逐題教學解析、核心術語、解題步驟、選項辨析、重點整理與 tags；所有年度解析採用新手系統教學標準。
+- `src/modules/examGroups/aGroup/data/years/{year}ContentReview.ts` 將年度資料接到共用 `contentReview.ts` rubric，檢查來源基準、資料 shape、逐選項辨析、疑義題註記、風險 PDF 抽取狀態與新手系統教學標準。
+- `src/modules/examGroups/aGroup/data/years/riskyExtractionReview.ts` 登錄 107 至 113 PDF 盤點中需要人工確認的圖形、表格、程式碼、特殊符號與換行風險題；未確認前不得把 `sourceRef.extractionStatus` 靜默標成 `verified`。
 - `src/modules/examGroups/aGroup/components/AGroupQuestionCard.vue` 將原題內容、官方答案檢查、教學解析與來源追溯分區呈現。
 - `src/modules/examGroups/bGroup/` 與 `src/modules/examGroups/language/` 目前是可到達的輕量入口，完整逐題解析不在本 change 範圍內。
 
 ## A 組內容範圍
 
-- 114 年是第一批完整內容，頁面顯示 50 題解析、官方答案狀態與 PDF 來源追溯。
-- 114 年每題解析都必須把讀者視為第一次接觸該觀念的新手；`beginnerExplanation` 說明前置觀念、公式或規則來源、適用條件與容易混淆的邊界，`solvingSteps` 把規則逐步套回題目具體值或選項，`optionExplanations` 說明 A-D 干擾選項錯在哪個條件，`keyTakeaways` 留下可複用規則與常見陷阱。
-- 107 至 113 年是有效年度但尚未製作完整解析，年度列與路由會保留，年度頁顯示 pending，不會出現 50 題完整題卡。
+- 107 至 114 年皆為完整年度入口，頁面顯示 50 題解析、官方答案狀態與 PDF 來源追溯。
+- 每題解析都必須把讀者視為第一次接觸該觀念的新手；`beginnerExplanation` 說明前置觀念、公式或規則來源、適用條件與容易混淆的邊界，`solvingSteps` 把規則逐步套回題目具體值或選項，`optionExplanations` 說明 A-D 干擾選項錯在哪個條件，`keyTakeaways` 留下可複用規則與常見陷阱。
+- 多答案與送分題以多個 `acceptedAnswers` 保留官方疑義，並以 `answerVerification: needs-review` 或 `suspected-error` 搭配 `answerNote` 說明。
 - invalid year，例如 `/a-group/115`、`/a-group/999`、`/a-group/abc`，不 redirect，直接顯示 NotFound。
-- 目前沒有把 B 組、語言或 107 至 113 年完整題庫放入資料模組；這些內容需另開 change。
+- 目前沒有把 B 組或語言完整題庫放入資料模組；這些內容需另開 change。
 
 ## PWA Runtime
 
@@ -51,12 +52,12 @@
 
 ## 測試覆蓋摘要
 
-- Router 與 route smoke 覆蓋 group routes、legacy redirects、valid/pending years、invalid years。
-- Storage tests 覆蓋 A 組 bookmark、completed years、壞 snapshot fail safe。
-- Loader 與 data tests 覆蓋 114 年 50 題、資料 shape、來源基準與整批內容審查。
-- `tests/unit/aGroup114QuestionContent.spec.ts` 逐題驗證 114 年 50 題的新手系統教學內容；`tests/unit/aGroup114ContentReview.spec.ts` 與 `npm run check:a-group-114-content` 驗證 rubric 能抓出只給結論、跳過前置觀念、缺少規則來源或缺少常見陷阱的淺層解析。
+- Router 與 route smoke 覆蓋 group routes、legacy redirects、107 至 114 complete years、invalid years。
+- Storage tests 覆蓋 A 組 107 至 114 bookmark、completed years、壞 snapshot fail safe。
+- Loader 與 data tests 覆蓋 107 至 114 年 50 題、資料 shape、來源基準與整批內容審查。
+- `tests/unit/aGroup{year}QuestionContent.spec.ts` 逐題驗證 107 至 114 年的新手系統教學內容；`tests/unit/aGroup{year}ContentReview.spec.ts` 與 `npm run check:a-group-{year}-content` 驗證 rubric 能抓出只給結論、跳過前置觀念、缺少規則來源或缺少常見陷阱的淺層解析。
 - Component tests 覆蓋 AppShell 導覽、PWA 狀態列與題卡分區呈現。
-- Playwright smoke 覆蓋 375px 手機導覽、A 組年度控制、114 年離線 reload，以及 `/a-group` cached navigation fallback。
+- Playwright smoke 覆蓋 375px 手機導覽、A 組年度控制、114 年離線 reload、107/113 年離線 route smoke，以及 `/a-group` cached navigation fallback。
 
 ## 私有內容範圍
 

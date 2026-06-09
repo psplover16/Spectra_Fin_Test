@@ -40,7 +40,7 @@ function setYearCompleted(year: AGroupYear, event: Event): void {
       <p class="text-sm font-semibold text-teal">資訊人員職員級</p>
       <h2 class="mt-2 text-2xl font-bold leading-tight">A 組</h2>
       <p class="mt-3 text-sm leading-6 text-slate">
-        先以 114 年建立逐題解析版型，107 至 113 年保留年度入口並等待版型確認後製作。
+        依年度整理計算機原理與網路概論逐題解析，每年皆保留原題、官方答案檢查與教學解析。
       </p>
     </div>
     <ol class="space-y-2" aria-label="A 組年度清單">
