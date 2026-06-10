@@ -15,6 +15,12 @@ export interface ExamQuestionSourceRef {
   extractionStatus: ExtractionStatus;
 }
 
+export interface TeachingTable {
+  title: string;
+  headers: string[];
+  rows: string[][];
+}
+
 export interface ExamQuestionAnalysis {
   year: AGroupYear;
   number: number;
@@ -28,6 +34,7 @@ export interface ExamQuestionAnalysis {
   solvingSteps: string[];
   optionExplanations: FourOptionRecord;
   keyTakeaways: string[];
+  teachingTables?: TeachingTable[];
   tags: string[];
   sourceRef: ExamQuestionSourceRef;
 }
@@ -77,6 +84,33 @@ function hasSourceRefShape(value: unknown): value is ExamQuestionSourceRef {
   );
 }
 
+function hasTeachingTableShape(value: unknown): value is TeachingTable {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const headers = value.headers;
+  if (!isNonEmptyString(value.title) || !isStringArray(headers)) {
+    return false;
+  }
+
+  const rows = value.rows;
+  return (
+    Array.isArray(rows) &&
+    rows.length > 0 &&
+    rows.every(
+      (row) =>
+        Array.isArray(row) &&
+        row.length === headers.length &&
+        row.every(isNonEmptyString)
+    )
+  );
+}
+
+function hasOptionalTeachingTablesShape(value: unknown): value is TeachingTable[] | undefined {
+  return value === undefined || (Array.isArray(value) && value.every(hasTeachingTableShape));
+}
+
 export function hasQuestionAnalysisShape(value: unknown): value is ExamQuestionAnalysis {
   if (!isRecord(value)) {
     return false;
@@ -101,6 +135,7 @@ export function hasQuestionAnalysisShape(value: unknown): value is ExamQuestionA
     isStringArray(value.solvingSteps) &&
     hasFourOptionRecordShape(value.optionExplanations) &&
     isStringArray(value.keyTakeaways) &&
+    hasOptionalTeachingTablesShape(value.teachingTables) &&
     isStringArray(value.tags) &&
     hasSourceRefShape(value.sourceRef)
   );

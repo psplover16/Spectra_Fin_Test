@@ -649,6 +649,7 @@ function createQuestion(raw: RawQuestion): ExamQuestionAnalysis {
     ],
     optionExplanations: review?.optionExplanations ?? createOptionExplanations(raw),
     keyTakeaways: review?.keyTakeaways ?? [`本題核心考點是「${raw.topic}」。`],
+    ...(review?.teachingTables ? { teachingTables: review.teachingTables } : {}),
     tags: mergeTags(raw.tags, review?.tags),
     sourceRef: {
       year: '114',

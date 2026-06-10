@@ -22,6 +22,8 @@ const beginnerExplanationParagraphs = computed(() =>
     .map((paragraph) => paragraph.trim())
     .filter((paragraph) => paragraph.length > 0)
 );
+
+const teachingTables = computed(() => props.question.teachingTables ?? []);
 </script>
 
 <template>
@@ -80,6 +82,42 @@ const beginnerExplanationParagraphs = computed(() =>
           >
             {{ paragraph }}
           </p>
+        </div>
+      </div>
+      <div v-if="teachingTables.length" class="space-y-3" data-testid="teaching-tables">
+        <div
+          v-for="table in teachingTables"
+          :key="table.title"
+          class="overflow-x-auto rounded-md border border-slate/10"
+        >
+          <table class="min-w-full text-left text-xs leading-5 sm:text-sm">
+            <caption class="bg-sand px-3 py-2 text-left font-semibold text-ink">
+              {{ table.title }}
+            </caption>
+            <thead class="bg-white text-slate">
+              <tr>
+                <th
+                  v-for="header in table.headers"
+                  :key="header"
+                  scope="col"
+                  class="border-t border-slate/10 px-3 py-2 font-semibold"
+                >
+                  {{ header }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate/10 bg-white text-ink">
+              <tr v-for="(row, rowIndex) in table.rows" :key="`${table.title}-${rowIndex}`">
+                <td
+                  v-for="(cell, cellIndex) in row"
+                  :key="`${table.title}-${rowIndex}-${cellIndex}`"
+                  class="px-3 py-2 align-top"
+                >
+                  {{ cell }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
       <div>

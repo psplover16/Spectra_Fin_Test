@@ -70,6 +70,36 @@ describe('114 A group content review checklist', () => {
     ]);
   });
 
+  it('keeps Q001 through Q004 as canonical novice-teaching examples', () => {
+    const twoComplement = getQuestion(1);
+    const vonNeumann = getQuestion(2);
+    const pythonTypes = getQuestion(3);
+    const crc = getQuestion(4);
+
+    expect(twoComplement.beginnerExplanation).toContain('6 位元共有 2^6 = 64 種排列');
+    expect(twoComplement.beginnerExplanation).toContain('反相加 1 的原理');
+    expect(twoComplement.beginnerExplanation).toContain('signed overflow');
+    expect(twoComplement.solvingSteps.join('\n')).toContain('011111');
+
+    expect(vonNeumann.beginnerExplanation).toContain('儲存程式概念');
+    expect(vonNeumann.beginnerExplanation).toContain('輸入、輸出、記憶體、運算器、控制器');
+    expect(vonNeumann.optionExplanations.D).toContain('CPU 內部');
+
+    expect(pythonTypes.beginnerExplanation).toContain('Python 常見型別');
+    expect(pythonTypes.teachingTables?.map((table) => table.title)).toEqual([
+      'Python 常見主要型別對照',
+      'list、tuple 與 set 核心差異'
+    ]);
+    expect(pythonTypes.teachingTables?.flatMap((table) => table.rows.flat()).join('\n')).toContain('[1, 2, 3]');
+    expect(pythonTypes.teachingTables?.flatMap((table) => table.rows.flat()).join('\n')).toContain('(1, 2, 3)');
+    expect(pythonTypes.teachingTables?.flatMap((table) => table.rows.flat()).join('\n')).toContain('set()');
+
+    expect(crc.beginnerExplanation).toContain('CRC');
+    expect(crc.beginnerExplanation).toContain('1010');
+    expect(crc.solvingSteps.join('\n')).toContain('補 3 個 0');
+    expect(crc.solvingSteps.join('\n')).toContain('餘數 100');
+  });
+
   it('rejects shallow teaching content that only states the answer', () => {
     const shallowQuestion: ExamQuestionAnalysis = {
       ...getQuestion(1),

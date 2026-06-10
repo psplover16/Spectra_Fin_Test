@@ -10,6 +10,7 @@ import { questions as questions110 } from '@/modules/examGroups/aGroup/data/year
 import { questions as questions111 } from '@/modules/examGroups/aGroup/data/years/111';
 import { questions as questions112 } from '@/modules/examGroups/aGroup/data/years/112';
 import { questions as questions113 } from '@/modules/examGroups/aGroup/data/years/113';
+import { questions as questions114 } from '@/modules/examGroups/aGroup/data/years/114';
 
 const completeQuestion = {
   year: '114',
@@ -50,7 +51,8 @@ const historicalYearQuestions = [
   ['110', questions110],
   ['111', questions111],
   ['112', questions112],
-  ['113', questions113]
+  ['113', questions113],
+  ['114', questions114]
 ] as const;
 
 describe('question analysis shape', () => {
@@ -66,6 +68,36 @@ describe('question analysis shape', () => {
         answerNote: 'Official material accepts B or C'
       })
     ).toBe(true);
+  });
+
+  it('accepts optional teaching tables when each row matches the headers', () => {
+    expect(
+      hasQuestionAnalysisShape({
+        ...completeQuestion,
+        teachingTables: [
+          {
+            title: 'Python 主要型別對照',
+            headers: ['類別', '代表型別', '主要特徵'],
+            rows: [['序列型別', 'list、tuple', '有順序且可用索引讀取']]
+          }
+        ]
+      })
+    ).toBe(true);
+  });
+
+  it('rejects malformed teaching tables with missing cells', () => {
+    expect(
+      hasQuestionAnalysisShape({
+        ...completeQuestion,
+        teachingTables: [
+          {
+            title: 'Python 主要型別對照',
+            headers: ['類別', '代表型別', '主要特徵'],
+            rows: [['序列型別', 'list、tuple']]
+          }
+        ]
+      })
+    ).toBe(false);
   });
 
   it('rejects records without exactly A to D options and explanations', () => {

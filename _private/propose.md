@@ -1,565 +1,559 @@
-# 提案草稿：完成 B 組、語言逐題解析與新增學習路由
+# refine-a-group-114-novice-teaching-analysis
+
+## Discussion Source
+
+來源：`_private/discuss.txt`
 
 ## Conclusion
 
-**Decision**: 下一個 Spectra change 應聚焦在三件事：完成 B 組年度清單與年度逐題解析、完成語言年度清單與年度逐題解析、並新增一個目前無內容的「學習」主路由。B 組與語言都沿用 A 組已建立的年度清單、書籤、完成狀態、年度導頁與逐題解析頁模式，但資料來源、題型與解析模板要各自獨立。
+**Decision**: 以 A 組 114 年為範圍，重新整理全部 50 題的教學解析，使內容符合「非資工類新手也能讀懂」的標準。
 
-**Rationale**: 目前程式已有 `/a-group`、`/b-group`、`/language` 主路由；A 組已具備年度清單、localStorage 進度、lazy-loaded 年度資料與逐題解析 UI。B 組與語言目前仍是 placeholder，正好可以用 A 組作為穩定範本擴充，而不是再做一套新的互動模式。B 組與語言的來源 PDF 量大、題型偏申論與語文解析，必須把「PDF 轉 Markdown 記憶檔」、「廣告/水印排除」、「逐題多副代理解析」、「主任務整併與校稿」寫成正式流程，避免內容品質失控。
+**Rationale**: 目前題解多半已能通過既有內容審查，但仍偏向已知道專有名詞的讀者。使用者明確要求每題先補足名詞解釋、核心想法、要解決的問題與實作方式，再回到本題選項判斷。
 
-**Capture to**: 後續應用 `$spectra-propose` 建立正式 change，建議 change 名稱為 `complete-b-group-language-learning-routes`。正式 artifacts 至少包含 `proposal.md`、`design.md`、`tasks.md`，並新增或更新 specs 來定義 B 組、語言、學習路由、PDF 轉換、廣告排除與逐題解析品質要求。
+**Capture to**: 建議建立 Spectra change：`refine-a-group-114-novice-teaching-analysis`
 
-## 已讀取脈絡
+## Current Code Context
 
-### 使用者指定需求來源
+已確認相關程式位置：
 
-已讀取 `@/_private/discuss.txt`，主要需求如下：
+- `src/modules/examGroups/aGroup/data/years/114ReviewedAnalyses.ts`
+  - 114 年逐題 reviewed 教學解析主要放在這裡。
+- `src/modules/examGroups/aGroup/data/years/114.ts`
+  - 將 raw question 與 reviewed analysis 合併成題卡資料。
+- `src/modules/examGroups/aGroup/types/questionAnalysis.ts`
+  - 目前資料 shape 已包含 `coreTerms`、`beginnerExplanation`、`solvingSteps`、`optionExplanations`、`keyTakeaways`，也支援可選的 `teachingTables`。
+- `src/modules/examGroups/aGroup/components/AGroupQuestionCard.vue`
+  - 題卡已可呈現教學解析段落與可選表格。
+- `src/modules/examGroups/aGroup/data/years/contentReview.ts`
+  - 目前已有「新手系統教學解析標準」檢查，但仍需要針對 114 年新標準補強。
+- `tests/unit/aGroup114ContentReview.spec.ts`
+  - 114 年內容審查測試入口。
 
-1. 開始實作 B 組與語言。
-2. B 組來源為 `@/_private/資訊管理、程式設計/` 內過去 8 年 PDF。
-3. B 組每題都是申論題。
-4. B 組 PDF 非官方，可能含補習班廣告水印、廣告圖片、廣告網址；這些內容必須排除、無視，不能寫入本專案。
-5. `/b-group` 要與 `/a-group` 樣式、功能一致：年度清單、書籤功能、點選年度進入年度考題內容。
-6. B 組每題需包含「問題、問題講解、擬答、擬答詳細說明」四步。
-7. 有些 B 組回答可能需要作圖，有些使用純文字。
-8. 主任務應從 114 年開始，先讓副代理讀 PDF、排除廣告與水印，轉成同名 Markdown 記憶檔，放入 `@/_private/資訊管理、程式設計/`。
-9. 逐題處理採批次生產線，不一次開完全部題目；每批建議 2 至 3 題。
-10. 每題固定最小流程為主解析副代理與審稿副代理；需要作圖才另開圖解副代理，高風險題才加開第二解析副代理交叉驗證。
-11. 校稿後每題 Markdown 放入 `@/_private/資訊管理、程式設計/<年份>/`，檔案名稱為第幾題。
-12. 每批完成校稿、寫入資料模型、測試或人工抽查後，才進入下一批。
-13. 語言路由與 B 組高度雷同，來源改為 `@/_private/國文、英文/`。
-14. 語言的英文題目應賦予副代理「英文老師」身分，受眾設定為國二程度英文學生。
-15. 任務數量不設上限，重點是解析正確、精準、不能有錯、具備學習用途；可接受並行執行任務。
-16. 新增一個路由名稱叫「學習」，目前沒有內容。
+## Assumptions
 
-### 本專案現況
+1. **解析內容應主要修改 `114ReviewedAnalyses.ts`**
+   Evidence: 114 年的題目、答案與 reviewed teaching fields 已在該檔分離。
+   If wrong: 若未來改成資料庫或外部 JSON，任務應改成資料匯入流程，而不是直接改 TS data。
 
-已讀取相關程式：
+2. **不需要新增路由或儲存抽象**
+   Evidence: `/a-group/114` 已存在，題卡也已能顯示教學欄位與表格。
+   If wrong: 若新格式需要互動式分頁或折疊章節，才需要額外設計 UI/狀態。
 
-1. `src/app/router.ts`
-2. `src/app/routePreload.ts`
-3. `src/app/AppShell.vue`
-4. `src/modules/examGroups/aGroup/views/AGroupView.vue`
-5. `src/modules/examGroups/aGroup/views/AGroupYearView.vue`
-6. `src/modules/examGroups/aGroup/storage/aGroupProgressStorage.ts`
-7. `src/modules/examGroups/aGroup/types/questionAnalysis.ts`
-8. `src/modules/examGroups/aGroup/data/yearSummaries.ts`
-9. `src/modules/examGroups/aGroup/composables/useAGroupYearQuestions.ts`
-10. `src/modules/examGroups/bGroup/views/BGroupView.vue`
-11. `src/modules/examGroups/language/views/LanguageGroupView.vue`
+3. **`teachingTables` 應作為輔助呈現，而不是每題必填**
+   Evidence: 第 3 題 Python 型別比較適合表格，但 CRC、二補數、馮紐曼架構不一定每題都需要表格。
+   If wrong: 若要求每題都必須至少一張表，shape 與 content review 需改為強制檢查。
 
-現況判斷：
+4. **內容審查應從「有足夠文字」升級成「有固定教學結構」**
+   Evidence: `contentReview.ts` 現在用 marker 檢查概念、規則、步驟與陷阱，但無法保證每題都有「名詞解釋、核心想法、如何使用」。
+   If wrong: 若只靠人工審查，不需強化測試，但長期容易讓 50 題品質不一致。
 
-1. 目前 router 已有 `/a-group`、`/a-group/:year`、`/b-group`、`/language`。
-2. 根路由目前 redirect 到 `/a-group`。
-3. 舊路由 `/information-management` 與 `/programming` 已 redirect 到 `/b-group`。
-4. A 組年度資料已支援 107 至 114，且都是 complete 狀態。
-5. A 組已有年度清單 UI、書籤、完成 checkbox、localStorage snapshot、年度導頁與年度資料 lazy import。
-6. B 組目前只有 placeholder 入口文案，尚無年度清單、年度路由與逐題解析。
-7. 語言目前只有 placeholder 入口文案，尚無年度清單、年度路由與逐題解析。
-8. 主要導覽目前只有 A 組、B 組、語言，尚無「學習」。
-9. route preloader 目前只認得 `aGroup`、`aGroupYear`、`bGroup`、`language`，尚無 B 組年度、語言年度與學習路由。
+## Proposed Scope
 
-### 來源檔案現況
+### In Scope
 
-已檢視來源資料夾檔名清單，未讀取 PDF 內容：
+- A 組 114 年 50 題逐題教學解析重寫或補強。
+- 每題依非資工新手標準補齊：
+  - 名詞解釋
+  - 核心想法
+  - 要解決的問題
+  - 如何使用或如何實作
+  - 本題如何套用
+  - 四個選項為什麼對或錯
+  - 可複用規則與常見陷阱
+- 第 1、2、3、4 題作為明確樣板。
+- 強化 114 年內容審查測試，確保解析不是只給答案。
+- 必要時補充 `teachingTables`，尤其是分類、比較、層級、流程、公式對照題。
 
-`@/_private/資訊管理、程式設計/`：
+### Out of Scope
 
-1. `107.pdf`
-2. `108.pdf`
-3. `109.pdf`
-4. `110.pdf`
-5. `111.pdf`
-6. `112.pdf`
-7. `113.pdf`
-8. `114.pdf`
+- 不重做 107-113 年解析。
+- 不新增 A 組路由或 PWA 離線架構。
+- 不改官方答案，除非重寫過程發現答案疑義。
+- 不把題卡改成互動式教科書或章節課程。
 
-`@/_private/國文、英文/`：
+## Teaching Standard
 
-1. `107.pdf`
-2. `108.pdf`
-3. `109.pdf`
-4. `110.pdf`
-5. `111.pdf`
-6. `112.pdf`
+每題的 `beginnerExplanation` 應採用以下順序整理：
 
-討論結論：
+1. **這題在問什麼**
+   - 用白話說明題目想測的觀念。
+   - 不假設讀者看得懂專有名詞。
 
-1. B 組明確是 107 至 114 共 8 年。
-2. B 組 114 年目前確認總共 6 題，但每年題目數量不固定；PDF 轉 Markdown 時不能假設固定題數，必須先建立題目索引並逐題核對。
-3. 語言來源只做 107 至 112，其他年度暫時不補。
-4. B 組與語言的完成狀態粒度第一階段與 A 組一致，採年度層級完成狀態即可。
-5. 作圖題第一階段只需要文字圖解與 alt text，不建立正式圖像資產；但這部分必須另開圖解副代理處理，不能由主任務或一般解析副代理順手帶過。
-6. 逐題解析採批次節奏：年度 PDF → 題目索引 → 第 1 批 2 至 3 題解析 → 校稿與寫入資料模型 → 跑測試或人工抽查 → 下一批。
-7. `@/_private/.../*.md` 記憶檔是否納入 git 由使用者看完後自行決定，不列為本 change 需要解決的問題。
-8. 「學習」路由只先開 placeholder，未來可能放使用者筆記，但詳細功能尚未決定。
+2. **名詞解釋**
+   - 解釋題目中的核心名詞。
+   - 需要時補英文或常見縮寫。
 
-## 建議產品方向
+3. **要解決的問題**
+   - 說明這個概念通常是為了解決什麼問題。
 
-### 主路由
+4. **核心想法**
+   - 用簡單模型、比喻、公式或規則說明。
 
-| 顯示名稱 | 路由 | 狀態 | 說明 |
+5. **如何使用或如何實作**
+   - 對計算題要列出操作流程。
+   - 對概念題要列出判斷規則。
+   - 對比較題要列出比較面向。
+
+6. **套回本題**
+   - 明確把規則套到題幹或選項。
+
+7. **常見混淆**
+   - 指出干擾選項錯在哪個觀念。
+
+## Canonical Examples
+
+### Question 1: 6 位元 2 的補數加法
+
+此題應補足：
+
+- 6 位元是什麼：只能保留 6 個 bit，結果超出時會丟掉高位。
+- 2 的補數系統是什麼：固定 bit 數下表示正負整數的方法。
+- 補數是什麼：用固定範圍內的互補關係表示負數。
+- 6 位元二補數範圍：`-2^(6-1)` 到 `2^(6-1)-1`，即 `-32` 到 `31`。
+- 為什麼最高位可視為 `-32` 權重。
+- 負數 bit pattern 如何轉十進位：
+  - 無號值減 `2^n`
+  - 反相加 1 找大小
+- 補數系統的基本運算概念：
+  - 加法：直接做二進位加法，只保留固定位數。
+  - 減法：轉成加上對方的二補數。
+  - 乘法：可視為加法延伸，但要注意位數擴張與溢位。
+  - 除法：概念上可做有號除法，但考試多先確認正負與商/餘數規則。
+- 本題要特別指出：
+  - 機器留下 `011111`，所以題目答案是 31。
+  - 真實數學值是 `-25 + -8 = -33`，超出範圍，因此有 signed overflow。
+
+### Question 2: 馮紐曼架構
+
+此題不宜過度深入，應讓讀者快速掌握：
+
+- 馮紐曼架構是什麼：現代通用電腦的基本設計模型。
+- 主要用途：讓程式與資料都能放在記憶體中，由 CPU 依序取指令、解碼、執行。
+- 大致概念：
+  - 輸入單元
+  - 輸出單元
+  - 記憶體
+  - 控制器
+  - 運算器
+- 各概念功能：
+  - 輸入：把外部資料送進電腦。
+  - 輸出：把結果送出。
+  - 記憶體：保存資料與指令。
+  - 控制器：負責指揮流程。
+  - 運算器：負責算術與邏輯運算。
+- 選項解析應提醒：
+  - 不要把具體硬體設備清單當成架構功能分類。
+  - 不要把軟體項目當成馮紐曼硬體架構。
+
+### Question 3: Python list、tuple 與 set
+
+此題應保留並擴充表格呈現。
+
+第一張表：Python 常見主要型別
+
+| 中文類別 | 英文/型別 | 怎麼表示 | 主要特徵 |
 | --- | --- | --- | --- |
-| A 組 | `/a-group` | 已存在 | 保留現有年度清單與逐題解析 |
-| B 組 | `/b-group` | 待擴充 | 改成年度清單，點年度進入 B 組年度申論解析 |
-| 語言 | `/language` | 待擴充 | 改成年度清單，點年度進入國文/英文年度解析 |
-| 學習 | `/learning` | 新增 placeholder | 目前只有空白路由或無內容狀態 |
+| 數值型別 | `int`, `float`, `complex` | `1`, `3.14`, `1+2j` | 表示數字，可做數學運算 |
+| 布林型別 | `bool` | `True`, `False` | 表示真假 |
+| 文字型別 | `str` | `'hello'`, `"abc"` | 有順序，可索引，但不可直接改字元 |
+| 串列 | `list` | `[1, 2, 3]` | 有順序，可重複，可修改 |
+| 元組 | `tuple` | `(1, 2, 3)` | 有順序，可重複，不可修改 |
+| 集合 | `set` | `{1, 2, 3}`, `set()` | 不靠位置索引，元素不重複 |
+| 字典 | `dict` | `{'name': 'Amy'}` | 用 key 找 value |
+| 空值 | `NoneType` | `None` | 表示沒有值 |
 
-主導覽應新增「學習」，並確認 375px mobile 下四個主導覽項目不水平溢出。若四欄太擠，建議改成可換行 grid 或 compact tab，而不是縮小到不可讀。
+第二張表：list、tuple 與 set 核心差異
 
-### 年度路由
+| 比較面向 | list | tuple | set |
+| --- | --- | --- | --- |
+| 字面值寫法 | `[1, 2, 3]` | `(1, 2, 3)` | `{1, 2, 3}`，空集合是 `set()` |
+| 是否有順序 | 有 | 有 | 不靠固定位置順序使用 |
+| 是否支援索引 | 支援，如 `items[0]` | 支援，如 `pair[0]` | 不支援 |
+| 是否允許重複 | 允許 | 允許 | 不允許 |
+| 是否可修改 | 可變 | 不可變 | `set` 可變，`frozenset` 不可變 |
+| 本題重點 | list 可變 | tuple 不可變 | 用來對照「無序、不可索引」的集合概念 |
 
-建議新增：
+### Question 4: CRC 與生成多項式
 
-| 功能 | 路由 | 說明 |
+此題應明確補足：
+
+- 生成多項式是什麼：
+  - 用來產生 CRC 檢查碼的規則。
+  - 題目給 `G(x)=X^3+X^1`，需轉成位元表示。
+- CRC 是什麼：
+  - 一種錯誤偵測方法，用來檢查資料傳輸或儲存後是否可能出錯。
+- 要解決什麼問題：
+  - 資料在傳送或保存時可能 bit 翻轉，CRC 用額外檢查碼協助發現錯誤。
+- 核心概念：
+  - 把資料看成二進位多項式。
+  - 用生成多項式做模 2 除法。
+  - 模 2 運算用 XOR，不是一般十進位減法。
+- 如何實作：
+  - 將 `G(x)=X^3+X^1` 轉成 `1010`。
+  - 最高次數是 3，所以原始資料後面補 3 個 0。
+  - 用 XOR 長除法求餘數。
+  - 把原始資料與餘數串接。
+- 此部分要比目前解析更詳細，尤其是 XOR 除法過程。
+- 若題目多項式慣例有疑義，`answerNote` 應保留說明，不可硬消除。
+
+## Data And UI Design
+
+### Data Shape
+
+維持目前 `ExamQuestionAnalysis`：
+
+- `coreTerms`
+- `beginnerExplanation`
+- `solvingSteps`
+- `optionExplanations`
+- `keyTakeaways`
+- `teachingTables?`
+
+不新增強制欄位，以免影響 107-113 年資料；但 114 年內容審查可針對特定題號要求表格。
+
+### Table Usage Rule
+
+使用 `teachingTables` 的情境：
+
+- 型別比較
+- OSI / TCP-IP 層級
+- 記憶體階層
+- 排程演算法比較
+- 資料結構差異
+- 公式欄位對照
+- 正反概念比較
+
+不需要表格的情境：
+
+- 單一流程可用步驟清楚說完。
+- 概念很短，表格只會增加閱讀負擔。
+
+## Execution Direction
+
+這個 change 的實作不能只做文字潤飾；每題都要用固定流程重建教學解析。實作時大致採以下方法。
+
+### Per-Question Rewrite Workflow
+
+每一題都依序產出以下內容，再寫回 `114ReviewedAnalyses.ts`：
+
+1. **題型分類**
+   - 先判斷此題是計算題、概念題、比較題、流程題、架構題、協定題、資料結構題、資安題，或名詞辨識題。
+   - 題型會決定解析方式：計算題重視公式與代入，比較題重視表格，流程題重視步驟目的。
+
+2. **新手名詞表**
+   - 從題幹與選項抽出非資工新手可能不懂的詞。
+   - 每個核心詞都要用白話解釋，不可直接把英文縮寫當作已知前提。
+   - 例：CRC、生成多項式、二補數、馮紐曼架構、tuple、set、ACID、preorder、CIDR。
+
+3. **問題目的**
+   - 說明該概念通常要解決什麼問題。
+   - 例：CRC 是為了偵測資料傳輸錯誤；二補數是為了讓固定 bit 數能表示正負整數並直接做加法。
+
+4. **核心規則或模型**
+   - 計算題：列公式、位元權重、單位換算、範圍、演算法規則。
+   - 概念題：列定義、組成、用途、判斷條件。
+   - 比較題：列比較面向並決定是否新增 `teachingTables`。
+
+5. **如何使用或如何實作**
+   - 把規則變成可操作的流程。
+   - 不只說「套公式」，而要寫出「先看哪個值、再做哪個換算、最後如何判斷」。
+   - 若涉及演算法、CRC、Hamming Code、樹走訪、排程、網路協定流程，必須逐步說明每一步在做什麼。
+
+6. **套回本題**
+   - `solvingSteps` 必須逐步引用本題的題幹資料或選項。
+   - 每一步都要讓讀者知道為什麼下一步成立。
+
+7. **A-D 選項辨析**
+   - 每個選項都要說明「對在哪裡」或「錯在哪個觀念」。
+   - 不可只寫「不是答案」。
+
+8. **重點整理**
+   - `keyTakeaways` 必須能讓讀者下次遇到同類題可複用。
+   - 至少包含一條規則、一條判斷方法、一條常見陷阱。
+
+9. **表格判斷**
+   - 若題目是分類、比較、流程、層級或公式對照，判斷是否需要 `teachingTables`。
+   - 表格必須包含具體例子；例如 Python 型別需寫出 `[1, 2, 3]`、`(1, 2, 3)`、`{1, 2, 3}`、`set()`。
+   - 若表格只會重複段落內容，則不要加入。
+
+10. **Rubric Review**
+   - 檢查是否有名詞解釋、核心想法、問題目的、使用流程、本題套用、選項辨析、常見陷阱。
+   - 若是比較題，確認是否該使用 `teachingTables`。
+   - 若官方答案或題幹有疑義，保留 `answerNote`，不可硬標成無疑義。
+
+### Question Type Playbooks
+
+| 題型 | 改寫方向 | 常見需要補的內容 |
 | --- | --- | --- |
-| B 組年度解析 | `/b-group/:year` | 年度範圍 107 至 114 |
-| 語言年度解析 | `/language/:year` | 年度範圍 107 至 112，其他年度暫時不補 |
+| 計算題 | 先教符號、公式、範圍或單位，再逐步代入 | 位元寬度、公式來源、每一步換算、溢位或邊界 |
+| 比較題 | 優先用表格整理比較面向 | 怎麼表示、是否有序、是否可變、用途、常見混淆 |
+| 架構題 | 先說架構用途，再拆組成與功能 | 架構解決什麼問題、各組成負責什麼 |
+| 流程題 | 用「目的 -> 流程 -> 每步原因」講解 | 每一步輸入/輸出、為什麼順序不能亂 |
+| 協定題 | 先說協定在哪一層、解決什麼通訊問題 | 封包/連線/錯誤控制/安全性目的 |
+| 資料結構題 | 先說資料如何存、適合什麼操作 | 索引、插入刪除、走訪順序、複雜度 |
+| 資安題 | 先說威脅或保護目標，再說控制方法 | 機密性、完整性、認證、授權、攻擊情境 |
+| 名詞辨識題 | 先建立分類地圖，再排除相似名詞 | 類別界線、相似詞差異、典型例子 |
 
-B 組與語言的 invalid year 應比照 A 組進入 NotFound，例如 `/b-group/999`、`/language/abc`。
+### Field-Level Output Contract
 
-B 組題目數量不得寫死。114 年目前確認 6 題，但其他年度題數不固定；年度 summary 的題數應由 PDF 轉 Markdown 後的題目索引或資料檔實際內容推導。
+每題最後必須回到現有資料欄位：
 
-## B 組設計決策
+| 欄位 | 寫作要求 |
+| --- | --- |
+| `coreTerms` | 放本題真正需要先懂的名詞，不只是題目標題 |
+| `beginnerExplanation` | 以非資工新手為讀者，先講名詞與目的，再講核心規則 |
+| `solvingSteps` | 一步一步把規則套回題幹或選項 |
+| `optionExplanations` | A-D 每個選項都要指出判斷依據或錯誤觀念 |
+| `keyTakeaways` | 可複用規則、判斷方法、常見陷阱 |
+| `teachingTables` | 只在分類、比較、流程或公式對照能明顯提升清楚度時使用 |
+| `answerNote` | 若題目、官方答案或 PDF 抽取有疑義，保留說明 |
 
-### UI 與互動
+### Concrete Example Of Execution
 
-B 組年度清單應與 A 組一致：
+以 114-Q004 CRC 為例，實作不是把原文改長，而是依序補出：
 
-1. 使用同樣的 surface card 視覺。
-2. 每個年度列有中央可點擊導頁區。
-3. 左側或固定區域提供書籤操作。
-4. 右側提供完成 checkbox。
-5. 點書籤與 checkbox 時不可觸發導頁。
-6. 書籤與完成狀態 reload 後保留。
-7. 完成某年度時，若該年度是目前書籤，應清除或依明確規則處理；建議沿用 A 組「完成後清除同年度書籤」。
+1. CRC 是錯誤偵測。
+2. CRC 解決資料傳送或保存時 bit 可能出錯的問題。
+3. 生成多項式是產生檢查碼的規則。
+4. `G(x)=X^3+X^1` 如何轉成 `1010`。
+5. 為什麼最高次數 3 代表原資料後面要補 3 個 0。
+6. XOR 長除法每一步如何對齊、如何 XOR、如何得到餘數。
+7. 餘數如何接回原資料得到答案。
+8. A-D 哪些是餘數錯、補 0 錯、生成多項式轉換錯，哪個正確。
 
-### B 組資料模型
+## Parallel Subagent Plan
 
-B 組是申論題，不應沿用 A 組四選一選項型別。建議建立獨立型別：
+由於 114 年共有 50 題，而且每題解析會變長，實作階段應使用大量複代理平行處理草稿與審查。複代理的用途不是各自任意改檔，而是平行產出結構化草稿、審查報告與修正建議，最後由主代理統一合併到 `114ReviewedAnalyses.ts`，避免格式與資料 shape 不一致。
 
-```ts
-export interface BGroupEssayQuestionAnalysis {
-  year: BGroupYear;
-  number: number;
-  originalQuestion: string;
-  questionExplanation: string;
-  modelAnswer: string;
-  modelAnswerDetails: string;
-  diagramInstructions: string[];
-  diagramAltText: string | null;
-  keyTerms: string[];
-  scoringPoints: string[];
-  commonMistakes: string[];
-  sourceRef: {
-    fileName: string;
-    pageNumber?: number;
-    originalExcerpt: string;
-    extractionStatus: 'verified' | 'needs-review';
-    adContentRemoved: boolean;
-  };
-  reviewStatus: 'draft' | 'reviewed' | 'needs-review';
-}
-```
+### Subagent Roles
 
-資料分檔建議：
+| 角色 | 負責內容 | 輸出 |
+| --- | --- | --- |
+| Rubric Lead | 建立 114 年新手教學 rubric 與固定輸出格式 | rubric、欄位檢查規則、範例題標準 |
+| Source Scout | 讀取 114 年題目、目前解析、官方答案、sourceRef、answerNote | 每題 source packet |
+| Draft Agents | 按題號區間平行重寫解析 | 每題的 `coreTerms`、`beginnerExplanation`、`solvingSteps`、`optionExplanations`、`keyTakeaways`、必要 `teachingTables` |
+| Table Specialist | 專門處理比較題與分類題表格 | `teachingTables` 草稿與表格欄位一致性檢查 |
+| Technical Reviewer | 檢查技術正確性、公式、計算過程與官方答案疑義 | finding list、需保留的 `answerNote` |
+| Novice Reviewer | 檢查非資工新手是否能讀懂 | 缺少名詞、目的、流程、陷阱的清單 |
+| Merge Lead | 統一整合文字風格、資料 shape、測試與格式 | 最終 patch 與驗證結果 |
 
-1. `src/modules/examGroups/bGroup/data/yearSummaries.ts`
-2. `src/modules/examGroups/bGroup/data/years/114.ts`
-3. `src/modules/examGroups/bGroup/data/years/113.ts`
-4. 依此到 `107.ts`
-5. `src/modules/examGroups/bGroup/composables/useBGroupYearQuestions.ts`
-6. `src/modules/examGroups/bGroup/storage/bGroupProgressStorage.ts`
-7. `src/modules/examGroups/bGroup/types/essayQuestionAnalysis.ts`
+### Suggested Parallel Split
 
-B 組年度資料必須 lazy import，不可在 `/b-group` 清單頁一次載入所有年度申論解析。`/b-group` 只載入年度 summary；`/b-group/:year` 才載入該年度資料。
+第一輪先由主代理或 Rubric Lead 完成 Q001-Q004，作為所有代理遵守的範本。
 
-### B 組內容模板
+第二輪平行處理 Q005-Q050：
 
-每題至少包含：
+| Agent | 題號範圍 | 備註 |
+| --- | --- | --- |
+| Draft Agent A | Q005-Q010 | 編碼、資料庫、作業系統早段題 |
+| Draft Agent B | Q011-Q016 | 程式語言、資料結構、演算法 |
+| Draft Agent C | Q017-Q022 | 系統、資料庫、管理資訊題 |
+| Draft Agent D | Q023-Q028 | 網路概論前段 |
+| Draft Agent E | Q029-Q034 | 網路協定、IP、OSI/TCP-IP |
+| Draft Agent F | Q035-Q040 | 資安、加密、攻擊與防護 |
+| Draft Agent G | Q041-Q046 | 網路工具、協定細節、錯誤控制 |
+| Draft Agent H | Q047-Q050 | 尾段資安/網路題與整體補洞 |
 
-1. 問題。
-2. 問題講解。
-3. 擬答。
-4. 擬答詳細說明。
-5. 評分重點。
-6. 常見錯誤。
-7. 關鍵名詞。
-8. 若需要作圖，提供精準的文字圖解與替代文字，不直接用廣告或來源圖浮水印。
-9. 來源 PDF、頁碼、擷取狀態與廣告排除標記。
+第三輪再平行審查：
 
-文字圖解與 alt text 規則：
+| Reviewer | 審查角度 |
+| --- | --- |
+| Technical Reviewer 1 | Q001-Q025 技術正確性 |
+| Technical Reviewer 2 | Q026-Q050 技術正確性 |
+| Novice Reviewer 1 | Q001-Q025 新手可讀性 |
+| Novice Reviewer 2 | Q026-Q050 新手可讀性 |
+| Table Reviewer | 所有 `teachingTables` 欄位數、例子、可讀性 |
 
-1. 需要作圖的題目必須另開圖解副代理。
-2. 圖解副代理負責把圖的節點、箭頭、方向、層級、標籤與流程關係寫成可審查的文字。
-3. alt text 必須能讓未看圖的人理解圖中所有關鍵元素與關係。
-4. 圖解副代理不得沿用 PDF 中的廣告圖、水印圖、補習班樣板圖或含廣告的截圖描述。
-5. 校稿副代理需檢查文字圖解與 alt text 是否和題目要求、擬答內容一致。
+### Source Packet For Each Subagent
 
-題數規則：
+每個草稿代理只應收到必要輸入，避免互相污染格式：
 
-1. 不預設每年固定題數。
-2. 每年 PDF 轉 Markdown 後先產生題目索引，列出題號、頁碼、題型、是否需作圖、擷取狀態。
-3. 114 年目前以 6 題作為第一個垂直切片的預期範圍，但仍必須由題目索引校對副代理重新確認，不可直接寫死。
-4. 其他年度依實際 PDF 題目數建立資料，不補空題、不硬湊固定數量。
+- 題號
+- 原題題幹
+- A-D 選項
+- 官方答案
+- 目前 `answerNote`
+- 目前解析內容
+- sourceRef
+- 本 change 的 teaching rubric
+- Q001-Q004 的 canonical examples
+- 必須輸出的欄位格式
 
-### B 組批次節奏與副代理流程
+### Subagent Output Format
 
-主任務每一年從 114 年開始，逐年往前處理。每個年度都採以下節奏：
-
-```text
-年度 PDF
-  ↓
-題目索引
-  ↓
-第 1 批 2 至 3 題解析
-  ↓
-校稿 + 寫入資料模型
-  ↓
-跑測試/人工抽查
-  ↓
-下一批
-```
-
-批次規則：
-
-1. 沒有完成該年度題目索引前，不開始逐題解析。
-2. 每批建議 2 至 3 題，避免一次開太多副代理導致整併與校稿失控。
-3. 同一批內可並行處理不同題目。
-4. 每批必須完成校稿、資料寫入、內容完整性測試或人工抽查後，才進入下一批。
-5. 若某題被標為高風險，該題必須暫停進批次完成條件，先加開第二解析副代理交叉驗證。
-
-副代理角色：
-
-1. **PDF 轉 Markdown 副代理**
-   - 讀取該年度 PDF。
-   - 排除廣告水印、廣告圖片、廣告網址與無關補習班資訊。
-   - 先建立題目索引，確認該年度實際題數，避免把頁首、頁尾、廣告或水印誤切成題目。
-   - 產出同名 Markdown 記憶檔到 `@/_private/資訊管理、程式設計/`。
-   - 檔名與 PDF 對應，例如 `114.md`。
-
-2. **題目索引校對副代理**
-   - 依 PDF 轉 Markdown 結果建立題目索引。
-   - 核對題號、頁碼、題型、是否需作圖、擷取信心與廣告排除狀態。
-   - 114 年雖目前預期為 6 題，仍需重新確認題目索引，避免把頁尾、附註、廣告或跨頁內容誤判成題目。
-   - 對題數不固定的年度，這一步是逐題解析的前置門檻。
-
-3. **主解析副代理**
-   - 每題固定開一個主解析副代理。
-   - 一次產出完整初稿，包含問題、問題講解、擬答、擬答詳細說明、評分重點、常見錯誤與關鍵名詞。
-   - 輸出要標明依據、假設與不確定處。
-
-4. **圖解副代理**
-   - 若題目需要作圖、流程圖、架構圖、資料流程圖、ERD、樹狀圖或網路拓樸，主任務需另開圖解副代理。
-   - 圖解副代理只產出文字圖解與 alt text，不產出正式 PNG/SVG 圖像資產。
-   - 圖解內容必須精準描述節點、箭頭、方向、關係、層級與必要標籤。
-   - 若題目不需要作圖，需明確標示「不需圖解」。
-
-5. **第二解析副代理**
-   - 只在高風險題開啟，不是每題固定開。
-   - 高風險條件包含 PDF 擷取不清、題意模糊、答案可能有爭議、題目涉及制度/標準/年份、需要嚴格計算、需圖解但圖形關係複雜、或主解析副代理標記不確定。
-   - 只要符合任一高風險條件，就必須開第二解析副代理，不能由主任務自行略過。
-   - 第二解析副代理負責交叉驗證，不直接覆蓋主解析。
-
-6. **逐題審稿副代理**
-   - 檢查答案正確性、術語、邏輯、格式、繁體中文、是否誤收廣告。
-   - 若題目有文字圖解與 alt text，需檢查圖解是否精準、是否漏節點、箭頭方向是否正確、alt text 是否足以替代圖像。
-   - 若主解析與第二解析副代理有衝突，審稿副代理需列出差異與建議採用版本。
-   - 有疑慮時標記 `needs-review`，不能硬寫成 verified。
-
-7. **主任務整併與寫入專案**
-   - 主任務負責決策、整併與寫入，不再為每題固定加開整併副代理。
-   - 若題目同時有主解析、圖解、第二解析與審稿輸出，主任務依審稿意見整合成最終版本。
-   - 產出每題 Markdown 到 `@/_private/資訊管理、程式設計/<年份>/`，檔名建議 `Q01.md`、`Q02.md`。
-   - 只把校稿後內容轉入 `src/` 的 TypeScript 資料檔。
-   - 不把廣告、水印、補習班網址或無關行銷文字寫入本專案。
-
-## 語言設計決策
-
-### UI 與互動
-
-語言路由沿用 B 組模式：
-
-1. `/language` 顯示年度清單。
-2. `/language/:year` 顯示該年度國文與英文解析。
-3. 年度列有書籤、完成 checkbox、中央導頁。
-4. 進度 storage 與 B 組/A 組分開，避免互相污染。
-
-### 語言資料模型
-
-語言題型可能包含國文閱讀、作文、英文文法、字彙、克漏字與閱讀理解。建議建立比 B 組更彈性的 union：
-
-```ts
-export type LanguageQuestionKind =
-  | 'chinese-reading'
-  | 'chinese-composition'
-  | 'english-grammar'
-  | 'english-vocabulary'
-  | 'english-cloze'
-  | 'english-reading'
-  | 'mixed';
-
-export interface LanguageQuestionAnalysis {
-  year: LanguageYear;
-  number: number;
-  kind: LanguageQuestionKind;
-  originalQuestion: string;
-  questionExplanation: string;
-  modelAnswer: string;
-  modelAnswerDetails: string;
-  teacherNotes: string[];
-  beginnerLevelNotes: string[];
-  vocabularyNotes: string[];
-  grammarNotes: string[];
-  sourceRef: {
-    fileName: string;
-    pageNumber?: number;
-    originalExcerpt: string;
-    extractionStatus: 'verified' | 'needs-review';
-    adContentRemoved: boolean;
-  };
-  reviewStatus: 'draft' | 'reviewed' | 'needs-review';
-}
-```
-
-### 英文題教學身分
-
-英文題的副代理應明確使用以下教學設定：
-
-1. 身分：英文老師。
-2. 受眾：國二程度英文學生。
-3. 教學語氣：繁體中文說明為主，英文例句可保留英文。
-4. 解釋重點：先用學生能懂的詞彙講概念，再補正式文法名稱。
-5. 禁止只翻譯答案；必須說明為什麼其他選項不適合。
-
-### 語言批次節奏與副代理流程
-
-語言也採與 B 組相同的批次生產線，不能一次處理全部年度或全部題目：
+每個草稿代理輸出時必須使用同一格式：
 
 ```text
-年度 PDF
-  ↓
-題目索引
-  ↓
-第 1 批 2 至 3 題解析
-  ↓
-校稿 + 寫入資料模型
-  ↓
-跑測試/人工抽查
-  ↓
-下一批
+Question: 114-Q###
+Question type:
+Potential novice blockers:
+Core terms:
+Beginner explanation:
+Teaching tables:
+Solving steps:
+Option explanations:
+Key takeaways:
+Answer note changes:
+Reviewer concerns:
 ```
 
-語言批次規則：
+### Merge Rules
 
-1. 沒有完成該年度題目索引前，不開始逐題解析。
-2. 每批建議 2 至 3 題，同一批內可並行處理不同題目。
-3. 題目索引階段必須先分類 `LanguageQuestionKind`，再分派副代理；不可先解析後補分類。
-4. 每題固定開主解析副代理與審稿副代理。
-5. 英文題的主解析副代理必須使用英文老師身分與國二程度受眾設定。
-6. 國文作文、國文閱讀、英文文法、字彙、克漏字與閱讀理解應使用不同解析重點，避免套錯模板。
-7. 若語言題涉及圖表、流程、文章結構圖或作文架構圖，另開圖解副代理產出文字圖解與 alt text。
-8. 高風險題必須開第二解析副代理交叉驗證。
-9. 每批必須完成校稿、資料寫入、內容完整性測試或人工抽查後，才進入下一批。
+- 複代理不得各自直接改同一個 `114ReviewedAnalyses.ts` 區塊。
+- 主代理統一合併，確保欄位順序、語氣、標點、表格 shape 一致。
+- 若草稿代理與 reviewer 對官方答案有衝突，保留 `answerNote` 並標記人工複核，不可強行消除疑義。
+- 表格不得為了好看而加入；只有比較、分類、流程、公式對照能讓新手更清楚時才保留。
+- 合併後必須跑內容審查與 typecheck，不能只靠人工讀過。
 
-### 語言來源決策
+## Spec Delta Recommendation
 
-目前 `@/_private/國文、英文/` 可見 107 至 112 PDF。使用者已確認語言來源只做 107 至 112，其他年度暫時不補。
+### Requirement: Year 114 Teaching Analysis Is Non-CS Beginner Friendly
 
-1. 語言年度清單只顯示 107 至 112。
-2. `/language/:year` 只接受 107 至 112。
-3. `/language/113`、`/language/114` 與其他不支援年度應進 NotFound。
-4. 語言年度資料必須 lazy import，不可在 `/language` 清單頁一次載入所有年度解析。
+A Group year 114 question analyses SHALL explain each question for readers without a computer-science background.
 
-## 廣告與水印排除規則
+#### Scenario: Teaching analysis explains prerequisite concepts
 
-B 組與語言來源 PDF 可能包含非官方補習班素材。正式規格應明確要求：
+- **WHEN** a user reads any 114 A group question card
+- **THEN** the beginner explanation introduces required terms before using them as assumptions
+- **THEN** it states the concept's core purpose or problem being solved
+- **THEN** it explains the rule, formula, mechanism, or comparison basis used to answer the question
 
-1. 不得把廣告水印寫入 `src/`。
-2. 不得把廣告圖片轉成內容。
-3. 不得把廣告網址、補習班行銷文案、聯絡資訊寫入本專案。
-4. PDF 轉 Markdown 記憶檔也應排除廣告，或若為校稿需要暫存，必須標記為排除項且不得進入正式資料。
-5. 每題資料應有 `adContentRemoved: true` 或等價欄位，表示已做廣告排除檢查。
-6. 校稿副代理需把「是否誤收廣告」列為必查項。
+#### Scenario: Teaching analysis applies the rule to the current question
 
-## 新增「學習」路由
+- **WHEN** a 114 question has calculation or multi-step reasoning
+- **THEN** solvingSteps walk through the operation in the order a beginner can follow
+- **THEN** each step maps back to the original question data or options
 
-需求是新增路由名稱「學習」，目前沒有內容。建議：
+#### Scenario: Comparison questions use tables when clarity improves
 
-1. 路由使用 `/learning`。
-2. AppShell 主導覽新增「學習」。
-3. 建立 `LearningView.vue` placeholder。
-4. placeholder 僅顯示目前沒有內容，不建立假資料。
-5. route preload 支援 `learning`。
-6. e2e 驗證 `/learning` 可到達且不顯示 NotFound。
-7. 未來可能承載使用者筆記，但本 change 不設計筆記功能、資料模型或編輯流程。
+- **WHEN** a 114 question compares categories, types, layers, data structures, or algorithms
+- **THEN** the analysis MAY include teachingTables
+- **THEN** each table has a title, headers, and rows with the same number of cells as headers
+- **THEN** table cells include concrete examples when the concept has a literal representation, such as `[1, 2, 3]`, `(1, 2, 3)`, `{1, 2, 3}`, or `set()`
 
-## Interface Depth Check
+#### Scenario: CRC question explains implementation mechanics
 
-本次會引入新模組與新路由，屬於需要界面深度檢查的變更。
+- **WHEN** the user reads 114-Q004
+- **THEN** the analysis explains CRC, the problem CRC solves, generating polynomial conversion, modulo-2 XOR division, zero padding, remainder calculation, and final codeword construction
 
-1. **Seam location**
-   - B 組合約放在 `src/modules/examGroups/bGroup/`。
-   - 語言合約放在 `src/modules/examGroups/language/`。
-   - 學習 placeholder 放在新的 `src/modules/learning/` 或 `src/modules/examGroups/learning/`，建議若未來會獨立於考題組別，使用 `src/modules/learning/`。
+#### Scenario: Two's complement question explains the system before the answer
 
-2. **Adapter count**
-   - 每個群組只需要一層 route loader 加一層年度資料 loader。
-   - 不建議為 B 組/語言再疊一層空的 generic adapter，否則只會轉呼叫。
+- **WHEN** the user reads 114-Q001
+- **THEN** the analysis explains bit width, complement, two's complement range, negative number conversion, fixed-width arithmetic, and signed overflow before concluding the answer
 
-3. **Depth**
-   - B 組與語言 loader 不只是 forward calls，應負責年度合法性、lazy import、資料 shape 驗證或錯誤狀態。
-   - storage module 應負責 snapshot parse、版本、無效資料 fallback、完成年度清除書籤等行為。
+## Task Breakdown
 
-4. **Deletion test**
-   - 刪掉 B 組模組會使 `/b-group`、`/b-group/:year`、B 組 storage 與逐題資料全部失效。
-   - 刪掉語言模組會使 `/language`、`/language/:year` 與英文/國文解析資料失效。
-   - 刪掉學習模組只會讓 `/learning` placeholder 失效；因此學習模組第一階段應保持很薄，不要過早建立複雜抽象。
+### 1. Prepare Rubric
 
-## 建議任務拆分
+- [ ] Define 114 年「非資工新手教學解析」rubric.
+- [ ] Add rubric checks to `contentReview.ts` or 114-specific review helpers.
+- [ ] Add tests proving shallow answer-only explanations fail.
+- [ ] Add tests proving missing term explanation, missing usage steps, and missing trap explanation fail.
 
-### 1. 路由與導覽
+### 2. Canonical Question Rewrites
 
-1. 新增 `/b-group/:year` 路由。
-2. 新增 `/language/:year` 路由。
-3. 新增 `/learning` 路由。
-4. AppShell 導覽新增「學習」。
-5. route preload 新增 `bGroupYear`、`languageYear`、`learning`。
-6. invalid B 組年度進 NotFound。
-7. invalid 語言年度進 NotFound。
-8. 補 e2e 驗證四個主路由與年度路由。
+- [ ] Rewrite 114-Q001 二補數解析 according to the new rubric.
+- [ ] Add or update Q001 tests for bit width, two's complement range, complement conversion, arithmetic operations, and overflow.
+- [ ] Rewrite 114-Q002 馮紐曼架構解析 with concise beginner explanation.
+- [ ] Add or update Q002 tests for five functional units.
+- [ ] Rewrite 114-Q003 Python type comparison with two teaching tables.
+- [ ] Add or update Q003 tests for Python type table and list/tuple/set table.
+- [ ] Rewrite 114-Q004 CRC analysis with detailed generating polynomial and XOR division steps.
+- [ ] Add or update Q004 tests for CRC concept, problem, core mechanism, and implementation flow.
 
-### 2. B 組年度清單與狀態
+### 3. Full 114 Year Rewrite
 
-1. 建立 B 組年度 summary，範圍 114 至 107。
-2. 年度題數由實際資料推導或由 PDF 轉 Markdown 題目索引填入，不寫死固定題數。
-3. 改寫 `BGroupView.vue` 為年度清單。
-4. 建立 B 組 progress storage。
-5. B 組書籤 reload 後保留。
-6. B 組完成狀態 reload 後保留。
-7. B 組完成年度後清除同年度書籤。
-8. 補 unit 與 e2e。
+以下每題獨立處理，避免大批量改寫造成品質不一致。每一題在正式 tasks 中都應至少展開為下列微任務：
 
-### 3. B 組資料與年度頁
+1. `source packet`：整理題幹、A-D、官方答案、現有解析、answerNote、sourceRef。
+2. `question type`：標記題型與適用 playbook。
+3. `novice blockers`：列出新手會卡住的名詞與前置觀念。
+4. `core explanation`：重寫名詞解釋、問題目的、核心規則或模型。
+5. `usage flow`：重寫如何使用、如何計算、如何判斷或如何實作。
+6. `apply to question`：重寫 `solvingSteps`，逐步套回題幹。
+7. `option review`：重寫 A-D `optionExplanations`。
+8. `takeaways`：重寫可複用規則與常見陷阱。
+9. `table decision`：判斷是否需要 `teachingTables`，需要時補表格。
+10. `review`：技術正確性、新手可讀性、answerNote、資料 shape 與 rubric 檢查。
 
-1. 建立 B 組申論題型別。
-2. 建立 B 組年度資料 lazy loader。
-3. 建立 B 組年度解析頁。
-4. 建立 B 組申論題卡元件。
-5. 建立 B 組資料 shape validation。
-6. 先完成 114 年垂直切片。
-7. 依序完成 113 至 107。
+建議在 Spectra tasks 中把以下每個題號都展開成上述微任務；若任務數超過數百個也可以接受。
 
-### 4. B 組 PDF 轉 Markdown 與逐題解析
+- [ ] Apply 10-step novice rewrite workflow to 114-Q005.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q006.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q007.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q008.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q009.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q010.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q011.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q012.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q013.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q014.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q015.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q016.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q017.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q018.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q019.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q020.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q021.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q022.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q023.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q024.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q025.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q026.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q027.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q028.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q029.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q030.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q031.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q032.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q033.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q034.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q035.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q036.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q037.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q038.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q039.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q040.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q041.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q042.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q043.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q044.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q045.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q046.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q047.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q048.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q049.
+- [ ] Apply 10-step novice rewrite workflow to 114-Q050.
 
-每一年都先執行年度前置流程，再依批次處理題目：
+### 4. Review And Verification
 
-1. PDF 轉 Markdown 記憶檔。
-2. 建立題目索引並確認實際題數。
-3. 廣告/水印/網址排除檢查。
-4. 題目切分與頁碼標記。
-5. 將題目切成每批 2 至 3 題。
-6. 每題固定開主解析副代理，產出完整初稿。
-7. 需要作圖的題目另開圖解副代理，產出精準文字圖解與 alt text。
-8. 高風險題另開第二解析副代理交叉驗證。
-9. 每題固定開審稿副代理，含圖解精準性檢查。
-10. 主任務整併並寫入資料模型。
-11. 對該批跑內容完整性測試或人工抽查。
-12. 該批通過後才進入下一批。
+- [ ] Run `npm run check:a-group-114-content`.
+- [ ] Run targeted component tests for `AGroupQuestionCard`.
+- [ ] Run `npm run typecheck`.
+- [ ] Run `npm run test:unit`.
+- [ ] Run `npm run build`.
+- [ ] Run `spectra analyze <change-name> --json`.
+- [ ] Run `spectra validate <change-name>`.
 
-### 5. 語言年度清單與狀態
+## Acceptance Criteria
 
-1. 建立語言年度 summary。
-2. 年度範圍固定為 107 至 112，其他年度暫時不補。
-3. 改寫 `LanguageGroupView.vue` 為年度清單。
-4. 建立語言 progress storage。
-5. 語言書籤 reload 後保留。
-6. 語言完成狀態 reload 後保留。
-7. 補 unit 與 e2e。
+- 114 年 50 題都仍載入成功。
+- 每題仍保留原題題幹、A-D 選項、官方答案、answerNote、answerVerification、sourceRef。
+- 每題解析都以非資工新手為對象。
+- 每題至少包含：
+  - 名詞解釋或前置觀念
+  - 核心想法或問題目的
+  - 使用方式、規則、公式或流程
+  - 套回本題的解題步驟
+  - 四個選項的排除理由
+  - 可複用重點與常見陷阱
+- Q003 必須包含 Python 主要型別表與 list/tuple/set 比較表。
+- Q004 必須詳細說明 CRC 的生成多項式、模 2 XOR 除法與餘數串接。
+- Q001 必須說明 6 位元、二補數、補數系統與固定寬度運算。
+- Q002 必須能快速說明馮紐曼架構的用途與五大功能單元。
 
-### 6. 語言資料與年度頁
+## Recommended Next Command
 
-1. 建立語言題型 union。
-2. 建立語言年度資料 lazy loader。
-3. 建立語言年度解析頁。
-4. 建立語言題卡元件。
-5. 語言也採每批 2 至 3 題處理。
-6. 英文題加入國二程度教學 notes。
-7. 國文題加入閱讀/作文/文意解析 notes。
-8. 高風險語言題必須開第二解析副代理交叉驗證。
-9. 先完成 112 年垂直切片。
-10. 依序完成其他年度。
-
-### 7. 學習路由
-
-1. 建立 `LearningView.vue`。
-2. 新增 `/learning` route。
-3. AppShell 顯示「學習」。
-4. route preload 支援 learning。
-5. e2e 驗證 `/learning` 可到達。
-6. placeholder 不建立假內容。
-
-### 8. 驗證與品質門檻
-
-1. `npm run lint`
-2. `npm run typecheck`
-3. `npm run test:unit`
-4. `npm run build`
-5. `npm run check:pwa-output`
-6. `npm run test:e2e`
-7. 每個年度資料檔都有內容完整性測試。
-8. 每個 PDF 轉 Markdown 檔都有廣告排除檢查紀錄。
-9. 中文內容需 UTF-8 正確保存，不能有亂碼、問號替代字元或可見 BOM。
-
-## 驗收標準
-
-1. `/b-group` 顯示 114 至 107 年度清單。
-2. `/b-group/:year` 可顯示該年度 B 組申論題解析。
-3. B 組每題包含問題、問題講解、擬答、擬答詳細說明。
-4. B 組不假設固定題數；114 年雖預期 6 題，仍需由題目索引校對副代理重新確認，其他年度依 PDF 實際題數建立。
-5. B 組需要作圖的題目必須由圖解副代理產出精準文字圖解與替代文字。
-6. 文字圖解需描述節點、箭頭、方向、層級、標籤與流程關係；alt text 需足以替代圖像理解。
-7. B 組內容不得包含補習班廣告、水印文字、廣告圖片描述或廣告網址。
-8. `/language` 顯示 107 至 112 年度清單。
-9. `/language/:year` 可顯示該年度國文與英文解析。
-10. `/language/113`、`/language/114` 進 NotFound。
-11. 英文題解析符合英文老師、國二程度學生的教學設定。
-12. 語言題目索引階段必須先分類題型，避免英文老師副代理或國文解析模板套錯題目。
-13. 語言內容不得包含補習班廣告、水印文字、廣告圖片描述或廣告網址。
-14. B 組與語言都有獨立書籤與年度完成狀態，不與 A 組互相污染。
-15. `/learning` 可到達，顯示目前沒有內容，不進 NotFound。
-16. 主導覽包含 A 組、B 組、語言、學習。
-17. 375px mobile viewport 不水平溢出。
-18. invalid B 組與語言年度進 NotFound。
-19. 所有逐題資料都有來源 PDF、頁碼或待確認頁碼、原題摘錄、擷取狀態、廣告排除狀態與校稿狀態。
-20. 每批 2 至 3 題需完成校稿、資料寫入、內容完整性測試或人工抽查後，才進入下一批。
-21. 內容完整性測試能擋下缺少問題講解、擬答或擬答詳細說明的題目。
-22. B 組與語言年度資料都必須 lazy import，清單頁不得一次載入所有年度逐題解析。
-23. 符合高風險條件的題目必須有第二解析副代理交叉驗證紀錄。
-24. CI/CD 原有驗證維持通過。
-
-## 已確認決策
-
-1. 語言來源只做 107 至 112，其他年度暫時不補。
-2. B 組 114 年目前預期總共 6 題，但仍需由題目索引校對副代理重新確認；每年題目數量不固定，PDF 轉 Markdown 時要特別小心題目切分。
-3. B 組與語言的完成狀態第一階段與 A 組一致，採年度層級完成即可。
-4. 作圖題第一階段用文字圖解與 alt text 即可，但必須另開圖解副代理，並把圖解精準性納入校稿。
-5. 副代理流程採批次生產線：年度 PDF → 題目索引 → 每批 2 至 3 題解析 → 校稿與寫入資料模型 → 跑測試或人工抽查 → 下一批。
-6. 每題固定開主解析副代理與審稿副代理；圖解副代理與第二解析副代理採條件式加開。
-7. 高風險題只要符合 PDF 擷取不清、題意模糊、答案爭議、制度/標準/年份、嚴格計算、複雜圖解或主解析不確定任一條件，就必須開第二解析副代理。
-8. B 組與語言年度資料都必須 lazy import，避免清單頁 bundle 膨脹。
-9. 每題都要保留來源 PDF、頁碼或待確認頁碼、原題摘錄、擷取狀態、廣告排除狀態與校稿狀態。
-10. 語言題目索引階段必須先分類題型，避免副代理身分與解析模板用錯。
-11. 「正式圖像資產」指另外製作並納入專案的 PNG、SVG 或其他圖片檔；本 change 不需要製作這類圖像資產。
-12. `@/_private/.../*.md` 記憶檔是否納入 git 由使用者看完後自行決定，本 change 不替使用者決策。
-13. 「學習」路由未來可能放使用者筆記，但目前只先開路由與 placeholder，不設計詳細功能。
-
-## 下一步建議
-
-使用 `$spectra-propose complete-b-group-language-learning-routes` 建立正式 change。建議正式 proposal 採垂直切片：
-
-1. 第一階段：B 組 114 年完整流程，包含 PDF 轉 Markdown、題目索引、預期 6 題的重新確認、分批逐題解析、校稿、寫入專案、路由與測試。
-2. 第二階段：B 組 113 至 107。
-3. 第三階段：語言 112 年垂直切片，採同樣批次流程與來源追蹤要求。
-4. 第四階段：語言剩餘年度。
-5. 學習路由可在第一階段一起新增，因為目前只是 placeholder，風險低。
+```text
+$spectra-propose 請讀取指定 Markdown 檔案 `@/_private/propose.md` 的內容，並以它作為唯一輸入。
+```

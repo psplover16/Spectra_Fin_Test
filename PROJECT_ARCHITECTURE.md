@@ -20,10 +20,10 @@
 - `src/modules/examGroups/aGroup/composables/useAGroupYearQuestions.ts` 以年度動態 import lazy load 107 至 114 年內容，避免初始頁一次載入全部題庫。
 - `src/modules/examGroups/aGroup/data/years/{year}.ts` 組合 PDF 來源基準與 `{year}ReviewedAnalyses.ts`，交付每年 50 題 `ExamQuestionAnalysis`。
 - `src/modules/examGroups/aGroup/data/years/{year}SourceBaseline.ts` 保留原題、A-D 選項、官方答案與 PDF sourceRef 對照；107 至 113 年共用 `sourceBaselineReview.ts` 進行缺題、缺選項、錯頁碼檢查。
-- `src/modules/examGroups/aGroup/data/years/{year}ReviewedAnalyses.ts` 放置逐題教學解析、核心術語、解題步驟、選項辨析、重點整理與 tags；所有年度解析採用新手系統教學標準。
+- `src/modules/examGroups/aGroup/data/years/{year}ReviewedAnalyses.ts` 放置逐題教學解析、核心術語、解題步驟、選項辨析、重點整理與 tags；所有年度解析採用新手系統教學標準。A 組解析 shape 可選擇加入 `teachingTables`，用於比較、分類、流程、層級或公式對照題。
 - `src/modules/examGroups/aGroup/data/years/{year}ContentReview.ts` 將年度資料接到共用 `contentReview.ts` rubric，檢查來源基準、資料 shape、逐選項辨析、疑義題註記、風險 PDF 抽取狀態與新手系統教學標準。
 - `src/modules/examGroups/aGroup/data/years/riskyExtractionReview.ts` 登錄 107 至 113 PDF 盤點中需要人工確認的圖形、表格、程式碼、特殊符號與換行風險題；未確認前不得把 `sourceRef.extractionStatus` 靜默標成 `verified`。
-- `src/modules/examGroups/aGroup/components/AGroupQuestionCard.vue` 將原題內容、官方答案檢查、教學解析與來源追溯分區呈現。
+- `src/modules/examGroups/aGroup/components/AGroupQuestionCard.vue` 將原題內容、官方答案檢查、教學解析、可選 `teachingTables` 與來源追溯分區呈現。
 - `src/modules/examGroups/bGroup/` 是 B 組 feature module，包含 107 至 114 年 source index、年度 summary、localStorage 進度、年度 lazy loader、申論解析資料、文字圖解與題卡。
 - `src/modules/examGroups/bGroup/data/sourceIndex.ts` 是 B 組題數與來源追蹤的單一來源；`B_GROUP_YEAR_SUMMARIES` 從 source index 推導題數與 `indexed` / `pending-review` 狀態。
 - `src/modules/examGroups/bGroup/storage/bGroupProgressStorage.ts` 使用 `finpub:b-group-progress:v1` 保存 versioned snapshot、completed years 與單一 bookmark；壞 snapshot fail safe。
@@ -40,6 +40,7 @@
 
 - 107 至 114 年皆為完整年度入口，頁面顯示 50 題解析、官方答案狀態與 PDF 來源追溯。
 - 每題解析都必須把讀者視為第一次接觸該觀念的新手；`beginnerExplanation` 說明前置觀念、公式或規則來源、適用條件與容易混淆的邊界，`solvingSteps` 把規則逐步套回題目具體值或選項，`optionExplanations` 說明 A-D 干擾選項錯在哪個條件，`keyTakeaways` 留下可複用規則與常見陷阱。
+- `teachingTables` 只在能提升理解時使用，例如 114-Q003 的 Python 主要型別與 list、tuple、set 比較表；每張表都必須有 title、headers、rows，且每列欄位數必須等於 headers 數量。
 - 多答案與送分題以多個 `acceptedAnswers` 保留官方疑義，並以 `answerVerification: needs-review` 或 `suspected-error` 搭配 `answerNote` 說明。
 - invalid year，例如 `/a-group/115`、`/a-group/999`、`/a-group/abc`，不 redirect，直接顯示 NotFound。
 - B 組與語言已各自具備年度資料模組，但資料形狀不與 A 組抽象共用；A 組仍維持選擇題逐題資料與官方答案基準。
@@ -73,7 +74,7 @@
 - Router 與 route smoke 覆蓋 group routes、legacy redirects、A/B 組 107 至 114 年、語言 107 至 112 年、`/learning`、invalid years。
 - Storage tests 覆蓋 A 組、B 組與語言 bookmark、completed years、完成已書籤年度清 bookmark、壞 snapshot fail safe。
 - Loader 與 data tests 覆蓋 A 組年度 50 題、B 組 107 至 114 年 source index 與申論解析、語言 107 至 112 年 source index 與自然題組解析。
-- `tests/unit/aGroup{year}QuestionContent.spec.ts` 逐題驗證 107 至 114 年的新手系統教學內容；`tests/unit/aGroup{year}ContentReview.spec.ts` 與 `npm run check:a-group-{year}-content` 驗證 rubric 能抓出只給結論、跳過前置觀念、缺少規則來源或缺少常見陷阱的淺層解析。
+- `tests/unit/aGroup{year}QuestionContent.spec.ts` 逐題驗證 107 至 114 年的新手系統教學內容；`tests/unit/aGroup{year}ContentReview.spec.ts` 與 `npm run check:a-group-{year}-content` 驗證 rubric 能抓出只給結論、跳過前置觀念、缺少規則來源或缺少常見陷阱的淺層解析。`tests/unit/AGroupQuestionCard.spec.ts` 與 `tests/unit/questionAnalysisShape.spec.ts` 另外覆蓋 `teachingTables` rendering 與資料 shape。
 - `tests/unit/bGroup{year}QuestionContent.spec.ts`、`tests/unit/bGroup{year}ContentReview.spec.ts` 驗證 B 組 source trace、批次大小、申論內容完整性與圖解文字。
 - `tests/unit/language{year}QuestionContent.spec.ts`、`tests/unit/language{year}ContentReview.spec.ts` 驗證語言 source trace、每批 2 至 3 題、國英文教學設定與自然題組內容完整性。
 - `tests/unit/bGroupDiagramContent.spec.ts`、`tests/unit/languageDiagramContent.spec.ts` 驗證文字圖解與 alt text，不要求正式圖片資產。

@@ -31,8 +31,10 @@ describe('PROJECT_ARCHITECTURE documentation', () => {
     expect(architectureDoc).toContain('前置觀念');
     expect(architectureDoc).toContain('規則來源');
     expect(architectureDoc).toContain('常見陷阱');
+    expect(architectureDoc).toContain('teachingTables');
     expect(architectureDoc).toContain('{year}ContentReview.ts');
     expect(architectureDoc).toContain('aGroup{year}QuestionContent.spec.ts');
+    expect(architectureDoc).toContain('questionAnalysisShape.spec.ts');
     expect(architectureDoc).toContain('riskyExtractionReview.ts');
   });
 

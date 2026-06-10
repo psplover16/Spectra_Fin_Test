@@ -100,6 +100,33 @@ describe('AGroupQuestionCard', () => {
     ]);
   });
 
+  it('renders optional teaching comparison tables', () => {
+    const tableQuestion: ExamQuestionAnalysis = {
+      ...question,
+      teachingTables: [
+        {
+          title: 'list、tuple 與 set 核心差異',
+          headers: ['比較面向', 'list', 'tuple', 'set'],
+          rows: [
+            ['是否可修改內容', '可變', '不可變', 'set 可變'],
+            ['是否支援索引', '支援', '支援', '不支援']
+          ]
+        }
+      ]
+    };
+    const wrapper = mount(AGroupQuestionCard, {
+      props: { question: tableQuestion }
+    });
+    const tableSection = wrapper.find('[data-testid="teaching-tables"]');
+
+    expect(tableSection.exists()).toBe(true);
+    expect(tableSection.text()).toContain('list、tuple 與 set 核心差異');
+    expect(tableSection.text()).toContain('比較面向');
+    expect(tableSection.text()).toContain('是否可修改內容');
+    expect(tableSection.text()).toContain('不可變');
+    expect(tableSection.text()).toContain('不支援');
+  });
+
   it.each([
     ['verified', null, '官方答案已驗證'],
     [

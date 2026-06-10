@@ -32,7 +32,7 @@ describe('114 A group reviewed question analysis content', () => {
       .filter((question) => question.answerVerification === 'needs-review')
       .map((question) => question.number);
 
-    expect(needsReviewNumbers).toEqual([16, 34, 49]);
+    expect(needsReviewNumbers).toEqual([16, 34, 43, 49]);
     for (const number of needsReviewNumbers) {
       expect(getQuestion(number).answerNote?.trim().length).toBeGreaterThan(0);
     }
@@ -720,7 +720,8 @@ describe('114 A group reviewed question analysis content', () => {
   it('reviews question 43 with 5G feature-boundary novice teaching', () => {
     const question = getQuestion(43);
 
-    expect(question.answerVerification).toBe('verified');
+    expect(question.answerVerification).toBe('needs-review');
+    expect(question.answerNote).toContain('高頻段');
     expect(question.coreTerms).toEqual(expect.arrayContaining(['5G', 'URLLC', 'mMTC', 'spectral efficiency']));
     expect(question.beginnerExplanation).toContain('低延遲');
     expect(question.beginnerExplanation).toContain('頻譜效率');

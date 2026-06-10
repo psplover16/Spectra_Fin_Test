@@ -1,4 +1,8 @@
-import type { ExamQuestionAnalysis, FourOptionRecord } from '@/modules/examGroups/aGroup/types/questionAnalysis';
+import type {
+  ExamQuestionAnalysis,
+  FourOptionRecord,
+  TeachingTable
+} from '@/modules/examGroups/aGroup/types/questionAnalysis';
 
 interface QuestionTeachingReview {
   answerVerification: ExamQuestionAnalysis['answerVerification'];
@@ -8,6 +12,7 @@ interface QuestionTeachingReview {
   solvingSteps: string[];
   optionExplanations: FourOptionRecord;
   keyTakeaways: string[];
+  teachingTables?: TeachingTable[];
   tags?: string[];
 }
 
@@ -86,31 +91,73 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
   3: {
     answerVerification: 'verified',
     answerNote: null,
-    coreTerms: ['list', 'tuple', '可變性'],
+    coreTerms: ['Python 主要型別', 'list', 'tuple', '可變性', '序列型別'],
     beginnerExplanation:
       [
-        '這題的前置觀念是 Python 的「序列」：list 和 tuple 都是有序序列，元素有固定前後順序，也都可以用索引讀取，例如第 0 個、第 1 個元素。也就是說，「有序」和「支援索引」不是它們的主要差別。',
-        '真正的判斷規則是可變性。list 是 mutable，可在建立後 append 新元素、移除元素或改某個索引的值；tuple 是 immutable，建立後不能改變長度，也不能直接替換其中元素。這個規則來源於 Python 對容器型別的設計。',
+        '先把 Python 常見型別分成幾類來看：數值型別如 int、float、complex 用來表示數字；bool 表示 True 或 False；str 表示文字；list、tuple、range 屬於序列型別，重點是元素有固定順序；dict 是對應型別，用 key 找 value；set、frozenset 是集合型別，重點是成員不重複且不靠位置索引；NoneType 只有 None，常用來表示沒有值。',
+        '不同型別的差異通常從幾個角度判斷：是否有順序、能不能用索引、是否允許重複元素、以及建立後能不能修改內容。list 和 tuple 都是有序序列，所以它們都有順序、都允許重複元素，也都能用索引讀取，例如第 0 個、第 1 個元素。',
+        '真正能區分 list 和 tuple 的核心規則是可變性。list 是 mutable，可在建立後 append 新元素、移除元素或改某個索引的值；tuple 是 immutable，建立後不能改變長度，也不能直接替換其中元素。這個規則來源於 Python 對容器型別的設計。',
         '本題常見陷阱是把 tuple 的「不可變」誤會成「不能讀取」或「沒有順序」。不可變只代表內容不能被直接修改，不代表不能用索引讀值，也不代表它是無序集合。'
       ].join('\n'),
     solvingSteps: [
-      '先確認 list 與 tuple 都屬於有序序列，因此「有序或無序」不是本題差異。',
+      '先把 list 和 tuple 放回 Python 型別分類中：兩者都不是數值、文字、dict 或 set，而是序列型別。',
+      '序列型別的共同特徵是有順序、可用位置讀取元素，因此「有序或無序」不是本題差異。',
       '再確認兩者都支援索引讀取，所以「tuple 支援索引、list 不支援」也是錯誤比較。',
       '套用可變性規則：list 是 mutable，能 append、刪除或指定索引改值。',
       '套用同一規則到 tuple：tuple 是 immutable，建立後不能直接改長度或替換元素。',
       '比對選項，A 說 list 可變、tuple 不可變，正好符合規則。'
     ],
     optionExplanations: {
-      A: 'list 可變、tuple 不可變，這正是 Python 序列容器最常考的核心差異。',
-      B: '這個選項把可變性顛倒了；tuple 是 immutable，不是可變容器。',
-      C: 'list 與 tuple 都是有序序列，不是 list 無序、tuple 有序。',
-      D: 'tuple 支援索引沒錯，但 list 也支援索引，所以索引能力不是兩者差別。'
+      A: 'list 可變、tuple 不可變，這正是 Python 序列型別中最常考的核心差異。',
+      B: '這個選項把可變性顛倒了；list 才是可變序列，tuple 是 immutable，不是可變容器。',
+      C: 'list 與 tuple 都是有序序列，不是 list 無序、tuple 有序；真正無序或不靠位置操作的常見型別是 set。',
+      D: 'tuple 支援索引沒錯，但 list 也支援索引，所以索引能力不是兩者差別；支援索引是序列型別的共同特徵。'
     },
     keyTakeaways: [
+      'Python 常見型別可先分成數值、布林、字串、序列、對應、集合與 NoneType。',
       'list 是 mutable，tuple 是 immutable；判斷時要問內容會不會被改。',
       '兩者都屬於有序序列，也都支援索引讀取。',
       '常見陷阱是把不可變誤解成不可讀、無序或不能用索引。',
-      '需要頻繁新增、刪除或改值時通常用 list；希望資料固定時可考慮 tuple。'
+      '需要頻繁新增、刪除或改值時通常用 list；希望資料固定時可考慮 tuple。',
+      'dict 的重點是 key-value 查找，set 的重點是不重複成員；不要把它們和 list、tuple 的序列特性混在一起。'
+    ],
+    teachingTables: [
+      {
+        title: 'Python 常見主要型別對照',
+        headers: ['類別', '代表型別', '怎麼表示', '主要特徵'],
+        rows: [
+          ['數值型別', 'int、float、complex', '1、3.14、1+2j', '表示整數、小數或複數，可做數學運算。'],
+          ['布林型別', 'bool', 'True、False', '只有 True 與 False，常用於條件判斷。'],
+          ['文字型別', 'str', "'hello'、\"abc\"", '表示字串，有順序且可用索引讀取字元，但內容不可直接修改。'],
+          [
+            '序列型別',
+            'list、tuple、range',
+            '[1, 2, 3]、(1, 2, 3)、range(3)',
+            '元素有固定順序，可用位置索引讀取；list 與 tuple 的差別在可變性。'
+          ],
+          ['對應型別', 'dict', "{'name': 'Amy', 'score': 90}", '用 key 對應 value，重點不是位置，而是用鍵查資料。'],
+          ['集合型別', 'set、frozenset', '{1, 2, 3}、frozenset({1, 2})', '成員不重複；set 可變，frozenset 不可變。'],
+          ['空值型別', 'NoneType', 'None', '只有 None，表示沒有值或尚未取得結果。']
+        ]
+      },
+      {
+        title: 'list、tuple 與 set 核心差異',
+        headers: ['比較面向', 'list', 'tuple', 'set'],
+        rows: [
+          ['字面值寫法', '[1, 2, 3]，用中括號', '(1, 2, 3)，用小括號', '{1, 2, 3}；空集合要寫 set()'],
+          ['是否有順序', '有順序', '有順序', '不靠固定位置順序使用'],
+          ['是否支援索引', '支援，例如 items[0]', '支援，例如 pair[0]', '不支援，例如 values[0] 不是 set 用法'],
+          ['是否允許重複元素', '允許，例如 [1, 1, 2]', '允許，例如 (1, 1, 2)', '不允許，重複值會被合併'],
+          [
+            '是否可修改內容',
+            '可變，可 append、刪除、改值',
+            '不可變，建立後不能直接改長度或元素',
+            'set 可變，可 add、remove；frozenset 才不可變'
+          ],
+          ['常見使用情境', '資料會增刪改且需要順序時使用', '資料希望固定、不被誤改時使用', '只關心成員是否存在、且要去除重複時使用'],
+          ['本題判斷重點', '可變', '不可變', '不是本題主角，但可用來對照「無序、不可索引」的集合概念']
+        ]
+      }
     ],
     tags: ['mutability']
   },
@@ -177,6 +224,30 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       '資料位要依序放在位置 3、5、6、7，最後再從位置 1 寫到 7。',
       '常見陷阱是從 0 開始編號、資料位順序放錯，或把偶校驗與奇校驗混用。'
     ],
+    teachingTables: [
+      {
+        title: 'Hamming(7,4) 位元配置',
+        headers: ['位置', '角色', '本題值', '說明'],
+        rows: [
+          ['1', 'p1', '0', '檢查位置 1、3、5、7，讓 1 的總數維持偶數。'],
+          ['2', 'p2', '1', '檢查位置 2、3、6、7，補 1 後變成偶數。'],
+          ['3', 'd1', '1', '原始資料 1011 的第 1 位。'],
+          ['4', 'p4', '0', '檢查位置 4、5、6、7，讓 1 的總數維持偶數。'],
+          ['5', 'd2', '0', '原始資料 1011 的第 2 位。'],
+          ['6', 'd3', '1', '原始資料 1011 的第 3 位。'],
+          ['7', 'd4', '1', '原始資料 1011 的第 4 位。']
+        ]
+      },
+      {
+        title: '偶校驗檢查組',
+        headers: ['校驗位', '檢查位置', '已知資料位', '校驗位決定'],
+        rows: [
+          ['p1', '1、3、5、7', '位置 3、5、7 是 1、0、1，共 2 個 1', '已是偶數，所以 p1=0。'],
+          ['p2', '2、3、6、7', '位置 3、6、7 是 1、1、1，共 3 個 1', '需補 1 變偶數，所以 p2=1。'],
+          ['p4', '4、5、6、7', '位置 5、6、7 是 0、1、1，共 2 個 1', '已是偶數，所以 p4=0。']
+        ]
+      }
+    ],
     tags: ['hamming-code']
   },
   6: {
@@ -209,6 +280,18 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       'Isolation 不是 Concurrency，它強調並行交易彼此隔離。',
       'Durability 強調提交後資料不因系統故障輕易消失。',
       '常見陷阱是把 Availability、Concurrency、Integrity、Dependability 混進 ACID。'
+    ],
+    teachingTables: [
+      {
+        title: 'ACID 四個字母對照',
+        headers: ['字母', '正確詞', '中文概念', '常見干擾'],
+        rows: [
+          ['A', 'Atomicity', '原子性，全做或全不做。', 'Availability 是可用性，不是交易 ACID 的 A。'],
+          ['C', 'Consistency', '一致性，交易前後符合資料規則。', 'Concurrency 是並行能力，不是 ACID 的 C。'],
+          ['I', 'Isolation', '隔離性，並行交易不看見不該看的中間狀態。', 'Integrity 是完整性概念，不是 ACID 的 I。'],
+          ['D', 'Durability', '持久性，提交後資料能保存。', 'Dependability 是可靠性泛稱，不是 ACID 的 D。']
+        ]
+      }
     ],
     tags: ['acid']
   },
@@ -275,6 +358,18 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       'Inorder 可用根節點切分左右子樹，再對子樹遞迴套用同一規則。',
       'Postorder 順序是左子樹、右子樹、根；整棵樹根會在最後。',
       '常見陷阱是把輸入的 Preorder 或 Inorder 直接當答案，而沒有重建左右子樹。'
+    ],
+    teachingTables: [
+      {
+        title: '由 Preorder 與 Inorder 重建後序',
+        headers: ['子樹範圍', 'Preorder 判斷根', 'Inorder 切分', 'Postorder 輸出'],
+        rows: [
+          ['整棵樹', 'A', '左 D,B,E；右 C,F', '左子樹、右子樹、A'],
+          ['A 的左子樹', 'B', '左 D；右 E', 'D,E,B'],
+          ['A 的右子樹', 'C', '左空；右 F', 'F,C'],
+          ['合併', '不適用', '不適用', 'D,E,B,F,C,A']
+        ]
+      }
     ],
     tags: ['binary-tree']
   },
@@ -374,6 +469,18 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       '快取用來縮短 CPU 與主記憶體的速度落差，但仍慢於暫存器。',
       '常見陷阱是用容量大小判斷速度，或把快取與暫存器的順序顛倒。'
     ],
+    teachingTables: [
+      {
+        title: '記憶體層次由快到慢',
+        headers: ['層次', '相對位置', '速度直覺', '容量直覺'],
+        rows: [
+          ['暫存器', 'CPU 內部', '最快', '最小'],
+          ['快取', 'CPU 附近', '很快', '小'],
+          ['主記憶體', '系統 RAM', '中等', '較大'],
+          ['硬碟', '外部儲存', '最慢', '最大']
+        ]
+      }
+    ],
     tags: ['memory-hierarchy', 'cache']
   },
   12: {
@@ -405,6 +512,18 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       'Java 可實作多個 interface，用合約方式取得多種能力。',
       'C++ 與 Python 可直接多重繼承 class。',
       '常見陷阱是把 implements 多個 interface 誤認成 extends 多個 class。'
+    ],
+    teachingTables: [
+      {
+        title: '語言與多重類別繼承比較',
+        headers: ['語言', '是否可直接多重繼承 class', 'Interface 在本題角色', '判斷'],
+        rows: [
+          ['C++', '可', '非必須', '不是答案。'],
+          ['Java', '不可，一個 class 只能 extends 一個 class', '可 implements 多個 interface', '答案。'],
+          ['JavaScript', '以原型為核心，不是典型 class 多重繼承題型', '非本題標準機制', '不是答案。'],
+          ['Python', '可', '非必須', '不是答案。']
+        ]
+      }
     ],
     tags: ['interface', 'inheritance']
   },
@@ -438,6 +557,17 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       'Python 是強型別也是動態型別。',
       '常見陷阱是把動態型別等同於弱型別，或把 Java 的強型別誤判成動態型別。'
     ],
+    teachingTables: [
+      {
+        title: '強弱型別與靜態動態型別是兩條軸線',
+        headers: ['判斷軸線', '問的問題', 'Python', 'Java', 'JavaScript'],
+        rows: [
+          ['強型別/弱型別', '不相容型別會不會被任意混用或自動轉換', '強型別', '強型別', '隱式轉型多，常不作為本題強型別標準答案'],
+          ['靜態型別/動態型別', '型別主要在編譯期還是執行期決定', '動態型別', '靜態型別', '動態型別'],
+          ['本題結論', '是否同時強型別且動態型別', '符合', '不符合動態型別', '不作為強型別標準答案']
+        ]
+      }
+    ],
     tags: ['dynamic-typing']
   },
   14: {
@@ -470,6 +600,18 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       '若要改呼叫端變數，通常要傳指標或位址。',
       '常見陷阱是把參數副本 p 的變化誤認成 main 裡 a 的變化。'
     ],
+    teachingTables: [
+      {
+        title: 'C 傳值呼叫執行追蹤',
+        headers: ['步驟', 'main 中的 a', 'func 中的 p', '說明'],
+        rows: [
+          ['int a=3;', '3', '尚未存在', 'a 建立在 main 中。'],
+          ['func(a); 進入函式', '3', '3', '把 a 的值複製給 p。'],
+          ['p = p*p;', '3', '9', '只改到 p，不改 a。'],
+          ['回到 main 並 printf', '3', '已消失', '輸出 a，所以是 3。']
+        ]
+      }
+    ],
     tags: ['pass-by-value', 'c-language']
   },
   15: {
@@ -501,6 +643,18 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       '平衡因子 = 左右子樹高度差，通常需維持在 -1 到 1。',
       '失衡時透過旋轉恢復平衡。',
       '常見陷阱是把高度差誤認為父子節點的鍵值差。'
+    ],
+    teachingTables: [
+      {
+        title: '一般 BST 與 AVL 樹比較',
+        headers: ['項目', '一般 BST', 'AVL 樹', '本題判斷'],
+        rows: [
+          ['基本排序', '左小右大', '保留左小右大', '兩者共同點。'],
+          ['平衡要求', '不一定檢查高度差', '平衡因子需在 -1 到 1', 'AVL 的核心差異。'],
+          ['失衡處理', '可能退化成鏈', '透過旋轉恢復平衡', 'AVL 的自平衡特色。'],
+          ['常見誤解', '以為比較父子鍵值差', '實際比較子樹高度差', '排除選項 D。']
+        ]
+      }
     ],
     tags: ['avl-tree', 'self-balancing-tree']
   },
@@ -537,6 +691,18 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       '二補數 overflow detection 也可能使用 XOR，因此本題保留 needs-review。',
       '常見陷阱是把 sum bit、carry generation、overflow detection 三個功能混在一起。'
     ],
+    teachingTables: [
+      {
+        title: 'XOR 在加法器中的功能分工',
+        headers: ['功能', '常見邏輯', '是否為本題採答', '說明'],
+        rows: [
+          ['和位元 sum bit', '半加器 A XOR B；全加器 A XOR B XOR Cin', '是，對應 D。', 'XOR 的典型直接用途。'],
+          ['產生進位', '半加器 A AND B；全加器常用 AND/OR 組合', '否。', '不是單純 XOR。'],
+          ['溢位檢測', '最高位 carry-in XOR carry-out', '有可辯性，對應 B。', '二補數溢位可用 XOR 檢測。'],
+          ['儲存符號位', '儲存在位元或暫存器中', '否。', 'XOR 不負責儲存。']
+        ]
+      }
+    ],
     tags: ['xor', 'twos-complement', 'adder']
   },
   17: {
@@ -570,6 +736,18 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       'Non-repeatable read 是同一交易內重讀已提交資料時結果改變。',
       '常見陷阱是把 Dirty Read、non-repeatable read 與 lost update 混在一起。'
     ],
+    teachingTables: [
+      {
+        title: '資料庫交易異常比較',
+        headers: ['現象', '關鍵條件', '對應選項', '是否為 Dirty Read'],
+        rows: [
+          ['Dirty Read', '讀到別人已修改但未提交的資料', 'C', '是，核心是未提交。'],
+          ['Non-repeatable read', '同一交易重讀同一筆已提交資料，結果不同', 'B', '不是，核心是重讀結果改變。'],
+          ['Lost update/覆寫', '後面的更新覆蓋前面的更新', 'A', '不是，核心是寫入覆蓋。'],
+          ['舊資料或快照', '讀到交易開始前或某時間點資料', 'D', '不是 Dirty Read 的定義。']
+        ]
+      }
+    ],
     tags: ['dirty-read']
   },
   18: {
@@ -602,6 +780,18 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       '3NF 消除傳遞依賴，處理非鍵屬性之間的間接依賴。',
       'BCNF 要求每個決定因子都是 superkey。',
       '常見陷阱是把 2NF 的部分依賴與 3NF 的傳遞依賴對調。'
+    ],
+    teachingTables: [
+      {
+        title: '正規化層級對照',
+        headers: ['正規化層級', '主要處理問題', '新手記憶方式', '對本題選項的影響'],
+        rows: [
+          ['1NF', '欄位值原子化、避免重複群組', '一格只放一個清楚值', 'A 是簡化說法。'],
+          ['2NF', '消除部分函數依賴', '複合鍵不能只靠一部分決定非鍵欄位', 'B 把 2NF 說錯。'],
+          ['3NF', '消除傳遞函數依賴', '非鍵欄位不要依賴另一個非鍵欄位', 'C 對應 3NF。'],
+          ['BCNF', '每個決定因子都要是 superkey', '能決定別人的欄位組要夠像鍵', 'D 是簡化說法，保留 note。']
+        ]
+      }
     ],
     tags: ['2nf', '3nf']
   },
@@ -666,6 +856,18 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       '根節點最後必須是黑色，但這不代表每個新節點都先設黑。',
       '插入修正包含重新著色與旋轉，用來處理紅紅衝突或其他規則違反。',
       '常見陷阱是忽略黑高度一致性，只背「根是黑色」。'
+    ],
+    teachingTables: [
+      {
+        title: '紅黑樹插入顏色判斷',
+        headers: ['插入顏色選擇', '對黑高度的影響', '可能問題', '本題結論'],
+        rows: [
+          ['預設黑色', '會讓插入路徑黑節點數增加', '容易破壞黑高度一致', '不選 A。'],
+          ['預設紅色', '通常不增加黑高度', '可能造成紅紅衝突，可修正', '選 B。'],
+          ['隨機顏色', '不可預測', '無法穩定維持紅黑樹規則', '不選 C。'],
+          ['與父節點相同', '取決於父節點顏色', '若父為紅會直接連紅', '不選 D。']
+        ]
+      }
     ],
     tags: ['red-black-tree', 'self-balancing-tree']
   },
@@ -854,6 +1056,17 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       '相同 baud rate 下，資料率比例可直接比較每符號 bit 數。',
       '常見陷阱是用 16/4 直接比較星座點數，而不是比較 log2(M)。'
     ],
+    teachingTables: [
+      {
+        title: '相同 baud 下的資料率比較',
+        headers: ['調變方式', '符號狀態數 M', '每符號 bit 數 log2(M)', '本題角色'],
+        rows: [
+          ['16-QAM', '16', '4 bits/symbol', '比較比例的分子。'],
+          ['QPSK', '4', '2 bits/symbol', '比較比例的分母。'],
+          ['比例', '不適用', '4 / 2 = 2', '16-QAM 是 QPSK 的 2 倍。']
+        ]
+      }
+    ],
     tags: ['qam', 'qpsk']
   },
   27: {
@@ -886,6 +1099,19 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       '路由聚合要確認起點落在新 prefix 的邊界上。',
       '常見陷阱是選到涵蓋多餘網段的 /18、/17 或 /16。'
     ],
+    teachingTables: [
+      {
+        title: '四個 /21 網段的連續範圍',
+        headers: ['原網段', '第三個 octet 範圍', '是否連續'],
+        rows: [
+          ['57.6.96.0/21', '96-103', '是。'],
+          ['57.6.104.0/21', '104-111', '是。'],
+          ['57.6.112.0/21', '112-119', '是。'],
+          ['57.6.120.0/21', '120-127', '是。'],
+          ['57.6.96.0/19', '96-127', '剛好涵蓋上列四段。']
+        ]
+      }
+    ],
     tags: ['route-aggregation', 'subnetting']
   },
   28: {
@@ -917,6 +1143,16 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       'receiver window 接收視窗是流量控制的重要機制。',
       'TCP congestion control 保護網路路徑，和 flow control 不是同一件事。',
       '常見陷阱是看到壅塞、RTT 上升就誤選 congestion control 類問題。'
+    ],
+    teachingTables: [
+      {
+        title: 'TCP flow control 與 congestion control',
+        headers: ['機制', '主要保護對象', '典型工具或訊號', '本題相關選項'],
+        rows: [
+          ['Flow control', '接收端緩衝區與處理能力', 'Receiver window', 'D 接收端緩衝溢位。'],
+          ['Congestion control', '網路中間路徑與鏈路', '壅塞視窗、封包遺失、延遲', 'A 擁塞崩潰、C RTT 上升。']
+        ]
+      }
     ],
     tags: ['flow-control', 'receiver-window']
   },
@@ -1366,7 +1602,7 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
     tags: ['prepared-statements', 'parameterized-query']
   },
   43: {
-    answerVerification: 'verified',
+    answerVerification: 'needs-review',
     answerNote: 'PDF 與 raw data 答案為 A。高頻段 5G 在部署上可能有涵蓋半徑較小的限制，但「覆蓋率下降」不是 5G 常見核心特性；本題應以常見 5G 特性分類作答。',
     coreTerms: ['5G', 'URLLC', 'mMTC', 'spectral efficiency', 'deployment challenge'],
     beginnerExplanation:
@@ -1491,6 +1727,17 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       'Stateful Protocol Analysis 檢查協定狀態，不等於一定最會抓未知攻擊。',
       '常見陷阱是忽略題目問「未知攻擊」，直接選熟悉的 signature detection。'
     ],
+    teachingTables: [
+      {
+        title: 'IDPS 偵測技術比較',
+        headers: ['技術', '判斷依據', '對未知攻擊的表現', '常見陷阱'],
+        rows: [
+          ['Signature', '已知攻擊特徵或規則', '較弱，未知攻擊未必已有規則。', '精準不代表能抓未知攻擊。'],
+          ['Stateful Protocol', '協定狀態與流程是否合理', '中等，受限於既定協定規則。', '不是所有未知攻擊都會違反協定流程。'],
+          ['Anomaly', '正常 baseline 與偏離程度', '較佳，能抓偏離正常的新行為。', 'false positive 可能較高。']
+        ]
+      }
+    ],
     tags: ['anomaly-detection']
   },
   47: {
@@ -1555,6 +1802,18 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       'SQL Injection 與 XSS 通常更適合由 WAF 這類應用層防護處理。',
       '常見陷阱是用部署型態或 SSL 支援與否判斷 WAF；考題通常問的是觀察層級與內容。'
     ],
+    teachingTables: [
+      {
+        title: 'WAF 與封包過濾式防火牆比較',
+        headers: ['項目', '傳統封包過濾式防火牆', 'WAF'],
+        rows: [
+          ['主要觀察內容', 'IP、port、protocol、連線狀態', 'URL、header、cookie、body、參數、HTTP 命令模式'],
+          ['主要層級', '較偏網路層與傳輸層欄位', '應用層，特別是 Web/HTTP'],
+          ['常見防護目標', '控制哪些連線可通過', '阻擋 SQLi、XSS 等 Web 應用攻擊'],
+          ['本題判斷', '不一定理解完整 Web 語意', '能檢視與過濾應用層內容或命令']
+        ]
+      }
+    ],
     tags: ['waf', 'application-layer']
   },
   49: {
@@ -1588,6 +1847,18 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       '本題 needs-review 的原因是教材可能採傳統三因素，也可能提到現代風險訊號。',
       '常見陷阱是把 location 這類風險訊號直接等同於傳統認證因素；分類題要先確認模型範圍。'
     ],
+    teachingTables: [
+      {
+        title: '傳統 MFA 因素與位置訊號',
+        headers: ['類型', '中文說法', '例子', '是否屬於傳統 MFA 基本因素'],
+        rows: [
+          ['Knowledge', '所知之事', '密碼、PIN、祕密問題答案', '是。'],
+          ['Possession', '所持之物', '手機、OTP token、硬體金鑰', '是。'],
+          ['Inherence', '所表之徵或所是之事', '指紋、人臉、虹膜', '是。'],
+          ['Context/Risk signal', '所在之處', '登入地點、IP 位置、旅速', '通常不是傳統三因素；可作為風險式驗證輔助訊號。']
+        ]
+      }
+    ],
     tags: ['mfa', 'auth-factors']
   },
   50: {
@@ -1619,6 +1890,18 @@ export const reviewedQuestionAnalyses: Partial<Record<number, QuestionTeachingRe
       'UDP 和 TCP 都是傳輸層協定。',
       'ICMP、IGMP、OSPF 常被歸在網路層或其控制/路由功能範圍。',
       '常見陷阱是把所有「網路通訊協定」都當網路層；分層題要看協定負責的功能。'
+    ],
+    teachingTables: [
+      {
+        title: 'TCP/IP 網路層相關協定與傳輸層對照',
+        headers: ['協定', '常見層級分類', '主要用途', '本題判斷'],
+        rows: [
+          ['ICMP', '網路層相關控制', '錯誤回報、診斷訊息，例如 ping', '屬於網路層相關。'],
+          ['IGMP', '網路層相關控制', 'IPv4 multicast 群組管理', '屬於網路層相關。'],
+          ['OSPF', '網路層路由控制', '交換路由資訊、決定路徑', '屬於網路層相關。'],
+          ['UDP', '傳輸層', '無連線資料報服務、使用 port', '非屬網路層。']
+        ]
+      }
     ],
     tags: ['udp', 'network-layer']
   }
