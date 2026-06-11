@@ -51,9 +51,13 @@ describe('AGroupQuestionCard', () => {
     });
     const originalSection = wrapper.find('[data-testid="original-exam-section"]');
     const teachingSection = wrapper.find('[data-testid="teaching-analysis-section"]');
+    const answerToggle = originalSection.get('[data-testid="official-answer-toggle"]');
 
     expect(originalSection.text()).toContain(question.originalStem);
-    expect(originalSection.text()).toContain('官方答案：C');
+    expect(answerToggle.text()).toContain('官方答案');
+    expect(answerToggle.text()).not.toContain('答案：C');
+    expect(originalSection.text()).not.toContain('答案：C');
+    expect(originalSection.text()).not.toContain('官方答案狀態');
     expect(originalSection.text()).toContain('A. 0');
     expect(originalSection.text()).toContain('B. 1');
     expect(originalSection.text()).toContain('C. 31');
@@ -128,33 +132,52 @@ describe('AGroupQuestionCard', () => {
   });
 
   it.each([
-    ['verified', null, '官方答案已驗證'],
-    [
-      'needs-review',
-      'Extracted official answer and extracted option text require human review',
-      '官方答案仍需人工確認'
-    ],
+    ['verified', null],
+    ['needs-review', 'Extracted official answer and extracted option text require human review'],
     [
       'suspected-error',
-      'Teaching analysis identifies a conflict between the official answer and the technical rule',
-      '疑似官方答案錯誤'
+      'Teaching analysis identifies a conflict between the official answer and the technical rule'
     ]
-  ] satisfies [AnswerVerification, string | null, string][])(
-    'shows explicit answer verification state for %s',
-    (answerVerification, answerNote, expectedLabel) => {
+  ] satisfies [AnswerVerification, string | null][])(
+    'reveals the official answer details for %s only after clicking the official answer',
+    async (answerVerification, answerNote) => {
       const wrapper = mount(AGroupQuestionCard, {
         props: {
           question: makeQuestion(answerVerification, answerNote)
         }
       });
-      const verificationStatus = wrapper.find('[data-testid="answer-verification-status"]');
 
-      expect(verificationStatus.text()).toContain(expectedLabel);
+      expect(wrapper.find('[data-testid="official-answer-details"]').exists()).toBe(false);
+      const answerToggle = wrapper.get('[data-testid="official-answer-toggle"]');
+      expect(answerToggle.attributes('aria-expanded')).toBe('false');
+      expect(answerToggle.text()).not.toContain('答案：C');
+
+      await answerToggle.trigger('click');
+
+      expect(answerToggle.attributes('aria-expanded')).toBe('true');
+      const answerDetails = wrapper.get('[data-testid="official-answer-details"]');
+      expect(answerDetails.text()).toContain('答案：C');
+      expect(answerDetails.text()).not.toContain('官方答案狀態');
+      expect(answerDetails.text()).not.toContain('官方答案已驗證');
       if (answerNote) {
-        expect(verificationStatus.text()).toContain(answerNote);
+        expect(answerDetails.text()).toContain(answerNote);
       }
     }
   );
+
+  it('hides answer details again when the official answer is clicked twice', async () => {
+    const wrapper = mount(AGroupQuestionCard, {
+      props: { question }
+    });
+    const answerToggle = wrapper.get('[data-testid="official-answer-toggle"]');
+
+    await answerToggle.trigger('click');
+    expect(wrapper.find('[data-testid="official-answer-details"]').exists()).toBe(true);
+
+    await answerToggle.trigger('click');
+    expect(wrapper.find('[data-testid="official-answer-details"]').exists()).toBe(false);
+    expect(answerToggle.attributes('aria-expanded')).toBe('false');
+  });
 
   it('shows source year, source PDF file, and page number when available', () => {
     const wrapper = mount(AGroupQuestionCard, {
@@ -178,7 +201,8 @@ describe('AGroupQuestionCard', () => {
     const source = wrapper.find('[data-testid="source-traceability"]');
 
     expect(originalSection.text()).toContain(historicalQuestion.originalStem);
-    expect(originalSection.text()).toContain(`官方答案：${historicalQuestion.acceptedAnswers.join('、')}`);
+    expect(originalSection.text()).toContain('官方答案');
+    expect(originalSection.text()).not.toContain(`答案：${historicalQuestion.acceptedAnswers.join('、')}`);
     expect(originalSection.text()).toContain(`A. ${historicalQuestion.options.A}`);
     expect(originalSection.text()).toContain(`D. ${historicalQuestion.options.D}`);
     expect(teachingSection.text()).toContain(historicalQuestion.beginnerExplanation.split('\n')[0]);

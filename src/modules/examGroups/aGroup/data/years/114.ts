@@ -635,7 +635,7 @@ function createQuestion(raw: RawQuestion): ExamQuestionAnalysis {
     year: '114',
     number: raw.number,
     acceptedAnswers: [raw.answer],
-    answerNote: review?.answerNote ?? 'PDF 題本已標示官方答案，後續逐題內容審查會補強完整推導。',
+    answerNote: review?.answerNote ?? null,
     answerVerification: review?.answerVerification ?? 'needs-review',
     originalStem: raw.stem,
     options: raw.options,

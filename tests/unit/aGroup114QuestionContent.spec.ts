@@ -22,6 +22,7 @@ describe('114 A group reviewed question analysis content', () => {
     for (const question of questions) {
       expect(question.beginnerExplanation).not.toContain('本題先辨識考點');
       expect(question.solvingSteps.join('\n')).not.toContain('PDF 題本標示答案');
+      expect(question.answerNote ?? '').not.toContain('後續逐題內容審查會補強完整推導');
       expect(ANSWER_OPTIONS.every((option) => !question.optionExplanations[option].includes('PDF 題本標示'))).toBe(true);
       expect(question.keyTakeaways.length).toBeGreaterThanOrEqual(2);
     }

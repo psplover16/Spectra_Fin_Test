@@ -1,20 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import {
   ANSWER_OPTIONS,
-  type AnswerVerification,
   type ExamQuestionAnalysis
 } from '@/modules/examGroups/aGroup/types/questionAnalysis';
 
 const props = defineProps<{
   question: ExamQuestionAnalysis;
 }>();
-
-const ANSWER_VERIFICATION_LABELS: Record<AnswerVerification, string> = {
-  verified: '官方答案已驗證',
-  'needs-review': '官方答案仍需人工確認',
-  'suspected-error': '疑似官方答案錯誤'
-};
 
 const beginnerExplanationParagraphs = computed(() =>
   props.question.beginnerExplanation
@@ -24,6 +17,15 @@ const beginnerExplanationParagraphs = computed(() =>
 );
 
 const teachingTables = computed(() => props.question.teachingTables ?? []);
+const isAnswerDetailsVisible = ref(false);
+const answerDetailsId = computed(() => `a-group-answer-details-${props.question.year}-${props.question.number}`);
+
+watch(
+  () => `${props.question.year}-${props.question.number}`,
+  () => {
+    isAnswerDetailsVisible.value = false;
+  }
+);
 </script>
 
 <template>
@@ -43,9 +45,24 @@ const teachingTables = computed(() => props.question.teachingTables ?? []);
         <p class="text-xs font-semibold text-slate">原題內容</p>
         <p class="mt-2 whitespace-pre-line text-sm leading-6 text-ink">{{ question.originalStem }}</p>
       </div>
-      <p class="text-sm font-semibold text-teal">官方答案：{{ question.acceptedAnswers.join('、') }}</p>
-      <div class="rounded-md bg-sand px-3 py-2 text-sm leading-6 text-ink" data-testid="answer-verification-status">
-        <p class="font-semibold">官方答案狀態：{{ ANSWER_VERIFICATION_LABELS[question.answerVerification] }}</p>
+      <button
+        type="button"
+        class="inline-flex w-fit items-center gap-2 rounded-md border border-teal/20 bg-teal/10 px-3 py-2 text-left text-sm font-semibold text-teal transition hover:bg-teal/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/40"
+        :aria-controls="answerDetailsId"
+        :aria-expanded="isAnswerDetailsVisible"
+        data-testid="official-answer-toggle"
+        @click="isAnswerDetailsVisible = !isAnswerDetailsVisible"
+      >
+        <span>官方答案</span>
+        <span aria-hidden="true" class="text-xs">{{ isAnswerDetailsVisible ? '收合' : '查看' }}</span>
+      </button>
+      <div
+        v-if="isAnswerDetailsVisible"
+        :id="answerDetailsId"
+        class="rounded-md bg-sand px-3 py-2 text-sm leading-6 text-ink"
+        data-testid="official-answer-details"
+      >
+        <p class="font-semibold">答案：{{ question.acceptedAnswers.join('、') }}</p>
         <p v-if="question.answerNote" class="mt-1 text-slate">備註：{{ question.answerNote }}</p>
       </div>
       <ol class="space-y-2" aria-label="原始選項">
