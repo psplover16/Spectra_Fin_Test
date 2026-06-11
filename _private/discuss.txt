@@ -116,11 +116,23 @@ Rollback 表示交易取消，資料要恢復原狀。
 Dirty Read 是指：一個交易讀到了另一個交易「尚未 Commit」的資料。
 Dirty Read 不會自動 Rollback，因為它不是資料庫判定的「執行錯誤」。 它是你選擇較低隔離層級後，資料庫允許發生的現象。 (也就是 READ UNCOMMITTED 放寬了 ACID 裡的 Isolation，所以可能發生 Dirty Read。)
 
+資料庫交易異常整理
+Dirty Read：
+讀到別人還沒 COMMIT 的資料。
+Non-repeatable Read：
+同一交易內，同一筆資料讀兩次，值不同。
+Phantom Read：
+同一交易內，同一條件查兩次，筆數不同。
+Lost Update：
+兩個交易同時更新同一筆資料，導致其中一個更新被覆蓋。
+Read Skew / Inconsistent Read(讀取偏斜)：
+同一交易讀到多筆相關資料，但不是同一時間點的狀態，合起來不一致。
+Write Skew(寫入偏斜)：
+兩個交易各自修改不同資料，各自看都合法，但最後整體違反規則。
 
 
 
-
-
+第 18 題
 
 
 
