@@ -4,9 +4,15 @@ import type {
   LanguageQuestionAnalysis,
   LanguageReviewStatus
 } from '@/modules/examGroups/language/types/languageQuestionAnalysis';
+import QuestionBookmarkButton from '@/modules/examGroups/shared/components/QuestionBookmarkButton.vue';
 
 const props = defineProps<{
   question: LanguageQuestionAnalysis;
+  isBookmarked?: boolean;
+}>();
+
+const emit = defineEmits<{
+  toggleBookmark: [questionNumber: number];
 }>();
 
 const REVIEW_STATUS_LABELS: Record<LanguageReviewStatus, string> = {
@@ -41,9 +47,10 @@ function splitParagraphs(text: string): string[] {
           {{ SUBJECT_LABELS[question.subject] }} / {{ question.kind }}
         </h3>
       </div>
-      <p class="shrink-0 rounded-md bg-teal/10 px-2 py-1 text-xs font-semibold text-teal">
-        {{ question.year }} 年
-      </p>
+      <QuestionBookmarkButton
+        :is-bookmarked="isBookmarked"
+        @toggle="emit('toggleBookmark', question.number)"
+      />
     </header>
 
     <section class="space-y-3 border-t border-slate/10 pt-4" data-testid="language-original-section">

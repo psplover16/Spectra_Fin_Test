@@ -7,15 +7,23 @@ import {
 } from '@/modules/examGroups/language/composables/useLanguageYearQuestions';
 import LanguageQuestionCard from '@/modules/examGroups/language/components/LanguageQuestionCard.vue';
 import type { LanguageYear } from '@/modules/examGroups/language/data/yearSummaries';
+import { useYearQuestionBookmarkPage } from '@/modules/examGroups/shared/composables/useYearQuestionBookmarkPage';
 
 const route = useRoute();
 const questionState = ref<LanguageYearQuestionState | null>(null);
 const loadError = ref(false);
 
-const year = computed(() => {
+const year = computed<string | undefined>(() => {
   const routeYear = route.params.year;
   return Array.isArray(routeYear) ? routeYear[0] : routeYear;
 });
+const {
+  bookmarkedQuestionNumber,
+  questionElementId,
+  refreshBookmarkedQuestion,
+  scrollToBookmarkedQuestion,
+  toggleQuestionBookmark
+} = useYearQuestionBookmarkPage('language', year);
 
 const completeQuestions = computed(() =>
   questionState.value?.status === 'complete' ? questionState.value.questions : []
@@ -28,6 +36,8 @@ watch(
 
     try {
       questionState.value = await loadLanguageYearQuestions(nextYear as LanguageYear);
+      refreshBookmarkedQuestion();
+      void scrollToBookmarkedQuestion();
     } catch {
       loadError.value = true;
       questionState.value = null;
@@ -59,11 +69,18 @@ watch(
       class="space-y-4"
       data-testid="language-question-list"
     >
-      <LanguageQuestionCard
+      <div
         v-for="question in completeQuestions"
+        :id="questionElementId(question.number)"
         :key="`${question.year}-${question.number}`"
-        :question="question"
-      />
+        data-testid="year-question-anchor"
+      >
+        <LanguageQuestionCard
+          :question="question"
+          :is-bookmarked="bookmarkedQuestionNumber === question.number"
+          @toggle-bookmark="toggleQuestionBookmark"
+        />
+      </div>
     </div>
   </section>
 </template>

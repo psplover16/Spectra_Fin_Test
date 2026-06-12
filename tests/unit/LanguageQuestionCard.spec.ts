@@ -37,6 +37,24 @@ describe('LanguageQuestionCard', () => {
     expect(wrapper.find('svg').exists()).toBe(false);
   });
 
+  it('shows a question bookmark button and emits the current question number', async () => {
+    const question = questions[5];
+    const wrapper = mount(LanguageQuestionCard, {
+      props: {
+        question,
+        isBookmarked: true
+      }
+    });
+    const bookmarkButton = wrapper.get('[data-testid="question-bookmark-button"]');
+
+    expect(bookmarkButton.text()).toContain('已書籤');
+    expect(bookmarkButton.attributes('aria-pressed')).toBe('true');
+
+    await bookmarkButton.trigger('click');
+
+    expect(wrapper.emitted('toggleBookmark')).toEqual([[question.number]]);
+  });
+
   it('shows source traceability with PDF file, page state, and extraction status', () => {
     const question = questions[5];
     const wrapper = mount(LanguageQuestionCard, {

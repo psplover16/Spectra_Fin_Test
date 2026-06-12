@@ -7,15 +7,23 @@ import {
   loadAGroupYearQuestions,
   type AGroupYearQuestionState
 } from '@/modules/examGroups/aGroup/composables/useAGroupYearQuestions';
+import { useYearQuestionBookmarkPage } from '@/modules/examGroups/shared/composables/useYearQuestionBookmarkPage';
 
 const route = useRoute();
 const questionState = ref<AGroupYearQuestionState | null>(null);
 const loadError = ref(false);
 
-const year = computed(() => {
+const year = computed<string | undefined>(() => {
   const routeYear = route.params.year;
   return Array.isArray(routeYear) ? routeYear[0] : routeYear;
 });
+const {
+  bookmarkedQuestionNumber,
+  questionElementId,
+  refreshBookmarkedQuestion,
+  scrollToBookmarkedQuestion,
+  toggleQuestionBookmark
+} = useYearQuestionBookmarkPage('a-group', year);
 
 const completeQuestions = computed(() =>
   questionState.value?.status === 'complete' ? questionState.value.questions : []
@@ -28,6 +36,8 @@ watch(
 
     try {
       questionState.value = await loadAGroupYearQuestions(nextYear as AGroupYear);
+      refreshBookmarkedQuestion();
+      void scrollToBookmarkedQuestion();
     } catch {
       loadError.value = true;
       questionState.value = null;
@@ -56,7 +66,18 @@ watch(
     </div>
 
     <div v-if="completeQuestions.length > 0" class="space-y-3">
-      <AGroupQuestionCard v-for="question in completeQuestions" :key="question.number" :question="question" />
+      <div
+        v-for="question in completeQuestions"
+        :id="questionElementId(question.number)"
+        :key="question.number"
+        data-testid="year-question-anchor"
+      >
+        <AGroupQuestionCard
+          :question="question"
+          :is-bookmarked="bookmarkedQuestionNumber === question.number"
+          @toggle-bookmark="toggleQuestionBookmark"
+        />
+      </div>
     </div>
   </section>
 </template>

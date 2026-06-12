@@ -86,6 +86,23 @@ describe('AGroupQuestionCard', () => {
     expect(text).toContain('computer-principles');
   });
 
+  it('shows a question bookmark button and emits the current question number', async () => {
+    const wrapper = mount(AGroupQuestionCard, {
+      props: {
+        question,
+        isBookmarked: true
+      }
+    });
+    const bookmarkButton = wrapper.get('[data-testid="question-bookmark-button"]');
+
+    expect(bookmarkButton.text()).toContain('已書籤');
+    expect(bookmarkButton.attributes('aria-pressed')).toBe('true');
+
+    await bookmarkButton.trigger('click');
+
+    expect(wrapper.emitted('toggleBookmark')).toEqual([[question.number]]);
+  });
+
   it('renders beginner explanation line breaks as readable paragraphs', () => {
     const paragraphQuestion: ExamQuestionAnalysis = {
       ...question,

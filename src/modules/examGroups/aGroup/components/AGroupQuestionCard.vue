@@ -4,9 +4,15 @@ import {
   ANSWER_OPTIONS,
   type ExamQuestionAnalysis
 } from '@/modules/examGroups/aGroup/types/questionAnalysis';
+import QuestionBookmarkButton from '@/modules/examGroups/shared/components/QuestionBookmarkButton.vue';
 
 const props = defineProps<{
   question: ExamQuestionAnalysis;
+  isBookmarked?: boolean;
+}>();
+
+const emit = defineEmits<{
+  toggleBookmark: [questionNumber: number];
 }>();
 
 const beginnerExplanationParagraphs = computed(() =>
@@ -35,9 +41,10 @@ watch(
         <p class="text-xs font-semibold text-teal">第 {{ question.number }} 題</p>
         <h3 class="mt-1 text-lg font-bold leading-tight">{{ question.coreTerms[0] }}</h3>
       </div>
-      <p class="shrink-0 rounded-md bg-teal/10 px-2 py-1 text-xs font-semibold text-teal">
-        {{ question.year }} 年
-      </p>
+      <QuestionBookmarkButton
+        :is-bookmarked="isBookmarked"
+        @toggle="emit('toggleBookmark', question.number)"
+      />
     </header>
 
     <section class="space-y-3 border-t border-slate/10 pt-4" data-testid="original-exam-section">

@@ -7,15 +7,23 @@ import {
 } from '@/modules/examGroups/bGroup/composables/useBGroupYearQuestions';
 import BGroupEssayQuestionCard from '@/modules/examGroups/bGroup/components/BGroupEssayQuestionCard.vue';
 import type { BGroupYear } from '@/modules/examGroups/bGroup/data/yearSummaries';
+import { useYearQuestionBookmarkPage } from '@/modules/examGroups/shared/composables/useYearQuestionBookmarkPage';
 
 const route = useRoute();
 const questionState = ref<BGroupYearQuestionState | null>(null);
 const loadError = ref(false);
 
-const year = computed(() => {
+const year = computed<string | undefined>(() => {
   const routeYear = route.params.year;
   return Array.isArray(routeYear) ? routeYear[0] : routeYear;
 });
+const {
+  bookmarkedQuestionNumber,
+  questionElementId,
+  refreshBookmarkedQuestion,
+  scrollToBookmarkedQuestion,
+  toggleQuestionBookmark
+} = useYearQuestionBookmarkPage('b-group', year);
 
 watch(
   year,
@@ -24,6 +32,8 @@ watch(
 
     try {
       questionState.value = await loadBGroupYearQuestions(nextYear as BGroupYear);
+      refreshBookmarkedQuestion();
+      void scrollToBookmarkedQuestion();
     } catch {
       loadError.value = true;
       questionState.value = null;
@@ -55,11 +65,18 @@ watch(
       class="space-y-4"
       data-testid="b-group-question-list"
     >
-      <BGroupEssayQuestionCard
+      <div
         v-for="question in questionState.questions"
+        :id="questionElementId(question.number)"
         :key="`${question.year}-${question.number}`"
-        :question="question"
-      />
+        data-testid="year-question-anchor"
+      >
+        <BGroupEssayQuestionCard
+          :question="question"
+          :is-bookmarked="bookmarkedQuestionNumber === question.number"
+          @toggle-bookmark="toggleQuestionBookmark"
+        />
+      </div>
     </div>
   </section>
 </template>

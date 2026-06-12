@@ -3,8 +3,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 import AGroupYearView from '@/modules/examGroups/aGroup/views/AGroupYearView.vue';
 import type { ExamQuestionAnalysis } from '@/modules/examGroups/aGroup/types/questionAnalysis';
+import {
+  readYearQuestionBookmark,
+  setYearQuestionBookmark
+} from '@/modules/examGroups/shared/storage/yearQuestionBookmarkStorage';
 
 const routeYear = ref('114');
+const scrollIntoView = vi.fn();
 
 const question: ExamQuestionAnalysis = {
   year: '114',
@@ -59,6 +64,13 @@ vi.mock('@/modules/examGroups/aGroup/composables/useAGroupYearQuestions', () => 
 describe('AGroupYearView', () => {
   beforeEach(() => {
     routeYear.value = '114';
+    localStorage.clear();
+    document.body.innerHTML = '';
+    scrollIntoView.mockClear();
+    Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: scrollIntoView
+    });
   });
 
   it('renders complete year question cards with separated original and teaching sections', async () => {
@@ -82,5 +94,40 @@ describe('AGroupYearView', () => {
     expect(wrapper.get('[data-testid="a-group-year-view"]').text()).not.toContain('等待版型確認後製作');
     expect(wrapper.findAll('[data-testid="a-group-question-card"]')).toHaveLength(1);
     expect(wrapper.text()).toContain('已載入 1 題解析資料');
+  });
+
+  it('stores the bookmarked question for the current A group year page', async () => {
+    const wrapper = mount(AGroupYearView, {
+      attachTo: document.body
+    });
+
+    await flushPromises();
+
+    const bookmarkButton = wrapper.get('[data-testid="question-bookmark-button"]');
+    expect(bookmarkButton.text()).toContain('書籤');
+    expect(bookmarkButton.attributes('aria-pressed')).toBe('false');
+
+    await bookmarkButton.trigger('click');
+
+    expect(readYearQuestionBookmark('a-group', '114')?.questionNumber).toBe(1);
+    expect(bookmarkButton.text()).toContain('已書籤');
+    expect(bookmarkButton.attributes('aria-pressed')).toBe('true');
+  });
+
+  it('scrolls to the stored A group question bookmark when the year page loads', async () => {
+    setYearQuestionBookmark('a-group', '114', 1);
+
+    const wrapper = mount(AGroupYearView, {
+      attachTo: document.body
+    });
+
+    await flushPromises();
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="question-bookmark-button"]').text()).toContain('已書籤');
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: 'smooth',
+      block: 'start'
+    });
   });
 });

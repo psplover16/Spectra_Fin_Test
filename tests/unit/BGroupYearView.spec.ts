@@ -3,8 +3,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 import BGroupYearView from '@/modules/examGroups/bGroup/views/BGroupYearView.vue';
 import type { BGroupEssayQuestionAnalysis } from '@/modules/examGroups/bGroup/types/essayQuestionAnalysis';
+import {
+  readYearQuestionBookmark,
+  setYearQuestionBookmark
+} from '@/modules/examGroups/shared/storage/yearQuestionBookmarkStorage';
 
 const routeYear = ref('114');
+const scrollIntoView = vi.fn();
 const sampleQuestion: BGroupEssayQuestionAnalysis = {
   year: '114',
   number: 1,
@@ -57,6 +62,13 @@ describe('BGroupYearView', () => {
   beforeEach(() => {
     routeYear.value = '114';
     loadBGroupYearQuestions.mockClear();
+    localStorage.clear();
+    document.body.innerHTML = '';
+    scrollIntoView.mockClear();
+    Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: scrollIntoView
+    });
   });
 
   it('loads the requested B group year module when rendered', async () => {
@@ -83,5 +95,49 @@ describe('BGroupYearView', () => {
     expect(wrapper.get('[data-testid="b-group-question-list"]').text()).toContain(sampleQuestion.originalQuestion);
     expect(wrapper.get('[data-testid="b-group-question-card"]').text()).toContain('traceroute');
     expect(wrapper.get('[data-testid="teaching-analysis-section"]').text()).toContain(sampleQuestion.modelAnswer);
+  });
+
+  it('stores the bookmarked question for the current B group year page', async () => {
+    loadBGroupYearQuestions.mockResolvedValueOnce({
+      status: 'complete',
+      year: '113',
+      questions: [{ ...sampleQuestion, year: '113' }]
+    });
+    routeYear.value = '113';
+
+    const wrapper = mount(BGroupYearView, {
+      attachTo: document.body
+    });
+
+    await flushPromises();
+
+    const bookmarkButton = wrapper.get('[data-testid="question-bookmark-button"]');
+    await bookmarkButton.trigger('click');
+
+    expect(readYearQuestionBookmark('b-group', '113')?.questionNumber).toBe(sampleQuestion.number);
+    expect(bookmarkButton.text()).toContain('已書籤');
+  });
+
+  it('scrolls to the stored B group question bookmark when the year page loads', async () => {
+    setYearQuestionBookmark('b-group', '113', sampleQuestion.number);
+    loadBGroupYearQuestions.mockResolvedValueOnce({
+      status: 'complete',
+      year: '113',
+      questions: [{ ...sampleQuestion, year: '113' }]
+    });
+    routeYear.value = '113';
+
+    const wrapper = mount(BGroupYearView, {
+      attachTo: document.body
+    });
+
+    await flushPromises();
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="question-bookmark-button"]').text()).toContain('已書籤');
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: 'smooth',
+      block: 'start'
+    });
   });
 });
