@@ -1,0 +1,1790 @@
+國家考試資訊類科重點整理（排版、補充與更訂版）
+
+整理原則：
+1. 原始文件中的考點全部保留，並改成可複習、可勾選的章節格式。
+2. 補充常見定義、比較表、計算題公式與易混淆觀念。
+3. 幾個原文可能的筆誤已一併更訂：
+   - TLB：應為 Translation Lookaside Buffer，不是 Transaction Lookaside Buffer。
+   - CSMA/CA：原文 CAMA/CA 應為 CSMA/CA。
+   - Contiguous Allocation：原文 Continous 應為 Contiguous。
+   - Java GC：原文 GIGC 可理解為 GC 或 G1GC，國考通常先掌握 Garbage Collection。
+4. 會隨標準更新的項目，例如 USB、Wi-Fi、Bluetooth、ISO 27001，已補入近年版本重點；考試仍以出題年度教材為準。
+
+複習符號建議：
+- [必背]：選擇題常出，先背定義、比較與例子。
+- [會算]：一定要練題，尤其是時間、位址、排程、記憶體、磁碟與編碼。
+- [會畫]：建議自己畫圖，例如 OSI、memory hierarchy、process state、deadlock、thrashing。
+- [比較]：常以表格題、配對題或觀念題出現。
+- [補充]：不是原文主軸，但近年或常見教材會搭配考。
+
+
+3a. 基本計概
+
+一、圖靈機與圖靈測試
+
+[必背] 圖靈機
+- 定義：一種抽象計算模型，用來描述「可計算」的問題。若問題可由圖靈機在有限步驟內完成，通常稱為可計算。
+- 三個主要單元：
+  1. 無限長紙帶：儲存輸入、輸出與中間結果。
+  2. 讀寫頭：讀取目前格子的符號，並可寫入符號、向左或向右移動。
+  3. 有限控制器：依目前狀態與讀到的符號決定下一步動作。
+- 常見考法：問「圖靈機是否為實體機器」時，答案是抽象模型，不是一般實體電腦。
+
+[必背] 圖靈測試
+- 定義：用來判斷機器是否展現類似人類智慧的測試。若審問者無法可靠分辨回答者是人或機器，則機器可被視為通過測試。
+- 易混淆：圖靈機是計算模型；圖靈測試是人工智慧判斷方式。
+
+二、馮紐曼架構
+
+[必背] 兩大特色
+- 程式內儲概念：程式與資料都存於記憶體。
+- 指令循序執行：CPU 依序取指令、解碼、執行，除非遇到跳躍或中斷。
+
+[必背] 五大單元
+- 輸入單元、輸出單元、記憶單元、算術邏輯單元（ALU）、控制單元（CU）。
+
+[比較] 馮紐曼架構 vs 哈佛架構
+- 馮紐曼架構：程式與資料共用記憶體與匯流排，設計簡單，但容易受限於記憶體傳輸。
+- 哈佛架構：程式記憶體與資料記憶體分離，可同時取指令與取資料，常見於嵌入式系統或快取設計。
+
+[必背] 馮紐曼瓶頸
+- 定義：CPU 與記憶體之間資料傳輸速度不足，造成 CPU 等待資料。
+- 解法：快取（Cache）、預取、增加匯流排寬度、提高記憶體頻寬、管線化、平行處理、改良記憶體階層。
+
+三、機器指令與指令週期
+
+[必背] 機器指令
+- 定義：CPU 可直接解讀與執行的二進位指令。
+- 常見組成：操作碼（Opcode）加上運算元（Operand）或位址欄位。
+
+[必背] 機器指令週期常見 5 階段
+1. Fetch：取指令，通常由 PC 指向下一個指令位址。
+2. Decode：解碼，判斷操作碼與定址模式。
+3. Operand Fetch / Address Calculation：取得運算元或計算有效位址。
+4. Execute：執行運算、跳躍、比較或 I/O。
+5. Write Back / Store：寫回結果，並檢查是否有中斷。
+
+[補充] 不同教材階段名稱可能不同，但選擇題重點通常是「取指令、解碼、取運算元、執行、寫回」。
+
+四、Pipeline（管線化）
+
+[必背] 定義
+- 將指令執行拆成多個階段，使不同指令可在不同階段同時進行，提高吞吐量。
+
+[會算] 常見公式
+- 假設有 n 個指令、k 個管線階段、每階段時間為 t：
+  - 非管線時間：約 n * k * t
+  - 管線時間：約 (k + n - 1) * t
+  - Speedup：約 [n * k] / [k + n - 1]
+- 若題目提供各階段時間不同，管線時脈通常由最慢階段決定。
+
+[必背] 管線限制
+- Pipeline 提高吞吐量，不一定降低單一指令延遲。
+- Hazard 會造成 stall，影響實際效能。
+
+五、匯流排（Bus）
+
+[必背] 三種匯流排
+- 位址匯流排（Address Bus）：傳送記憶體或 I/O 位址。
+- 資料匯流排（Data Bus）：傳送資料。
+- 控制匯流排（Control Bus）：傳送讀寫、中斷、時脈、確認等控制訊號。
+
+[會算] 基本計算
+- n bits 位址匯流排可產生 2^n 個位址。
+- 若每個位址代表 1 byte，則可定址空間為 2^n bytes。
+- n bits 資料匯流排一次可傳送 n bits 的資料。
+
+[比較] 傳輸方向
+- 位址匯流排：通常 CPU 到記憶體或 I/O，單向為主。
+- 資料匯流排：雙向。
+- 控制匯流排：依訊號而定，常見為雙向或多方向。
+
+六、效能名詞與公式
+
+[必背] 名詞
+- Clock：時脈，用來同步 CPU 動作。
+- Clock Cycle：一個時脈週期，時間為 1 / Clock Rate。
+- Clock Rate：每秒時脈次數，例如 GHz。
+- CPI（Cycles Per Instruction）：平均每個指令所需時脈週期數。
+- MIPS（Million Instructions Per Second）：每秒百萬指令數。
+- 內頻：CPU 核心運作頻率。
+- 外頻：CPU 與外部元件或系統匯流排相關頻率，舊教材常稱 FSB 或 base clock。
+
+[會算] 公式
+- CPU Time = Instruction Count * CPI * Clock Cycle Time
+- CPU Time = Instruction Count * CPI / Clock Rate
+- MIPS = Instruction Count / (Execution Time * 10^6)
+- MIPS = Clock Rate / (CPI * 10^6)
+
+[易混淆]
+- Clock Rate 越高不一定越快，還要看 CPI、指令數、記憶體存取與架構。
+- MIPS 不適合跨不同 ISA 直接比較，因為不同架構完成同一工作所需指令數不同。
+
+七、RISC 與 CISC
+
+[比較] RISC vs CISC
+
+項目 | RISC | CISC
+--- | --- | ---
+全名 | Reduced Instruction Set Computer | Complex Instruction Set Computer
+指令數 | 少而精簡 | 多而複雜
+定址模式 | 較少 | 較多
+指令長度 | 多為固定長度 | 常為可變長度
+執行週期 | 多數指令接近固定、較短 | 指令可能需多個週期
+暫存器數量 | 通常較多 | 通常較少
+記憶體存取 | Load/Store 架構較常見 | 指令可直接操作記憶體較常見
+編譯器需求 | 較需要強力 compiler 做最佳化 | 硬體指令較複雜，compiler 壓力相對不同
+翻譯出的指令數 | 同一高階語言動作可能較多 | 同一動作可能較少
+Pipeline | 較適合 | 較不易，但現代 CISC 會轉成微指令改善
+代表架構 | ARM、MIPS、RISC-V、SPARC | x86、VAX |
+
+[考點] 不要把 RISC 簡化成「一定比較快」。效能取決於 ISA、微架構、編譯器、快取與工作負載。
+
+八、Memory 階層圖
+
+[會畫] 記憶體階層由快到慢、由貴到便宜、由小到大：
+
+暫存器
+→ L1 Cache
+→ L2 Cache
+→ L3 Cache
+→ 主記憶體（Main Memory）
+→ SSD / HDD
+→ 光碟、磁帶、雲端備份等外部儲存
+
+[必背] 比較方向
+- 越靠近 CPU：速度快、成本高、容量小。
+- 越遠離 CPU：速度慢、成本低、容量大。
+
+[必背] SRAM / DRAM
+- Cache 通常使用 SRAM。
+- Main Memory 通常使用 DRAM。
+
+[必背] Locality
+- Temporal Locality（時間區域性）：最近使用過的資料或指令很可能很快再被使用。
+- Spatial Locality（空間區域性）：使用某位址後，附近位址也可能很快被使用。
+- 例子：迴圈反覆使用同一變數屬於時間區域性；陣列連續掃描屬於空間區域性。
+
+九、Memory 分類圖
+
+[會畫] 基本分類
+- 記憶體可分為主記憶體、輔助記憶體、快取、暫存器。
+- 也可分為揮發性與非揮發性。
+- RAM 多為揮發性；ROM、Flash、SSD 多為非揮發性。
+
+[比較] ROM vs RAM
+
+項目 | ROM | RAM
+--- | --- | ---
+用途 | 儲存韌體、開機程式 | 執行中程式與資料 |
+斷電後資料 | 通常保留 | 通常消失 |
+讀寫特性 | 以讀取為主，部分可改寫 | 可快速讀寫 |
+例子 | PROM、EPROM、EEPROM、Flash ROM | DRAM、SRAM |
+
+[比較] DRAM vs SRAM
+
+項目 | DRAM | SRAM
+--- | --- | ---
+組成 | 電容為主，需 refresh | Flip-flop，不需 refresh |
+速度 | 較慢 | 較快 |
+成本 | 較低 | 較高 |
+密度 | 較高 | 較低 |
+用途 | 主記憶體 | Cache |
+
+[比較] PROM / EPROM / EEPROM / Flash
+- PROM：一次性燒錄。
+- EPROM：可用紫外線擦除，整片擦除。
+- EEPROM：可電氣擦除與改寫，可局部改寫。
+- Flash：EEPROM 的延伸，以 block 為單位擦除，常見於 SSD、USB 隨身碟、記憶卡。
+
+十、Register（暫存器）
+
+[必背]
+- Program Counter（PC）：存放下一個要執行指令的位址。
+- Instruction Register（IR）：存放目前正在解碼或執行的指令。
+- Base Register：存放程式可用記憶體區段的起始位址，常用於記憶體保護與重定位。
+- Limit Register：存放可用區段大小或界限，用於檢查是否越界。
+- Flag Register / Status Register：記錄運算狀態，例如 Zero、Carry、Overflow、Sign、Interrupt Enable。
+
+[補充]
+- MAR（Memory Address Register）：存放要存取的記憶體位址。
+- MDR / MBR（Memory Data/Buffer Register）：存放從記憶體讀出或要寫入記憶體的資料。
+
+十一、Cache
+
+[必背] L1 / L2 / L3
+- L1：最靠近 CPU，最快、容量最小。
+- L2：速度與容量居中。
+- L3：通常多核心共享，容量較大但較慢。
+
+[必背] Hit Ratio
+- Hit：資料在 cache 中找到。
+- Miss：資料不在 cache 中，需到下一層記憶體取。
+- Hit Ratio = Hit 次數 / 總存取次數。
+- Miss Rate = 1 - Hit Ratio。
+
+[會算] AMAT
+- Average Memory Access Time = Hit Time + Miss Rate * Miss Penalty。
+
+[比較] Write Through vs Write Back
+- Write Through：寫 cache 時同步寫回主記憶體，資料一致性好，但寫入較慢。
+- Write Back：先寫 cache，等區塊被替換時才寫回主記憶體，效能較好，但控制較複雜。
+
+[補充] 常見搭配
+- Write Allocate：write miss 時把區塊載入 cache 再寫。
+- No Write Allocate：write miss 時直接寫到下一層，不載入 cache。
+
+十二、Hazard
+
+[必背] 定義
+- Pipeline 中造成下一個指令無法在預定時脈進行的情況。
+
+[比較] 三種 Hazard
+- Structural Hazard：硬體資源衝突，例如同一時間需要同一記憶體或功能單元。
+  - 解法：增加硬體資源、分離 instruction/data cache、排程調整。
+- Data Hazard：指令間資料相依，例如後一指令需要前一指令結果。
+  - 常見：RAW、WAR、WAW。基礎考試最常問 RAW。
+  - 解法：Forwarding、stall、compiler scheduling、register renaming。
+- Control Hazard：分支或跳躍造成下一個 PC 不確定。
+  - 解法：branch prediction、delayed branch、flush、speculative execution。
+
+十三、USB 速度
+
+[必背] 常見版本與理論速度
+
+版本 | 常見名稱 | 理論速度
+--- | --- | ---
+USB 1.0 / 1.1 Low Speed | Low Speed | 1.5 Mbps
+USB 1.0 / 1.1 Full Speed | Full Speed | 12 Mbps
+USB 2.0 | High Speed | 480 Mbps
+USB 3.0 / USB 3.1 Gen 1 / USB 3.2 Gen 1x1 | SuperSpeed | 5 Gbps
+USB 3.1 Gen 2 / USB 3.2 Gen 2x1 | SuperSpeed+ | 10 Gbps
+USB 3.2 Gen 2x2 | SuperSpeed USB 20Gbps | 20 Gbps
+USB4 Gen 2x2 | USB4 20Gbps | 20 Gbps
+USB4 Gen 3x2 | USB4 40Gbps | 40 Gbps
+USB4 Version 2.0 / USB 80Gbps | USB4 80Gbps | 80 Gbps
+
+[易混淆]
+- USB 命名改版很多，考試若問 USB 3.0 通常抓 5 Gbps；USB 3.1 Gen 2 抓 10 Gbps；USB 3.2 Gen 2x2 抓 20 Gbps；USB4 常見抓 40 Gbps，但新規格已到 80 Gbps。
+- 實際速度會受線材、控制器、協定開銷與裝置限制影響。
+
+十四、進制轉換
+
+[會算]
+- 10 進制轉 n 進制：整數部分用連除法，小數部分用連乘法。
+- n 進制轉 10 進制：每位數乘上基底的次方後加總。
+- 2 的冪次方轉換：
+  - 2 進位每 3 bits 對應 8 進位 1 位。
+  - 2 進位每 4 bits 對應 16 進位 1 位。
+  - 常背：2^10 約 1K，2^20 約 1M，2^30 約 1G，2^40 約 1T。
+
+十五、補數轉換
+
+[會算] 表示法
+- 符號大小（Sign-Magnitude）：最高位為符號位，0 正、1 負，其餘為大小。
+- 1's complement：負數為正數位元全部反相。
+- 2's complement：負數為正數位元反相後加 1。
+
+[必背] n bits 表示範圍
+- Sign-Magnitude：-(2^(n-1)-1) 到 +(2^(n-1)-1)，有 +0 與 -0。
+- 1's complement：-(2^(n-1)-1) 到 +(2^(n-1)-1)，有 +0 與 -0。
+- 2's complement：-2^(n-1) 到 +(2^(n-1)-1)，只有一個 0。
+
+[易混淆]
+- 現代電腦整數多使用 2's complement。
+- 2's complement 加減法可直接用二進位加法處理，較方便。
+
+十六、浮點數轉換
+
+[會算] 傳統表示法
+- 掌握正負號、小數點移動、科學記號與基底。
+
+[會算] IEEE 754
+- 單精度 32 bits：Sign 1 bit、Exponent 8 bits、Fraction 23 bits，bias = 127。
+- 雙精度 64 bits：Sign 1 bit、Exponent 11 bits、Fraction 52 bits，bias = 1023。
+- 一般正規化數值：
+  - (-1)^S * 1.F * 2^(E - bias)
+
+[建議]
+- 原文提醒很重要：不要只背轉換規則，要多算題目形成熟悉感。
+- 題目常考十進位小數轉二進位小數、正規化、bias exponent、尾數欄位。
+
+十七、數碼、文字碼與檢查碼
+
+[必背] 數碼與文字碼
+- BCD：以 4 bits 表示一個十進位數字，8421 BCD 最常見。
+- Gray Code：相鄰碼只有 1 bit 不同，常用於減少轉換錯誤。
+- 二進位轉 Gray：最高位不變，其餘位為相鄰二進位位元 XOR。
+- Gray 轉二進位：最高位不變，其餘二進位位元為前一二進位位元 XOR 目前 Gray 位元。
+- ASCII：常見 7 bits 字元碼，延伸 ASCII 為 8 bits。
+- EBCDIC：IBM 系統常見編碼。
+- Unicode：統一表示多語言字元；UTF-8 是常見可變長度編碼。
+
+[會算] 檢查碼
+- 同位元檢查（Parity Check）：分奇同位與偶同位，可偵測奇數個 bit 錯誤，但不一定能更正。
+- CRC：用多項式除法產生檢查碼，常用於網路與儲存錯誤偵測。
+- 漢明碼（Hamming Code）：可偵測與更正部分錯誤，常考檢查位位置與 syndrome。
+- 漢明距（Hamming Distance）：兩個碼字不同 bit 的數量。
+  - 偵測 d 個錯誤需最小距離 >= d + 1。
+  - 更正 t 個錯誤需最小距離 >= 2t + 1。
+
+
+3b. 數位邏輯
+
+一、基本邏輯
+
+[必背]
+- 邏輯閘：AND、OR、NOT、NAND、NOR、XOR、XNOR。
+- 真值表：能由輸入組合推得輸出。
+- 布林代數：交換律、結合律、分配律、德摩根定理、吸收律。
+
+二、SOP 與 POS
+
+[必背]
+- SOP（Sum of Products）：積項和，常由輸出為 1 的 minterms 組成。
+- POS（Product of Sums）：和項積，常由輸出為 0 的 maxterms 組成。
+
+[會算]
+- 由真值表寫出標準 SOP / POS。
+- 由布林函式轉成真值表。
+
+三、卡諾圖化簡
+
+[會算]
+- 2、3、4 變數卡諾圖必會。
+- 圈選規則：圈 1、2、4、8 個相鄰格，數量必須是 2 的冪次方。
+- 可重疊、可跨邊、要盡量圈大。
+- Don't care 可用可不用，以能化簡最多為原則。
+
+四、萬用閘
+
+[必背]
+- NAND 與 NOR 是萬用閘，可實作任何邏輯閘。
+- NAND 實作 NOT：A NAND A。
+- NOR 實作 NOT：A NOR A。
+- 常考：用幾個 NAND 或 NOR 組成 AND、OR、NOT、XOR。
+
+五、組合與循序電路
+
+[原文提醒]
+- 原文提到半加器、全加器、正反器、編碼器、解碼器、多工器、解多工器，國營聯招似乎較少考，該次準備時全跳過。
+
+[整理建議]
+- 即使少考，建議至少會辨認功能：
+  - 半加器：輸入 A、B，輸出 Sum、Carry。
+  - 全加器：輸入 A、B、Cin，輸出 Sum、Cout。
+  - Flip-Flop：儲存 1 bit，常見 SR、D、JK、T。
+  - Encoder / Decoder：編碼與解碼。
+  - Multiplexer / Demultiplexer：多選一與一分多。
+
+
+3c. 作業系統
+
+一、基本常識
+
+[比較] OS 分類
+- 批次系統（Batch）：大量工作批次處理，互動性低。
+- 分時系統（Time-Sharing）：多使用者共享 CPU，重視回應時間。
+- 即時系統（Real-Time）：重視 deadline，可分 hard real-time 與 soft real-time。
+- 分散式系統（Distributed）：多台電腦協同工作。
+- 嵌入式系統（Embedded）：專用設備中的 OS。
+- 行動作業系統：Android、iOS。
+- 網路作業系統：提供網路資源共享與管理。
+
+[必背] Concurrency vs Parallelism
+- Concurrency：多個工作在同一時間段內交錯進行，不一定同時執行。
+- Parallelism：多個工作在同一時刻真的同時執行，通常需要多核心或多處理器。
+- 廚師煮菜例子：
+  - 一位廚師切菜、煮湯、炒菜交替進行：Concurrency。
+  - 多位廚師同時各做一道菜：Parallelism。
+
+[比較] Offline / Spooling / Buffering / Cache
+- Offline：讓 I/O 或資料準備與主機執行分離，減少等待。
+- Spooling：以磁碟模擬排隊裝置，例如列印佇列。
+- Buffering：用緩衝區吸收生產者與消費者速度差。
+- Cache：保存近期常用資料以提高存取速度。
+- 採用原因：解決速度落差、提高 CPU/I/O 利用率、降低等待時間。
+
+二、I/O 與中斷
+
+[會畫] Polling / Interrupt / DMA
+- Polling：CPU 主動輪詢裝置狀態，簡單但浪費 CPU。
+- Interrupt：裝置完成或需要服務時通知 CPU，提高效率。
+- DMA：由 DMA controller 直接在 I/O 裝置與記憶體間傳輸大量資料，CPU 只負責設定與完成後處理。
+
+[必背] 三種中斷
+- NMI（Non-Maskable Interrupt）：不可遮蔽中斷，常用於嚴重硬體錯誤。
+- Interrupt：一般中斷，可分外部中斷與內部中斷。
+- Trap：由程式執行造成的同步中斷，例如 system call、除以零、breakpoint。
+
+三、硬體保護
+
+[必背]
+- I/O Protection：I/O 指令設為 privileged instruction，只能在 kernel mode 執行。
+- Memory Protection：使用 base/limit register、page table 或 segment table 防止越界。
+- CPU Protection：使用 timer interrupt 防止單一程式霸占 CPU。
+
+[補充] Dual Mode
+- User Mode：一般程式執行模式，權限較低。
+- Kernel Mode：OS 核心執行模式，可執行特權指令。
+
+四、OS 結構
+
+[必背]
+- Command / Shell：使用者與 OS 互動的命令介面。
+- System Call：使用者程式向 OS 請求服務的介面，例如檔案、行程、記憶體、I/O。
+- Kernel：OS 核心，負責行程、記憶體、檔案系統、I/O、保護與排程。
+- Microkernel：將核心功能最小化，把檔案系統、驅動等移到 user space，提高模組化與可靠性，但溝通成本可能較高。
+- Virtual Machine：在實體硬體上模擬多個虛擬硬體環境。
+
+[比較] Kernel vs Microkernel
+- Monolithic kernel：功能集中，效能好，但核心龐大。
+- Microkernel：核心小，可靠與可維護性較好，但 IPC 成本較高。
+
+[比較] Virtual Machine 優缺點
+- 優點：隔離性、可移植、易於測試、伺服器整併。
+- 缺點：額外效能負擔、資源需求高、管理較複雜。
+
+五、Process
+
+[必背]
+- Process 定義：正在執行中的程式，是 OS 分配資源與排程的基本單位。
+- Process 包含：程式碼、資料、堆疊、堆積、暫存器狀態、開啟檔案、PCB 等。
+- Program vs Process：
+  - Program 是靜態檔案。
+  - Process 是動態執行中的實體。
+
+[會畫] Process State Transition Diagram
+- New、Ready、Running、Waiting / Blocked、Terminated。
+- 常見轉換：
+  - Ready → Running：dispatch。
+  - Running → Ready：preemption。
+  - Running → Waiting：等待 I/O 或事件。
+  - Waiting → Ready：I/O 或事件完成。
+
+[必背] PCB（Process Control Block）
+- 儲存 PID、process state、PC、registers、CPU scheduling information、memory management information、accounting、I/O status。
+
+[比較] Scheduler
+- Long-Term Scheduler：決定哪些 job 進入系統，控制 multiprogramming 程度。
+- Short-Term Scheduler：從 ready queue 選下一個 process 執行。
+- Medium-Term Scheduler：負責 swapping，暫時移出或移入 process。
+
+[必背]
+- Context Switch：CPU 從一個 process 切換到另一個 process，需保存與載入狀態，有額外成本。
+- Preemptive：可搶先，OS 可中斷正在執行的 process。
+- Non-Preemptive：不可搶先，process 自願釋放 CPU。
+- Starvation：某些 process 長期得不到資源。
+- Convoy Effect：短工作被長工作卡住，常見於 FCFS。
+
+[會算] CPU Scheduling
+- 必練指標：Waiting Time、Turnaround Time、Response Time、Throughput、CPU Utilization。
+- 常見演算法：
+  - FCFS：先到先服務，簡單但可能 convoy effect。
+  - SJF：最短工作優先，平均等待時間低，但可能 starvation。
+  - SRTF：SJF 的搶先版。
+  - Priority Scheduling：依優先權排程，可能 starvation，可用 aging 解決。
+  - Round Robin：時間片輪轉，適合分時系統，time quantum 太大像 FCFS，太小 context switch 過多。
+  - Multilevel Queue：依類型分多個佇列。
+  - Multilevel Feedback Queue：process 可在佇列間移動，較彈性。
+  - HRRN：Highest Response Ratio Next，兼顧等待時間與服務時間。
+
+六、Deadlock
+
+[必背] 定義
+- 一組 process 互相等待對方持有的資源，導致永遠無法繼續。
+
+[必背] 四個必要條件
+1. Mutual Exclusion：資源不可同時共享。
+2. Hold and Wait：持有資源時又等待其他資源。
+3. No Preemption：資源不可強制搶奪。
+4. Circular Wait：形成循環等待。
+
+[比較] 處理方式
+- Deadlock Prevention：破壞四個必要條件之一。
+- Deadlock Avoidance：事先判斷是否進入不安全狀態，典型為 Banker's Algorithm。
+- Deadlock Detection & Recovery：允許發生，偵測後透過終止 process 或搶回資源恢復。
+- Ignore：例如 Ostrich Algorithm，某些一般系統可能選擇忽略低機率 deadlock。
+
+[會算]
+- Resource Allocation Graph。
+- Banker's Algorithm：Available、Max、Allocation、Need，判斷 safe sequence。
+
+七、Process Communication
+
+[原文提醒]
+- 原文提到這章跳過。
+
+[補充建議]
+- 至少掌握基本 IPC：
+  - Shared Memory：速度快，但需同步控制。
+  - Message Passing：透過 send/receive 溝通，較容易保護。
+  - Pipe：單機 process 間資料流。
+  - Socket：跨機器或本機 process 通訊。
+  - RPC：讓遠端程序呼叫看起來像本地呼叫。
+- 同步工具：
+  - Mutex：互斥鎖。
+  - Semaphore：計數型同步工具。
+  - Monitor：封裝共享資料與同步操作。
+- 經典問題：Producer-Consumer、Readers-Writers、Dining Philosophers。
+
+八、Memory Management
+
+[會算] 配置策略
+- First Fit：找第一個足夠大的空洞。
+- Next Fit：從上次搜尋位置繼續找。
+- Best Fit：找最小但足夠的空洞，可能產生很多小碎片。
+- Worst Fit：找最大空洞，讓剩餘空間仍較大。
+
+[必背] Fragmentation
+- External Fragmentation：總空間足夠，但不連續。
+- Internal Fragmentation：分配區塊內部用不到的空間。
+
+[比較] Paging vs Segmentation
+- Paging：固定大小 page/frame，解決外部碎片，可能有內部碎片。
+- Segmentation：依邏輯單位分段，符合程式結構，但可能有外部碎片。
+
+[必背] TLB
+- Translation Lookaside Buffer：快取 page table entries，加速 virtual address 到 physical address 的轉換。
+- TLB hit 可減少查 page table 的時間。
+
+九、Virtual Memory
+
+[必背]
+- Virtual Memory：讓程式可使用大於實體記憶體的位址空間，透過 disk 與 memory 交換頁面。
+- Demand Paging：需要頁面時才載入。
+- Page Fault：存取的頁面不在主記憶體中，需由 OS 載入。
+
+[必背] 影響 Page Fault Ratio 的因素
+- 配置的 frame 數量。
+- Page replacement algorithm。
+- 程式的 locality。
+- Working set 大小。
+- Page size。
+
+[會算] Effective Memory Access Time
+- EAT = (1 - p) * memory access time + p * page fault service time。
+- 若有 TLB，題目通常另外給 TLB hit ratio 與 TLB access time，要分情況加權。
+
+[會算] Page Replacement Algorithm
+- FIFO：先進先出，可能有 Belady's anomaly。
+- OPT：理論最佳，替換最晚再使用的頁面，實務不可知，常作比較基準。
+- LRU：替換最久未使用的頁面，符合 locality，但實作成本高。
+- LFU：替換使用次數最少者。
+- Clock / Second Chance：FIFO 改良，使用 reference bit。
+
+[必背] Thrashing
+- 定義：系統大量時間花在 page fault 與換頁，真正執行時間很少。
+- 造成過程：multiprogramming 過高 → 每個 process frame 不足 → page fault 增加 → CPU utilization 下降 → 系統以為 process 不夠又加入更多 process → 更嚴重 thrashing。
+- 解法：降低 multiprogramming、增加實體記憶體、working set model、page fault frequency control。
+
+十、Disk Management
+
+[比較] Allocation
+- Contiguous Allocation：連續配置，讀取快、支援直接存取，但外部碎片與擴充困難。
+- Linked Allocation：每個區塊指向下一區塊，無外部碎片，但隨機存取差。
+- Indexed Allocation：用 index block 記錄區塊位置，支援直接存取，但 index block 有額外成本。
+- FAT：File Allocation Table，集中管理 linked allocation 的鏈結資訊。
+
+[會算] Disk 存取時間
+- Disk Access Time = Seek Time + Rotational Latency + Transfer Time。
+- 平均旋轉延遲約為半圈時間。
+
+[比較] RAID
+- RAID 0：striping，效能高，無容錯。
+- RAID 1：mirroring，容錯高，容量利用率低。
+- RAID 5：striping + distributed parity，可容忍一顆磁碟壞。
+- RAID 6：雙 parity，可容忍兩顆磁碟壞。
+- RAID 10：先 mirror 再 stripe，效能與容錯佳，成本高。
+
+[會算] Disk Scheduling
+- FCFS：照請求順序，公平但效率可能差。
+- SSTF：最短尋道時間優先，可能 starvation。
+- SCAN：電梯演算法，磁頭往一方向服務到端點再反向。
+- C-SCAN：單向掃描，到端點後回到另一端再服務。
+- LOOK / C-LOOK：類似 SCAN / C-SCAN，但只移動到最遠請求位置。
+
+
+4. 資料結構與演算法
+
+一、準備方向
+
+[原文提醒]
+- 這科很多專有名詞需要記憶，尤其 Tree 相關名詞。
+- 唯一不建議死背的是程式碼，甚至虛擬碼也不要只靠背。
+- 應理解程式在做什麼，抽象觀念可畫圖理解。
+- 時間複雜度比較圖幾乎必考。
+- 「圖」和「排序」較困難，建議先看圖、照流程跑，再整理成虛擬碼，最後試著寫程式。
+- 排序初學時，把每一步每個元素的位置畫出來最清楚。
+- 「高等樹」要懂排序方式並會寫虛擬碼，原文印象中歷年較少考高等樹完整程式碼。
+
+二、演算法
+
+[必背] 定義
+- 演算法是解決問題的明確步驟集合。
+
+[必背] 五個滿足條件
+1. Input：可有零個或多個輸入。
+2. Output：至少一個輸出。
+3. Definiteness：每一步必須明確。
+4. Finiteness：有限步驟後結束。
+5. Effectiveness：每一步可實際執行。
+
+三、時間複雜度
+
+[必背] Big O 比較
+- O(1) < O(log n) < O(n) < O(n log n) < O(n^2) < O(n^3) < O(2^n) < O(n!)
+
+[會算]
+- 迴圈相加通常 O(n)。
+- 雙層巢狀迴圈通常 O(n^2)。
+- 每次問題規模減半通常 O(log n)。
+- 分治常見 O(n log n)，例如 merge sort。
+
+[易混淆]
+- Big O 看成長趨勢，不看常數與低次項。
+- 最好、平均、最差時間複雜度要分開看。
+
+四、陣列（Array）
+
+[必背]
+- 連續記憶體配置。
+- 支援 O(1) 隨機存取。
+- 插入與刪除可能需搬移元素，通常 O(n)。
+
+[會算] 位址計算
+- 一維陣列：
+  - LOC(A[i]) = Base(A) + (i - lower_bound) * element_size。
+- 二維陣列 Row-major：
+  - LOC(A[i][j]) = Base + [(i - row_lower) * number_of_columns + (j - column_lower)] * element_size。
+- 二維陣列 Column-major：
+  - LOC(A[i][j]) = Base + [(j - column_lower) * number_of_rows + (i - row_lower)] * element_size。
+
+五、Linked List
+
+[必背]
+- 節點由資料欄位與指標欄位組成。
+- 不需連續記憶體。
+- 插入與刪除在已知節點位置時可很快，但搜尋通常 O(n)。
+
+[比較] Array vs Linked List
+- Array：隨機存取快、記憶體連續、大小較固定。
+- Linked List：插入刪除彈性高、需額外指標空間、無法 O(1) 直接索引。
+
+[會寫虛擬碼]
+- 插入：
+  - 在 head 前插入。
+  - 在 tail 後插入。
+  - 在節點中間插入。
+- 刪除：
+  - 刪除 head。
+  - 刪除 tail。
+  - 刪除指定節點。
+
+[比較]
+- Singly Linked List：單向。
+- Circular Linked List：尾端指回頭端。
+- Doubly Linked List：每節點有 prev 與 next，可雙向走訪。
+
+六、Stack 與 Queue
+
+[必背] Stack
+- LIFO：Last In, First Out。
+- 操作：push、pop、peek。
+- 應用：函式呼叫、遞迴、括號配對、DFS、運算式轉換。
+
+[必背] Queue
+- FIFO：First In, First Out。
+- 操作：enqueue、dequeue、front/rear。
+- 應用：排程、BFS、緩衝區。
+
+[比較]
+- Stack：一端進出。
+- Queue：一端進、一端出。
+- Array 實作：需注意 overflow、underflow。
+- Linked List 實作：大小較彈性，但需額外指標。
+
+[會算] Circular Queue
+- 以陣列實作 queue 時，front/rear 透過 modulo 循環。
+- 常見判斷：
+  - 空：front == rear，或依教材設定。
+  - 滿：(rear + 1) mod size == front，若保留一格。
+
+七、Tree
+
+[必背] 基本術語
+- Root、Node、Edge、Parent、Child、Sibling、Leaf、Degree、Level、Height、Depth、Subtree、Ancestor、Descendant。
+
+[必背] Binary Tree
+- 每個節點最多兩個 child。
+- Full Binary Tree：每個節點有 0 或 2 個 child。
+- Complete Binary Tree：除最後一層外皆滿，最後一層由左到右填。
+- Perfect Binary Tree：所有內部節點都有兩個 child，所有 leaf 同層。
+- Balanced Binary Tree：高度接近平衡。
+
+[比較] Tree vs Binary Tree
+- Tree：每節點 child 數不限。
+- Binary Tree：每節點最多兩個 child，且左右 child 有順序。
+
+[會算] Binary Tree 特性
+- 高度 h 的 perfect binary tree 節點數為 2^(h+1) - 1（若 root 高度為 0）。
+- n 個節點的 binary tree 邊數為 n - 1。
+- Complete binary tree 可用陣列表示：
+  - 若從 1 開始編號，節點 i 的 left child = 2i，right child = 2i + 1，parent = floor(i/2)。
+
+[會做] Traversal
+- Preorder：Root → Left → Right。
+- Inorder：Left → Root → Right。
+- Postorder：Left → Right → Root。
+- Level-order：逐層走訪。
+- 常考：由前序、中序推回樹；或由後序、中序推回樹。
+
+八、圖（Graph）
+
+[必背] 基本術語
+- Vertex、Edge、Directed Graph、Undirected Graph、Weighted Graph、Path、Cycle、Connected Graph、Degree、In-degree、Out-degree。
+
+[比較] 表示法
+- Adjacency Matrix：查邊快 O(1)，空間 O(V^2)，適合稠密圖。
+- Adjacency List：空間 O(V+E)，適合稀疏圖。
+
+[比較] DFS vs BFS
+- DFS：深度優先，常用 stack 或 recursion，可用於拓樸排序、連通分量、cycle detection。
+- BFS：廣度優先，常用 queue，可求 unweighted graph 最短路徑。
+
+[必背] Spanning Tree
+- 包含所有 vertex 且無 cycle 的子圖。
+- n 個 vertex 的 spanning tree 有 n - 1 條 edge。
+
+[會做] MST
+- Kruskal's Algorithm：依 edge 權重由小到大選，避免 cycle，常用 union-find。
+- Prim's Algorithm：從某節點開始，每次選連到外部的最小 edge。
+
+[會做] Shortest Path
+- Dijkstra's Algorithm：單源最短路徑，權重不可為負。
+- Floyd-Warshall Algorithm：所有點對最短路徑，可處理負邊但不能有負環。
+
+[必背] AOV / AOE
+- AOV Network：Activity on Vertex，常用於拓樸排序。
+- AOE Network：Activity on Edge，常用於專案排程、critical path。
+
+九、排序
+
+[必背] 7 種常見排序比較
+
+排序法 | 最好 | 平均 | 最差 | 穩定性 | 備註
+--- | --- | --- | --- | --- | ---
+Bubble Sort | O(n) | O(n^2) | O(n^2) | 穩定 | 若有 early stop 最好 O(n)
+Selection Sort | O(n^2) | O(n^2) | O(n^2) | 通常不穩定 | 交換次數少
+Insertion Sort | O(n) | O(n^2) | O(n^2) | 穩定 | 適合小資料或近乎排序
+Merge Sort | O(n log n) | O(n log n) | O(n log n) | 穩定 | 需要額外空間
+Quick Sort | O(n log n) | O(n log n) | O(n^2) | 不穩定 | pivot 選不好會退化
+Heap Sort | O(n log n) | O(n log n) | O(n log n) | 不穩定 | 原地排序，利用 heap
+Shell Sort | 視 gap 而定 | 視 gap 而定 | 可到 O(n^2) | 不穩定 | 插入排序改良 |
+
+[會做]
+- 每種排序法的操作流程要能手算。
+- 程式碼不要死背，但虛擬碼與核心概念要會。
+
+[補充]
+- Counting Sort / Radix Sort / Bucket Sort 屬非比較排序，適用於特定資料範圍或格式。
+
+十、高等樹
+
+[必背] AVL Tree
+- 自平衡 BST。
+- 任一節點左右子樹高度差最多 1。
+- 插入或刪除後透過旋轉維持平衡。
+- 旋轉：LL、RR、LR、RL。
+- 搜尋、插入、刪除平均與最差多為 O(log n)。
+
+[必背] B Tree
+- 多路平衡搜尋樹，常用於磁碟索引與資料庫。
+- 節點可有多個 key 與 child。
+- 所有 leaf 在同一層。
+- 搜尋、插入、刪除 O(log n)。
+- 考點：階數、key 數、child 數、分裂、合併、借 key。
+
+[必背] Heap Tree
+- Complete Binary Tree。
+- Max Heap：parent >= children。
+- Min Heap：parent <= children。
+- 插入：放最後再向上調整。
+- 刪除 root：最後節點補 root，再向下調整。
+- 搜尋任意值：通常 O(n)。
+- 取最大或最小：O(1)。
+- 插入與刪除 root：O(log n)。
+
+[必背] Red-Black Tree
+- 自平衡 BST。
+- 節點顏色為紅或黑。
+- Root 為黑。
+- 紅節點不能有紅 child。
+- 從任一節點到其 NIL leaf 的黑節點數相同。
+- 搜尋、插入、刪除 O(log n)。
+
+十一、雜湊法（Hashing）
+
+[必背]
+- Hash Function：將 key 映射到 table index。
+- Collision：不同 key 映射到同一位置。
+- Overflow：碰撞或桶空間不足造成溢位。
+
+[比較] Overflow / Collision 處理
+- Chaining：每格接 linked list 或 bucket。
+- Open Addressing：
+  - Linear Probing：線性探測，易 primary clustering。
+  - Quadratic Probing：平方探測。
+  - Double Hashing：用第二個 hash function 決定探測距離。
+- Rehashing：擴大 table 後重新雜湊。
+
+[補充]
+- Load Factor = 已存元素數 / table 大小。
+- Load factor 太高會降低效率。
+
+
+5. 資料庫
+
+一、準備方向
+
+[原文提醒]
+- SQL 語法一定要熟，建議多寫歷屆。
+- 可另外搜尋 SQL 練習題，例如面試必考 SQL 100 題。
+- 練題時要注意使用的是哪種 SQL：標準 SQL、MySQL、T-SQL、PostgreSQL 等，不同 DBMS 可用函數不同。
+
+二、ANSI/SPARC 架構
+
+[會畫] 三層架構
+- External Level（外部層）：使用者或應用看到的 view。
+- Conceptual Level（概念層）：整體資料庫邏輯結構。
+- Internal Level（內部層）：實體儲存方式與索引。
+
+[比較] 各層的對象、內容、特色與例子
+
+層級 | 對象 | 內容 | 特色 | 例子
+--- | --- | --- | --- | ---
+External Level | 使用者、應用程式 | 使用者需要看到的資料視圖 | 可有多個 view，隱藏不必要資料 | 業務人員只看客戶訂單 view
+Conceptual Level | DBA、系統分析人員 | 整體邏輯 schema、entity、relationship、constraints | 全資料庫的統一邏輯描述 | 客戶、訂單、產品及其關係
+Internal Level | DBMS、系統管理者 | 實體儲存、檔案組織、索引、存取路徑 | 關心資料實際如何存放 | B+ tree index、heap file、hash file
+
+[必背] 為何使用
+- 提供資料抽象化。
+- 降低使用者與實體儲存的耦合。
+- 支援資料獨立性：
+  - Logical Data Independence：概念層改變不影響外部層。
+  - Physical Data Independence：內部儲存改變不影響概念層。
+
+三、資料庫基礎
+
+[比較] 優缺點
+- 優點：資料共享、降低重複、維持一致性、權限控管、備份復原、交易管理。
+- 缺點：系統複雜、成本高、DBA 需求、集中化風險。
+
+[比較] 種類
+- 階層式資料庫：樹狀結構，父子關係明確。
+- 網路式資料庫：圖狀結構，支援多對多。
+- 關聯式資料庫：以 table 表示資料，最常見。
+- 物件導向式資料庫：以 object 儲存資料。
+- NoSQL：常見 key-value、document、column-family、graph database。
+
+四、Key
+
+[必背]
+- Super Key：可唯一識別 tuple 的屬性集合。
+- Candidate Key：最小 super key。
+- Primary Key：被選為主要識別的 candidate key。
+- Alternate Key：未被選為 primary key 的 candidate key。
+- Foreign Key：參照其他 table primary key 的欄位。
+- Composite Key：由多個欄位組成的 key。
+
+五、ERD
+
+[必背]
+- Entity：實體。
+- Attribute：屬性。
+- Relationship：關係。
+- Cardinality：1:1、1:N、M:N。
+- Weak Entity：依賴其他 entity 才能識別。
+
+[會做]
+- M:N 關係通常需轉成關聯表。
+- 多值屬性通常拆成新表。
+
+六、正規化
+
+[比較]
+- 1NF：欄位不可再分，避免重複群組。
+- 2NF：符合 1NF，且非 key 屬性完全相依於整個 candidate key。
+- 3NF：符合 2NF，且非 key 屬性不傳遞相依於 key。
+- BCNF：每個決定因子都是 candidate key。
+- 4NF：處理多值相依。
+
+[必背] 優缺點
+- 優點：降低資料重複、避免更新異常、插入異常、刪除異常。
+- 缺點：table 增多、join 成本提高，查詢可能較複雜。
+
+七、SQL 分類與 CRUD
+
+[必背]
+- DDL：Data Definition Language，例如 CREATE、ALTER、DROP、TRUNCATE。
+- DML：Data Manipulation Language，例如 SELECT、INSERT、UPDATE、DELETE。
+- DCL：Data Control Language，例如 GRANT、REVOKE。
+- TCL：Transaction Control Language，例如 COMMIT、ROLLBACK、SAVEPOINT。
+- DQL：有些教材會把 SELECT 獨立為 Data Query Language。
+
+[會寫] CRUD
+- Create：INSERT。
+- Read：SELECT。
+- Update：UPDATE。
+- Delete：DELETE。
+
+[必練]
+- WHERE、ORDER BY、GROUP BY、HAVING。
+- INNER JOIN、LEFT JOIN、RIGHT JOIN、FULL OUTER JOIN。
+- Subquery、EXISTS、IN。
+- Aggregate functions：COUNT、SUM、AVG、MAX、MIN。
+- Constraints：PRIMARY KEY、FOREIGN KEY、UNIQUE、NOT NULL、CHECK、DEFAULT。
+
+八、ACID 與交易
+
+[必背]
+- Atomicity：交易全做或全不做。
+- Consistency：交易前後資料庫維持一致。
+- Isolation：並行交易彼此隔離。
+- Durability：提交後永久保存。
+
+[補充] 隔離性問題
+- Dirty Read：讀到未提交資料。
+- Non-repeatable Read：同一筆資料重讀結果不同。
+- Phantom Read：同一查詢條件重查出現新增或消失的列。
+
+九、NoSQL
+
+[比較]
+- Key-Value：例如 Redis，速度快。
+- Document：例如 MongoDB，適合 JSON 類資料。
+- Column-Family：例如 Cassandra，適合大量分散式資料。
+- Graph：例如 Neo4j，適合關係網路。
+
+[易混淆]
+- NoSQL 不代表不用 SQL，而是 Not Only SQL。
+- 常與 CAP theorem、BASE 特性一起考：
+  - CAP：Consistency、Availability、Partition Tolerance。
+  - BASE：Basically Available、Soft state、Eventual consistency。
+
+十、資料庫補充考點
+
+[補充]
+- Index：提高查詢速度，但增加寫入與維護成本。
+- View：虛擬表，可簡化查詢與控管權限。
+- Stored Procedure：資料庫端預先定義程序。
+- Trigger：資料變更時自動觸發。
+- SQL Injection：將惡意 SQL 插入輸入欄位，防範方式包含 prepared statement、parameterized query、權限最小化、輸入驗證。
+
+
+6. 網路通訊
+
+一、準備方向
+
+[原文提醒]
+- OSI 7 層一定要熟：各層功能、協定屬於哪一層、實體設備在哪一層。
+- 資訊安全近年幾乎每年必考，需多花時間準備。
+- 可注意與國營事業相關的資安事件，以及防範方法。
+- 資安、雲端相關政策也可以看。
+
+二、網路概論
+
+[比較] LAN / MAN / WAN
+- LAN：區域網路，範圍小，例如公司、校園。
+- MAN：都會網路，城市範圍。
+- WAN：廣域網路，跨城市或跨國，例如 Internet。
+
+[比較] Client-Server vs P2P
+- Client-Server：集中管理，伺服器提供服務，容易控管但伺服器可能成瓶頸。
+- P2P：節點彼此提供資源，擴充性高但管理與安全較難。
+
+[比較] HTTP vs HTTPS
+- HTTP：明文傳輸，預設 port 80。
+- HTTPS：HTTP over TLS，提供加密與憑證驗證，預設 port 443。
+
+[必背] Stateless
+- 定義：伺服器不保存每次請求間的狀態。
+- 優點：簡單、容易擴充。
+- 缺點：需靠 cookie、session、token 保存登入或購物車等狀態。
+
+[比較] Session vs Cookie
+- Cookie：存於 client，由瀏覽器帶給 server。
+- Session：狀態多存於 server，client 只保存 session id。
+- Token：常見於 API，例如 JWT，但需注意過期、簽章與撤銷問題。
+
+[比較] 網路拓樸
+- Bus：成本低，但主幹故障影響大。
+- Ring：資料依環傳遞，故障可能影響整環。
+- Star：以中心設備連接，易管理，中心故障影響大。
+- Mesh：可靠度高，成本高。
+
+三、網路設備與 OSI 層
+
+[必背]
+- Repeater：實體層，重生訊號。
+- Hub：實體層，多埠中繼，碰撞域大。
+- Bridge：資料鏈結層，依 MAC 分隔碰撞域。
+- L2 Switch：資料鏈結層，依 MAC address 轉送 frame。
+- L3 Switch：網路層，具路由功能。
+- Router：網路層，依 IP 選路。
+- Gateway：可跨不同協定或應用層轉換，視情況可在高層運作。
+- Firewall：常見於網路層、傳輸層、應用層，依型態不同。
+
+[比較] 功能、優缺點與適合場景
+
+設備 | 功能 | 優點 | 缺點 | 適合場景
+--- | --- | --- | --- | ---
+Repeater | 重生訊號、延長距離 | 簡單便宜 | 不分割碰撞域與廣播域 | 早期或特殊長距離實體連線
+Hub | 多埠訊號轉發 | 成本低 | 所有埠共享頻寬，碰撞多 | 幾乎只作歷史觀念題
+Bridge | 依 MAC 轉送 frame | 可分割碰撞域 | 埠數少、效能有限 | 早期 LAN segment 連接
+L2 Switch | 依 MAC table 交換 | 效能好、每埠獨立碰撞域 | 預設不切廣播域 | 一般 LAN 存取層
+L3 Switch | 交換加路由 | VLAN 間路由快 | 成本較高、功能視設備而定 | 企業核心或匯聚層
+Router | 依 IP 路由 | 分割廣播域、連接不同網路 | 處理延遲較交換高 | 連接不同網段、WAN、Internet
+Gateway | 協定或格式轉換 | 可跨異質系統 | 設定與維護較複雜 | 舊系統整合、應用層代理
+Firewall | 存取控制與防護 | 提升安全、可記錄與控管 | 規則錯誤會阻擋服務或放行風險 | 網路邊界、DMZ、內部分段
+
+[比較] LAN vs VLAN
+- LAN：實體或邏輯區域網路。
+- VLAN：在交換器上切分邏輯網段，可隔離廣播域並提高管理彈性。
+
+四、常見 Port Number
+
+[必背]
+- FTP：20/21 TCP。
+- SSH：22 TCP。
+- Telnet：23 TCP。
+- SMTP：25 TCP。
+- DNS：53 UDP/TCP。
+- DHCP：67/68 UDP。
+- HTTP：80 TCP。
+- POP3：110 TCP。
+- NTP：123 UDP。
+- IMAP：143 TCP。
+- SNMP：161/162 UDP。
+- HTTPS：443 TCP。
+- SMB：445 TCP。
+- RDP：3389 TCP/UDP。
+
+五、OSI 7 層與 TCP/IP 5 層
+
+[會畫] OSI 7 層
+1. Physical：bit，傳輸媒介、電氣訊號。
+2. Data Link：frame，MAC、switch、error detection。
+3. Network：packet，IP、routing、router。
+4. Transport：segment/datagram，TCP、UDP、port。
+5. Session：會談建立、維持、結束。
+6. Presentation：資料格式、加密、壓縮。
+7. Application：使用者服務，HTTP、DNS、SMTP 等。
+
+[會畫] TCP/IP 5 層
+- Application。
+- Transport。
+- Internet。
+- Data Link。
+- Physical。
+
+[易混淆]
+- TCP/IP 模型常把 OSI 的 Application、Presentation、Session 合併到 Application。
+
+六、實體層
+
+[比較] 傳輸媒介
+- 雙絞線：便宜、常見於乙太網路。
+- 同軸電纜：抗干擾較雙絞線好，早期網路與有線電視常用。
+- 光纖：速度快、距離長、抗電磁干擾，成本較高。
+- 紅外線：短距、需視線。
+- 雷射：方向性強。
+- 無線電波：可穿透、覆蓋廣。
+- 微波：高頻、方向性較強，常需視線。
+
+[必背] Bluetooth
+- 採用 IEEE 802.15.1 相關個人區域網路概念。
+- 使用 2.4 GHz ISM 頻段。
+- 特性：短距、低功耗、跳頻展頻。
+- 世代重點：
+  - Bluetooth 1.x：基本速率約 1 Mbps。
+  - Bluetooth 2.0 + EDR：約 3 Mbps。
+  - Bluetooth 3.0 + HS：可透過高速通道達約 24 Mbps。
+  - Bluetooth 4.0：導入 BLE，重視低功耗。
+  - Bluetooth 5.x：提升 BLE 速度、距離與廣播能力，LE 2M PHY 約 2 Mbps。
+  - Bluetooth 5.2：LE Audio 是常見重點。
+  - Bluetooth 6.0 / 6.1：近年重點含 Channel Sounding、隱私與位址更新等，考試若教材較舊可先掌握 4.x、5.x。
+
+[必背] 物聯網（IoT）
+- 定義：透過感測器、網路與平台讓物件可感測、傳輸、分析與控制。
+- 三層架構：
+  - 感知層：感測器、RFID、裝置。
+  - 網路層：有線/無線傳輸。
+  - 應用層：智慧家庭、智慧電網、工業控制、醫療等。
+
+[必背] 雲端運算
+- 定義：透過網路提供可擴充的運算、儲存與服務。
+- 特性：on-demand self-service、broad network access、resource pooling、rapid elasticity、measured service。
+- 服務模式：
+  - IaaS：提供 VM、網路、儲存。
+  - PaaS：提供開發與部署平台。
+  - SaaS：提供應用程式。
+- 部署模式：
+  - Public Cloud：公有雲。
+  - Private Cloud：私有雲。
+  - Community Cloud：社群雲。
+  - Hybrid Cloud：混合雲。
+
+[比較] 公有雲、私有雲、社群雲、混合雲
+
+模式 | 定義 | 優點 | 缺點 | 常見場景
+--- | --- | --- | --- | ---
+Public Cloud | 由雲端服務商提供給大眾或多租戶使用 | 彈性高、成本可按量計費、建置快 | 法遵與資料控管需評估 | 網站、測試環境、彈性運算
+Private Cloud | 單一組織專用雲環境 | 控制力高、安全與客製彈性高 | 建置與維運成本高 | 金融、政府、敏感資料系統
+Community Cloud | 多個有共同需求的組織共享 | 符合共同法遵或產業需求 | 治理與成本分攤較複雜 | 醫療、教育、政府共同平台
+Hybrid Cloud | 結合公有雲與私有雲 | 兼顧彈性與控管 | 整合、網路與資安管理較複雜 | 核心資料留私有雲，尖峰流量用公有雲
+
+[必背] Big Data
+- 定義：大量、多樣、快速產生且需特殊技術處理的資料。
+- 5V：Volume、Velocity、Variety、Veracity、Value。
+
+[必背] Wi-Fi
+- IEEE 802.11 系列。
+- 重要標準：
+  - 802.11b：2.4 GHz，最高 11 Mbps。
+  - 802.11a：5 GHz，最高 54 Mbps。
+  - 802.11g：2.4 GHz，最高 54 Mbps。
+  - 802.11n / Wi-Fi 4：2.4/5 GHz，MIMO，最高約 600 Mbps。
+  - 802.11ac / Wi-Fi 5：5 GHz，最高約 6.9 Gbps。
+  - 802.11ax / Wi-Fi 6：2.4/5 GHz，OFDMA、MU-MIMO，最高約 9.6 Gbps。
+  - Wi-Fi 6E：Wi-Fi 6 延伸到 6 GHz 頻段。
+  - 802.11be / Wi-Fi 7：重點是 320 MHz channel、4096-QAM、Multi-Link Operation，理論最高可到約 46 Gbps。
+- MIMO：Multiple Input Multiple Output，利用多天線提高吞吐與可靠性。
+
+[必背] RFID / NFC
+- RFID 組成：Tag、Reader、Backend System。
+- RFID 分類：主動式、被動式、半主動式。
+- 優點：非接觸、可批次讀取。
+- 缺點：隱私、安全與干擾問題。
+- NFC：近距離無線通訊，距離短，常用於行動支付、門禁。
+- NFC vs RFID：NFC 距離更短、常支援雙向互動；RFID 應用距離與型態較多。
+
+[必背] 行動網路 1G 到 5G
+- 1G：類比語音。
+- 2G：數位語音、簡訊，GSM。
+- 3G：行動資料、WCDMA/CDMA2000。
+- 4G：LTE，IP 化、高速資料。
+- 5G：eMBB、URLLC、mMTC，低延遲、高頻寬、大量連線。
+
+[比較] 技術標準、速度、功能與優缺點
+
+世代 | 技術標準例子 | 速度概念 | 主要功能 | 優點 | 缺點
+--- | --- | --- | --- | --- | ---
+1G | AMPS、TACS | Kbps 等級 | 類比語音 | 開啟行動通話 | 安全差、容量低、易受干擾
+2G | GSM、IS-95 CDMA | Kbps 到數百 Kbps | 數位語音、SMS、低速資料 | 容量與安全較 1G 好 | 資料速度低
+3G | WCDMA、CDMA2000、HSPA | Mbps 等級 | 行動上網、影音服務 | 支援較完整資料服務 | 延遲與速度不如 4G
+4G | LTE、LTE-Advanced | 數十到數百 Mbps，理論可更高 | All-IP 寬頻資料 | 高速、低延遲、適合串流 | 覆蓋與頻譜需求高
+5G | NR | Gbps 等級理論峰值 | eMBB、URLLC、mMTC | 高頻寬、低延遲、大量連線 | 建設成本高，高頻訊號覆蓋較受限
+
+[必背] 乙太網路
+- IEEE 802.3。
+- CSMA/CD 是傳統共享式乙太網重點；現代交換式全雙工環境較少碰撞。
+- 速度常見：10 Mbps、100 Mbps、1 Gbps、10 Gbps、40 Gbps、100 Gbps 以上。
+
+七、資料鏈結層
+
+[必背] 5-4-3 Rule
+- 傳統乙太網路中繼器規則：5 個 segment、4 個 repeater、最多 3 個 populated segment。
+- 現代交換式網路較少直接使用，但仍可能作為歷史觀念題。
+
+[必背]
+- 訊框化（Framing）：將 bit stream 切成 frame。
+- Error Detection：常見 CRC。
+- Flow Control：控制傳送速率。
+
+[比較] HDLC vs PPP
+- HDLC：位元導向資料鏈結協定。
+- PPP：點對點協定，常見於撥接、PPPoE，可支援認證。
+
+[比較] 傳輸方向
+- Simplex：單工，單向傳輸。
+- Half-duplex：半雙工，雙向但不能同時。
+- Full-duplex：全雙工，雙向可同時。
+
+[比較] 多重存取
+- 無競爭多重存取：Token Passing、輪詢。
+- 競爭多重存取：ALOHA、CSMA、CSMA/CD、CSMA/CA。
+
+[比較] CSMA / CSMA/CD / CSMA/CA
+- CSMA：先聽再傳。
+- CSMA/CD：偵測碰撞後停止並退避，傳統乙太網。
+- CSMA/CA：避免碰撞，常見於 Wi-Fi。
+
+[必背] ARQ
+- Stop-and-Wait ARQ。
+- Go-Back-N ARQ。
+- Selective Repeat ARQ。
+
+[比較] Bridge / Switch
+- Bridge：較早期，連接 LAN segment。
+- L2 Switch：多埠 bridge，依 MAC table 轉送。
+- L3 Switch：具 routing 功能，可在 VLAN 間轉送。
+
+八、網路層
+
+[比較] 靜態路由 vs 動態路由
+- 靜態路由：人工設定，簡單穩定，但維護成本高。
+- 動態路由：透過協定自動學習，適合大型網路。
+
+[必背] 路由協定
+- RIP：Distance Vector，hop count，最大 15 hops。
+- OSPF：Link State，使用 cost，收斂快。
+- BGP：Path Vector，Internet AS 間路由。
+
+[必背] IP
+- IPv4：32 bits，常用 dotted decimal。
+- IPv6：128 bits，十六進位冒號表示。
+- 公有 IP：可在 Internet 路由。
+- 私有 IP：
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16
+- 特殊 IP：
+  - 127.0.0.0/8：loopback，常見 127.0.0.1。
+  - 169.254.0.0/16：link-local / APIPA。
+  - 0.0.0.0：未指定位址或預設路由語境。
+  - 255.255.255.255：limited broadcast。
+  - 224.0.0.0/4：IPv4 multicast。
+
+[會算] 子網路、CIDR、網路遮罩
+- /24 表示前 24 bits 為 network prefix。
+- 可用主機數常見公式：2^host_bits - 2，但 /31、/32 有特殊用途。
+- 必練：給 IP 與 mask，求 network address、broadcast address、host range、可切幾個 subnet。
+
+[比較] IPv4 vs IPv6
+- IPv6 位址長度較長、header 較簡化、不使用 broadcast、支援 extension header。
+- IPv4 header 有 checksum；IPv6 header 不含 header checksum。
+
+[比較] Header 欄位差異
+- IPv4 常見 header 欄位：Version、IHL、Type of Service / DSCP、Total Length、Identification、Flags、Fragment Offset、TTL、Protocol、Header Checksum、Source Address、Destination Address、Options。
+- IPv6 固定 header 常見欄位：Version、Traffic Class、Flow Label、Payload Length、Next Header、Hop Limit、Source Address、Destination Address。
+- IPv6 把選用功能移到 extension headers，路由器處理固定 header 較單純。
+- IPv4 可由路由器分片；IPv6 分片主要由來源端透過 extension header 處理。
+
+[必背]
+- NAT：私有 IP 與公有 IP 轉換，常見 PAT 以 port 區分連線。
+- ARP：IPv4 位址轉 MAC address。
+- ARP Spoofing：偽造 ARP 回應進行中間人攻擊。
+- RARP：MAC 轉 IP，舊式協定。
+- ICMP：錯誤回報與診斷，ping 使用 ICMP echo。
+- IGMP：IPv4 multicast group 管理。
+- IPSec：網路層安全協定，可提供加密與認證。
+
+[必背] 網路指令
+- ping：測試連通性。
+- traceroute / tracert：追蹤路由路徑。
+- netstat：查看連線與 port。
+- ipconfig / ifconfig / ip：查看網路設定。
+- nslookup / dig：查 DNS。
+
+[比較]
+- Distance Vector：只知道到目的地距離與下一跳，例 RIP。
+- Link State：掌握拓樸資訊，例 OSPF。
+- MAC Address vs IP Address：
+  - MAC：資料鏈結層，硬體位址，區域網路內轉送。
+  - IP：網路層，邏輯位址，跨網路路由。
+- VLSM：Variable Length Subnet Mask，可依需求切不同大小子網路。
+
+九、傳輸層
+
+[比較] Circuit Switching vs Packet Switching
+- Circuit Switching：先建立固定通道，例如傳統電話。
+- Packet Switching：資料切成封包分別傳送，例如 Internet。
+
+[必背] Packet
+- 封包包含 header 與 payload。
+- Header 放位址、序號、控制資訊等。
+
+[必背] TCP
+- Connection-oriented。
+- Reliable delivery。
+- Flow control。
+- Congestion control。
+- Ordered delivery。
+
+[會畫] TCP 三方交握
+1. Client → Server：SYN。
+2. Server → Client：SYN + ACK。
+3. Client → Server：ACK。
+
+[會畫] TCP 四方交握
+1. FIN。
+2. ACK。
+3. FIN。
+4. ACK。
+
+[必背] SYN Flood Attack
+- 攻擊者大量送 SYN 但不完成握手，使 server 半開連線耗盡。
+- 防禦：SYN cookies、rate limiting、防火牆、調整 backlog。
+
+[必背] TCP Flow Control
+- 透過 sliding window 與 receiver window 避免接收端被塞爆。
+
+[必背] TCP Congestion Control
+- Slow Start、Congestion Avoidance、Fast Retransmit、Fast Recovery。
+
+[比較] TCP vs UDP
+- TCP：可靠、連線導向、較慢，適合 HTTP、FTP、SMTP。
+- UDP：不保證可靠、無連線、開銷小，適合 DNS、VoIP、串流、遊戲。
+
+十、應用層
+
+[必背]
+- DNS：網域名稱解析。
+- DHCP：自動分配 IP、mask、gateway、DNS。
+- FTP：檔案傳輸。
+- URL：定位網路資源，包含 scheme、host、path、query 等。
+- GET vs POST：
+  - GET：取得資源，參數常在 URL，應具冪等性。
+  - POST：提交資料，資料常在 body，不要求冪等。
+- SNMP：網路管理。
+- SDN：Software-Defined Networking，控制平面與資料平面分離。
+- RTP：即時傳輸音訊與視訊。
+- RTCP：RTP 控制協定。
+- RTSP：串流控制。
+- HTTP：Web 應用協定。
+- HTTPS：HTTP over TLS。
+- Gateway：協定轉換或應用層閘道。
+- CDN：內容傳遞網路，靠近使用者快取內容。
+- SMTP：寄信。
+- IMAP：收信並保留在伺服器同步。
+- POP3：收信，傳統上常下載到本機。
+
+十一、資訊安全
+
+[必背] 安全目標
+- Confidentiality：機密性。
+- Integrity：完整性。
+- Availability：可用性。
+- Non-repudiation：不可否認性。
+- Authentication / Authenticity：認證性或真實性。
+
+[比較] 防禦設備
+- Firewall：依規則允許或阻擋流量。
+- NGFW：加入應用識別、IPS、威脅情報等。
+- WAF：Web Application Firewall，防護 HTTP/HTTPS 應用攻擊。
+- IDS：偵測入侵並告警。
+- IPS：偵測並主動阻擋。
+
+[比較] 加密
+- 對稱式加密：同一把 key 加解密，速度快，key distribution 困難。
+- 非對稱式加密：public/private key，解決 key distribution，但速度較慢。
+- Hash：單向摘要，不是加密，常用於完整性檢查。
+
+[必背] 電子商務安全需求
+- 機密性、完整性、不可否認性、可驗證性、存取控制。
+
+[必背]
+- 數位簽章：用私鑰簽章，公鑰驗證，提供完整性、身分驗證與不可否認性。
+- Proxy Server：代理 client 或 server，可快取、過濾、匿名化或控管。
+- VPN：建立加密通道。
+- PPTP：早期 VPN 協定，安全性較弱，了解即可。
+- DMZ：隔離對外服務區，降低內網暴露。
+- EDR：Endpoint Detection and Response，端點偵測與回應。
+- MDR：Managed Detection and Response，委外或託管式偵測回應服務。
+- PKI：Public Key Infrastructure，包含 CA、憑證、CRL/OCSP。
+- NIST：美國國家標準與技術研究院，常見資安框架來源。
+- ISO 27001：資訊安全管理系統 ISMS 要求，現行主軸為 ISO/IEC 27001:2022。
+
+[必背] 常見網攻
+- 電腦病毒：需宿主程式，會感染檔案。
+- Worm：可自我複製並透過網路散播。
+- Trojan：偽裝成正常程式。
+- Ransomware：勒索軟體，加密資料要求贖金。
+- Phishing：釣魚，誘騙帳密或敏感資料。
+- XSS：跨站腳本攻擊。
+- SQL Injection：注入 SQL 指令。
+- CSRF：跨站請求偽造。
+- DoS / DDoS：阻斷服務。
+- Man-in-the-Middle：中間人攻擊。
+- ARP Spoofing、DNS Spoofing。
+
+[補充] 近年常見觀念
+- Zero Trust：永不信任、持續驗證、最小權限。
+- MFA：多因素認證。
+- Least Privilege：最小權限原則。
+- Defense in Depth：縱深防禦。
+- Backup 3-2-1：至少 3 份資料、2 種媒介、1 份異地。
+
+
+7. 程式
+
+一、準備方向
+
+[原文提醒]
+- 基本語法要會寫：if-else、switch、迴圈、物件導向、常用字串函式。
+- 常考語言：C、C++、Java、Python。
+- 語言獨有特性要記：
+  - C / C++：指標。
+  - Java：GC / G1GC 等垃圾回收觀念。
+  - Python：List、Tuple、Dictionary、Set。
+
+二、基礎
+
+[比較] Assembler vs Compiler vs Interpreter
+- Assembler：組合語言轉機器碼。
+- Compiler：將高階語言整體或大段編譯成目標碼。
+- Interpreter：逐行或逐步解讀執行。
+
+[必背]
+- 變數：儲存資料的命名空間，注意型別與作用域。
+- 函式：封裝可重用邏輯。
+- 陣列：同型別連續資料集合。
+- 迴圈：for、while、do-while。
+- 條件：if-else、switch。
+- 例外處理：try、catch、finally、throw。
+
+[比較] 參數傳遞
+- Call by Value：傳值，函式內修改不影響原值。
+- Call by Address：傳位址，常見於 C 指標。
+- Call by Reference：傳參考，可影響原物件或變數。
+- Call by Name：延遲求值概念，較少見但可能考名詞。
+
+[必背] static
+- C/C++ 區域 static 變數：生命週期延長至程式結束，但作用域仍在區塊內。
+- C/C++ 檔案層級 static：限制 linkage。
+- Java static：屬於 class，不屬於特定 object。
+
+三、中階
+
+[必背] 指標
+- 指標存放位址。
+- & 取址，* 解參考。
+- 指標與陣列關係常考。
+- 注意 null pointer、dangling pointer、memory leak。
+
+[必背] 字串相關函式
+- C：strlen、strcpy、strncpy、strcmp、strcat。
+- C++：std::string 常用 length、substr、find。
+- Java：String length、substring、equals、charAt。
+- Python：len、split、join、find、replace。
+
+[必背] OOP 三大特性
+- Encapsulation：封裝資料與操作。
+- Inheritance：繼承既有類別特性。
+- Polymorphism：多型，同一介面可有不同實作。
+
+[補充] OOP 常見延伸
+- Overloading：多載，同名函式參數不同。
+- Overriding：覆寫，子類別改寫父類別方法。
+- Abstract Class vs Interface：抽象類別可含狀態與部分實作；介面偏規格契約。
+
+[必背] Recursion
+- 遞迴需有 base case 與 recursive case。
+- 常見題型：階乘、費氏數列、河內塔、樹走訪、DFS。
+- 注意 stack overflow 與重複計算，可用 memoization。
+
+四、Python 特殊資料型別
+
+[比較]
+- List：有序、可變、可重複。
+- Tuple：有序、不可變、可重複。
+- Dictionary：key-value，key 不可重複。
+- Set：無序、不重複。
+
+五、C / C++ / Java 補充重點
+
+[補充]
+- C：指標、struct、malloc/free、陣列與字串結尾 '\0'。
+- C++：class、constructor/destructor、RAII、reference、STL。
+- Java：JVM、bytecode、GC、class、interface、exception、collection framework。
+
+
+8. 系統分析與設計
+
+一、準備方向
+
+[原文提醒]
+- 這科重點較抽象，若不易掌握，可直接看歷屆題目，有出現再做筆記。
+- 有相關從業經驗會較容易理解，否則需靠名詞與比較題累積。
+
+二、系統分析與設計概論
+
+[必背] SDLC
+- Planning：規劃。
+- Analysis：需求分析。
+- Design：系統設計。
+- Implementation：實作。
+- Testing：測試。
+- Deployment：導入。
+- Maintenance：維護。
+
+[必背] SSDLC
+- Secure SDLC：在需求、設計、實作、測試、部署與維護各階段納入安全控制。
+- 常見活動：威脅建模、安全需求、程式碼掃描、滲透測試、弱點修補。
+
+三、結構化分析與設計
+
+[必背] Cohesion（內聚力）
+- 內聚力越高越好。
+- 由佳到差大致可記：
+  - Functional Cohesion：功能內聚。
+  - Sequential Cohesion：順序內聚。
+  - Communicational Cohesion：溝通內聚。
+  - Procedural Cohesion：程序內聚。
+  - Temporal Cohesion：暫時內聚。
+  - Logical Cohesion：邏輯內聚。
+  - Coincidental Cohesion：偶發內聚。
+
+[必背] Coupling（耦合力）
+- 耦合力越低越好。
+- 由低到高大致可記：
+  - Data Coupling：資料耦合。
+  - Stamp / Data Structure Coupling：資料結構耦合。
+  - Control Coupling：控制耦合。
+  - Common Coupling：共同耦合。
+  - Content Coupling：內容耦合。
+
+[補充]
+- DFD：Data Flow Diagram，描述資料流、處理程序、資料儲存與外部實體。
+- Data Dictionary：資料字典，定義資料項目。
+- Structure Chart：結構圖，描述模組層級與呼叫關係。
+
+四、物件導向
+
+[比較]
+- Dependency（相依）：一個類別短暫使用另一個類別。
+- Association（結合）：物件間有一般關聯。
+- Aggregation（聚合）：has-a 弱整體部分關係，部分可獨立存在。
+- Composition（組合）：has-a 強整體部分關係，部分生命週期依賴整體。
+
+[補充]
+- Generalization：一般化，常表示繼承。
+- Realization：實作介面。
+
+五、UML
+
+[必背]
+- Class Diagram：類別、屬性、方法與關係。
+- Use Case Diagram：使用者角色與系統功能。
+- Activity Diagram：流程、分支、平行活動。
+- Sequence Diagram：物件間訊息傳遞與時間順序。
+
+[補充]
+- State Diagram：狀態與事件轉換。
+- Component Diagram：元件與相依。
+- Deployment Diagram：部署節點與構件。
+
+六、專案管理
+
+[必背] 測試種類
+- 為什麼要測試：找缺陷、降低風險、驗證需求、提升品質。
+- Unit Test：單元測試。
+- Integration Test：整合測試。
+- Regression Test：迴歸測試。
+- Recovery Test：回復測試。
+- Security Test：安全測試。
+- Performance Test：效能測試。
+- Acceptance Test：驗收測試。
+- Alpha Test：內部或受控環境測試。
+- Beta Test：外部使用者測試。
+- White-box Test：白箱，知道內部結構。
+- Black-box Test：黑箱，只看輸入輸出。
+
+[比較] 系統導入方式
+- Direct Conversion：直接導入，速度快但風險高。
+- Parallel Conversion：新舊系統並行，風險低但成本高。
+- Pilot Conversion：先在部分單位試行。
+- Phased Conversion：分階段導入。
+
+[必背] PDCA
+- Plan：計畫。
+- Do：執行。
+- Check：檢查。
+- Act：改善行動。
+
+[補充]
+- 甘特圖：看時程。
+- PERT/CPM：看關鍵路徑。
+- 風險管理：識別、分析、應對、監控。
+
+
+9. 資訊管理
+
+一、準備方向
+
+[原文提醒]
+- 這科讀起來抽象，若影片或教材不好吸收，可先看題目。
+- 歷屆有出的先做筆記，再逐步補相關知識。
+
+二、數位轉型
+
+[必背] 定義
+- 組織運用數位科技改變流程、商業模式、顧客體驗與組織文化，以創造價值。
+
+[必背] 要素
+- 技術：雲端、資料、AI、IoT、自動化。
+- 流程：流程再造與效率提升。
+- 人才：數位技能與跨域合作。
+- 文化：敏捷、創新、資料驅動。
+- 顧客：以使用者體驗與價值為中心。
+
+[原文考點] 企業需兼顧五大層面以提高成功轉型機會
+- 可整理為：策略、組織文化、流程、科技、人才/資料治理。
+- 若教材有固定版本，請以該教材五項為準。
+
+[原文考點] 企業逐步轉型三階段
+- 常見可用：數位化（Digitization）→ 數位優化（Digitalization）→ 數位轉型（Digital Transformation）。
+- 也有教材用「資訊化、流程數位化、商業模式轉型」描述，需依課本用語作答。
+
+三、資訊系統開發流程與模式
+
+[比較] Incremental Model
+- 定義：將系統分成多個增量逐步交付。
+- 核心概念：每次交付可用功能。
+- 優點：早期看到成果、風險分散。
+- 缺點：整體架構需先規劃好，整合管理較重要。
+- 適用：需求可分階段交付的系統。
+
+[比較] Prototype Model
+- 定義：先做雛形讓使用者確認需求。
+- 優點：釐清需求、提高使用者參與。
+- 缺點：使用者可能誤以為雛形就是完成品；若雛形品質差，後續維護困難。
+- 適用：需求不明確、介面重視使用者回饋。
+
+[比較] Spiral Model
+- 定義：以風險分析為核心，反覆規劃、風險評估、工程、評估。
+- 優點：重視風險，適合大型高風險專案。
+- 缺點：管理複雜、成本較高。
+- 適用：大型、複雜、風險高系統。
+
+[必背] Agile
+- 定義：以快速迭代、持續回饋、擁抱變更為核心的開發方式。
+- 核心價值：
+  - 個人與互動勝過流程與工具。
+  - 可用軟體勝過詳盡文件。
+  - 客戶合作勝過合約談判。
+  - 回應變更勝過遵循計畫。
+- 優點：回饋快、彈性高、適應需求變化。
+- 缺點：需求高度變動時需良好溝通；大型組織導入需治理。
+
+[比較] 常見 Agile 框架
+- Scrum：Sprint、Product Backlog、Sprint Backlog、Daily Scrum、Review、Retrospective。
+- Kanban：視覺化流程、限制 WIP、持續改善。
+- Extreme Programming（XP）：Pair Programming、TDD、Continuous Integration、Refactoring。
+
+四、ESG
+
+[必背]
+- E：Environmental，環境，例如減碳、能源、廢棄物。
+- S：Social，社會，例如員工、供應鏈、人權、社區。
+- G：Governance，治理，例如董事會、風險、法遵、資訊揭露。
+
+[補充]
+- ESG 常與永續報告、碳盤查、供應鏈管理、公司治理一起考。
+
+五、資訊系統倫理與新興法規
+
+[必背] 資訊倫理 PAPA
+- Privacy：隱私。
+- Accuracy：正確性。
+- Property：財產權。
+- Accessibility：可近用性。
+
+[比較] 資料來源
+- Zero Party Data：使用者主動、明確提供給企業的資料。
+- First Party Data：企業從自身與顧客互動中蒐集的資料。
+- Second Party Data：其他組織的一方資料，經合作分享。
+- Third Party Data：第三方資料商或外部來源彙整資料。
+
+[必背] 隱私悖論
+- 定義：使用者口頭重視隱私，但實際行為可能為便利、優惠或社交需求而提供個資。
+- 成因：資訊不對稱、風險低估、便利性、同儕壓力、平台依賴。
+- 範例：明知 App 蒐集定位仍授權使用，或為折扣提供個人資料。
+
+[必背] 個人資料保護法
+- 重點：個資蒐集、處理、利用需有特定目的與合法基礎，並注意告知義務、安全維護、當事人權利。
+- 常考：個資、敏感個資、蒐集處理利用、目的外利用、當事人權利。
+
+[必背] GDPR
+- General Data Protection Regulation，歐盟一般資料保護規則。
+- 適用資訊：可識別自然人的個人資料。
+- 適用對象：處理歐盟境內個人資料者，包含部分境外組織。
+- 常見權利：知情權、存取權、更正權、刪除權、限制處理權、資料可攜權、反對權。
+
+六、資訊管理補充考點
+
+[補充]
+- MIS：管理資訊系統，支援例行管理與報表。
+- DSS：決策支援系統，支援半結構化決策。
+- ESS / EIS：高階主管資訊系統。
+- ERP：企業資源規劃，整合財務、採購、生產、人資等。
+- CRM：顧客關係管理。
+- SCM：供應鏈管理。
+- KM：知識管理，重視知識取得、儲存、分享與應用。
+- BI：商業智慧，透過資料倉儲、報表、儀表板、資料探勘支援決策。
+- Data Warehouse：主題導向、整合、時間變異、非揮發資料集合。
+- Data Mining：從大量資料中找模式。
+- COBIT：IT 治理框架。
+- ITIL：IT 服務管理最佳實務。
+- BPR：Business Process Reengineering，企業流程再造。
+
+
+複試
+
+[原文保留] 複試
+
+[補充建議]
+- 準備自我介紹：學經歷、報考動機、資訊背景、與職缺相關經驗。
+- 準備專業口試：
+  - OSI 7 層、資安事件處理、資料庫交易、作業系統排程、雲端與備份。
+  - 能用白話說明技術，不只背名詞。
+- 準備情境題：
+  - 若公司遭遇勒索軟體怎麼處理。
+  - 若系統效能突然下降如何排查。
+  - 若資料庫資料異常或備份失敗如何處理。
+- 準備國營或公部門特性：
+  - 穩定性、法遵、資安、服務不中斷、跨部門溝通。
+- 建議練習：
+  - 1 分鐘自我介紹。
+  - 3 分鐘說明一個專案或學習經驗。
+  - 以 STAR 法回答行為題：Situation、Task、Action、Result。
+
+
+最後複習順序建議
+
+第一輪：建立地圖
+- 計概：馮紐曼、RISC/CISC、memory、cache、補數、浮點數。
+- OS：process、scheduling、deadlock、virtual memory。
+- DS：複雜度、tree、graph、sorting。
+- DB：SQL、key、normalization、ACID。
+- Network：OSI、TCP/IP、routing、TCP/UDP、資安。
+
+第二輪：做計算題
+- Pipeline。
+- Clock / CPI / MIPS。
+- 位址與容量。
+- 補數、浮點數、CRC、漢明碼。
+- CPU scheduling。
+- Banker's algorithm。
+- Page replacement。
+- Disk scheduling。
+- Array address。
+- Subnet / CIDR。
+
+第三輪：背比較表
+- RISC vs CISC。
+- SRAM vs DRAM。
+- ROM / PROM / EPROM / EEPROM。
+- Write Through vs Write Back。
+- Process vs Program。
+- Paging vs Segmentation。
+- TCP vs UDP。
+- IDS vs IPS。
+- Symmetric vs Asymmetric Encryption。
+- SDLC / Agile / Spiral / Prototype。
+
+第四輪：歷屆題回補
+- 把錯題依章節補回本清單。
+- 每個錯題標記原因：不熟、算錯、看錯題目、觀念混淆。
+- 考前一週優先看錯題與比較表。

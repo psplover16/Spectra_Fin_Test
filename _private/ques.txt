@@ -1,0 +1,146 @@
+3. 計概
+3a. 基本計概
+馮紐曼架構：2 大特色、5 大單元；馮紐曼瓶頸是什麼；怎麼解決。
+圖靈機：定義；有哪三個單元；圖靈測試。
+
+機器指令：定義；機器指令週期有哪 5 個（印象中選擇題常出）。
+
+Pipeline：定義；管線化的計算題要會。
+
+匯流排：位址、資料和控制匯流排的定義；n bits 位址匯流排產生多少個記憶體空間；n bits 資料匯流排一次可傳送多少位元的資料；三種匯流排的傳輸方向；
+
+MIPS、CPI、內外頻、Clock、Clock Cycle、Clock Rate 的定義；Clock Cycle 和 Clock Rate 相關的計算題
+
+RISC、CISC：定義；兩個之間的差異（指令數、定址模式、編譯器翻譯出的指令數、誰需要強力 compiler、暫存器數量、指令長度、誰適合 Pipeline、代表架構和指令週期誰比較長等）。
+
+memory 階層圖：圖要記，會出在選擇。用階層圖來比較速度、成本和空間；cache、main memory 分別屬於 SRAM 還是 DRAM；記憶題的時間、空間 locality。
+
+memory 分類圖：圖要記（這個和階層圖不同）；ROM、RAM 的比較表；DRAM、SRAM 的比較表；PROM、EPROM 和 EEPROM 的比較表。
+
+Register：Program Counter、Instruction Register、Base Register、Limit Register 和 Flag Register 的用途。
+
+Cache：L1、L2 Cache；什麼是 Hit Ratio；Write Through 和 Write Back 是什麼？
+
+Hazard：定義；Structural、Data 和 Control Hazard 的發生原因；解決方式？
+
+USB：USB 1.0～4.0 的速度。
+
+進制轉換：10 轉 n、n 轉 10 進制；2 的冪次方的進制轉換。
+
+補數轉換：計算符號大小、1’s、2’s 補數轉換；記一下它們的表示範圍。
+
+浮點數轉換：傳統表示法和 IEEE 754 表示法要會算，千萬不要去背它們的轉換規則，題目算多了有肌肉記憶，下次遇到類似題目就會算。
+
+數碼、文字碼和檢查碼：BCD、2 進制轉格雷碼、格雷轉 2 進制、ASCII、EBCDIC、Unicode 都蠻基本的，一定要會。接下來是比較常考的，同位元檢查、CRC、漢明碼和漢明碼距一定要會算，會出在選擇題。
+
+3b. 數位邏輯
+邏輯閘、求布林函式的 SOP 和 POS、卡諾圖化簡、怎麼用 2 種萬用閘實現其他邏輯閘的功能（用幾個萬用閘可以看一下）。至於半加器、全加器、正反器、編/解碼器和多工/解多工器，國營聯招似乎比較少考，我這次就全跳過。
+
+3c. 作業系統
+基本常識：整理 OS 的分類比較表（定義、優缺點和實例）；Concurrency、Parallelism 的定義、實際例子，用廚師煮菜的例子去理解；Offline、Spooling、Buffering、Cache 的定義、為何採用這些設計？
+
+I/O 的中斷方式：理解 Polling、Interrupt 和 DMA 的中斷流程，建議畫圖。三種中斷（NMI、Interrupt（內/外部）、Trap）的定義和實例。
+
+硬體保護：I/O、Memory 和 CPU Protection 的運作流程。
+
+OS 的結構：稍微看一下 Command、System call 各自的定義、負責的功能；比較 Kernel 和 Microkernel 的定義和功能；Virtual Machine 的定義和優缺點。
+
+Process：Process 的定義、包含哪些部分？Process vs Program；Process State Transition Diagram；Process Control Block；Long、Short 和 Medium Term Scheduler；Context Switch；Preemptive vs Non Preemptive；Starvation；Convoy Effect；各種 CPU Scheduling Algorithm 的定義、優缺點，相關的計算題一定要會。
+
+Deadlock：定義、4 個必要條件；Deadlock Prevention、Deadlock Avoidance、 Deadlock Detection & Recovery 還有相關的計算題一定要會。
+
+Process Communication：這章我跳過。
+
+Memory Management：First/Next/Best/Worst Fit；External/Internal Fragmentation；Page/Segment Memory Management；TLB（Transaction Lookaside Buffer）
+
+Virtual Memory：定義；Demand Paging；Page Fault（定義、影響 Page Fault Ratio 的因素）；Effective Memory Access Time 的計算；Page Replacement Algorithm（定義、優缺點、計算題必考）；Thrashing（定義、造成 Thrashing 的過程圖、解法）
+
+Disk Management：Continous、Link、Index Allocation 和 FAT 的定義和優缺點；Disk 的結構、計算存取時間；RAID 的比較；Disk Scheduling Algorithm 的比較；
+
+4. 資料結構 & 演算法
+這堂課有許多專有名詞需要記憶（像是和 Tree 有關的名詞），唯一不能記的就是程式碼！ 甚至連虛擬碼都不要記！因為考題是會變化的，與其浪費時間記憶程式碼，不如把時間花在理解程式在做什麼事。如果覺得有些觀念很抽象的話，建議畫圖理解，之後遇到類似的觀念，腦海中會浮現畫面，理解速度會加快！
+
+首先，一定要記時間複雜度的比較圖，幾乎是必考！
+
+章節中比較困難的是「圖」和「排序」！在理解圖形相關的演算法時，先看圖和程式碼（或是虛擬碼）照著流程跑一次，大概想一下為什麼要這樣跑？為什麼會有這個結果？接著，試著把程式碼整理成虛擬碼，再把虛擬碼寫成程式碼。上面的步驟都沒問題代表理解的差不多了！
+
+排序的話，剛開始理解的時候，把每個步驟每個元素在什麼位置都畫出來就很好理解了！然後再照我上面說的方法加深印象。
+
+「高等樹」這個章節要搞懂是怎麼排序的，還有要會寫虛擬碼，印象中歷年來沒有考過高等樹的程式碼。以下附上我的筆記的知識點：
+
+演算法：定義；5 個滿足條件
+
+時間複雜度：O(n) 表示法和計算題；Big O 表示法的比較圖
+
+陣列：特色；一、二維陣列的位址計算題；
+
+Link List：特色；運作原理；和 array 的比較表；插入/刪除（在 head 前、在 tail 後和在節點中間）；單向、環狀和雙向 Link List；相關的虛擬碼都要會寫
+
+Stack、Queue：特色；運作原理；實際應用；Stack、Queue、Array 和 Link List 的比較表；虛擬碼；Circular Queue
+
+Tree：定義；基本術語；Binary Tree 的定義、特性和 Binary Tree vs Tree、前中後序轉換
+
+圖：定義；基本術語；DFS vs BFS、Spanning Tree、Kruskal’s、Prim’s Algorithm；Dijkstra’s、Floyd-Warshall Algorithm、AOV、AOE 網路
+
+排序：定義；7 種常見排序法的比較（時間複雜度（平均、最好、最差）、穩定性、程式碼、虛擬碼）
+
+高等樹：AVL Tree（定義、特性、插入、刪除、時間複雜度）；B Tree（定義、特性、搜尋、插入、刪除、時間複雜度）；Heap Tree（定義、特性、插入、刪除、搜尋、時間複雜度）；紅黑樹（定義、特性、插入、刪除、時間複雜度）
+
+雜湊法：定義、Overflow 的處理方式
+
+
+
+5. 資料庫
+語法一定要熟，可以多寫歷屆，寫完去網路上找題目，像是搜尋：面試必考 SQL 100 題。練題目的時候要注意寫的是哪種 SQL 語言（SQL、My SQL、T SQL），可以用的函數不同。以下附上我的筆記的知識點：
+
+基礎：ANSI/SPARC 架構圖（定義、為何使用它）和各層的對象、內容、特色、例子；資料庫的優缺點、種類（階層式、網路式、關聯式和物件導向式）
+
+資料庫：Key、ERD、正規化（優缺點、1～4 NF、BCNF）、DDL、DML、DCL、ACID、NoSQL、SQL 的 CRUD 語法
+
+6. 網路通訊
+OSI 7 層一定要熟，各層負責的事情、各協定在哪一層、實體設備在哪一層等等，這些都算基本觀念，幾乎每年必考。最近隨著資安意識抬頭，資訊安全每年必考，今年專二的題目一堆資安，資安一定要多花時間準備！準備資安的時候，記得要多看時事，尤其是和國營事業相關的資安事件，可能會考防範方法之類的。除了上述之外、資安、雲端相關的政策也可以看一下。以下是我的筆記的知識點：
+
+網路概論：LAN vs MAN vs WAN；Client Server vs P2P；HTTP vs HTTPS；Stateless（定義、優缺點）；Session vs Cookie；網路拓樸（Bus、Ring、Star、Mesh）的運作方式、優缺點等；網路設備（中繼器、集線器、橋接器、L2 交換器、L3 交換器、路由器和閘道器）屬於 OSI 哪一層、功能、優缺點、適合場景等；LAN vs VLAN；協定的 Port Number、功能和屬於 TCP 還是 UDP；OSI 7 層（負責事情、傳輸資料的單位、常見協定、常見設備）；TCP/IP 5 層。
+實體層：雙絞線、同軸電纜、光纖、紅外線、雷射、無線電波、微波、藍牙（特性、採用 IEEE 的哪個標準、不同世代的藍牙的速度）、物聯網（定義、三層各自負責的功能、應用實例）、雲端運算（定義、特色、服務模式、部署模式、公有/私有/社群/混合雲的比較）；Big Data（定義、5V 特性）；WiFi（定義、802.11 不同標準的比較表、不同世代的比較表）、MIMO；RFID（定義、組成元件、運作原理、分類、優缺點、應用）、NFC（定義、特性應用、NFC vs RFID）；行動網路1G～5G（技術標準、速度、功能、優缺點）；乙太網路（定義、特色、速度）、中繼器（功能）、集線器（功能）
+
+資料鏈結層：543 Rule；訊框化；HDLC vs PPP；全雙工 vs 半雙工 vs 單工；無競爭多重存取 vs 競爭多重存取；CSMA vs CSMA/CD vs CAMA/CA；ARQ；橋接器；交換器（L2 vs L3 Switch 比較）
+
+網路層：靜態路由 vs 動態路由；RIP；OSPF；BGP；IP（位址、路由、表示法、特殊 IP、公有 vs 私有 IP）；子網路；CIDR；網路遮罩；IPv4 vs IPv6（要注意兩個的 Header 欄位不同）；NAT；網路指令（ping、traceroute、netstat、ipconfig、nslookup）；ARP；ARP Spoofing；RARP；IGMP；ICMP；IPSec；Router；Distance Vector；Link State；MAC address vs IP address；VLSM；
+
+傳輸層：Circuit Switching；Packet Switching；Packet；TCP；三方交握；四方交握；SYN Flood Attack；TCP 流量控制；TCP 雍塞控制；UDP；TCP vs UDP；
+
+應用層：DNS；DHCP；FTP；URL；GET vs POST；SNMP；SDN；RTP；RTCP；RTSP；HTTP；HTTPS；閘道器；CDN；SMTP；IMAP；POP3；
+
+資訊安全：機密性、可用性、完整性、不可否認性、認證性；防火牆、次世代防火牆、WAF；IDS vs IPS；對稱／非對稱式加密；電子商務的機密性、完整性、不可否認性、可驗證性、存取控制；數位簽章；Proxy Server；VPN；PPTP；各種常見網攻（電腦病毒、木馬、XSS等）；DMZ；EDR；MDR；PKI；NIST；ISO 27001；
+
+7. 程式
+基本的語法要會寫，大概就是 if-else、switch、迴圈、物件導向、一些常用的字串函式要會。比較常考的語言就是 C、C++、Java、Python等。某些語言獨有的特性要記住，像是 C、C++ 的指標、Java 的 GIGC 和 Python 內建的特殊資料型別（List、Tuple、Dictionary 和 Set）等。以下是我的筆記的知識點：
+
+基礎：Assembler vs Compiler vs Interpreter；變數；函式；call by value vs call by address vs call by name vs call by reference；關鍵字 static 的使用方式；陣列；迴圈；if-else；switch；例外處理
+
+中階：指標；字串相關函式；OOP（三大特性）；recursion
+
+8. 系統分析與設計
+這科我聽完整個課程後，還是不曉得重點在哪，所以直接看歷屆題目，如果歷屆有出，就做筆記，其他的知識範圍就自己斟酌。如果有相關的從業經驗，唸起來會比較輕鬆，否則就只能硬背了！以下是我的筆記的知識點：
+
+系統分析與設計概論：系統開發生命週期（SDLC）、安全系統開發生命週期（SSDLC）
+
+結構化分析與設計：程式的內聚力（Cohesion，包含功能、順序、溝通、暫時、程序、邏輯和偶發等內聚力）；程式的耦合力（Coupling，包含資料、資料結構、控制、共同和內容等耦合力）
+
+物件導向：相依（Dependency）vs 結合（Association）vs 聚合（Aggregation）vs 組合（Composition）
+
+UML（Unified Modeling Language）：類別圖、使用個案圖（Use Case Diagram）、活動圖（Activity Diagram）、循序圖（Sequence Diagram）
+
+專案管理：測試（為什麼要做測試？單元、整合、迴歸、回覆、安全、效能、驗收、阿法、貝塔、白箱、黑箱等測試）；系統導入（直接、平行、領航、階段導入的定義和優缺點）；PDCA（戴明環）
+
+9. 資訊管理
+這科也是我覺得讀起來很抽象的科目，我影片看不到一半，就決定直接看題目！題目有出的才做筆記，相關的知識後續再作補充。以下是我的筆記的知識點：
+
+數位轉型（定義、要素、企業要兼顧哪五大層面才能提高成功轉型的機會？企業要經歷哪三個階段才能逐步轉型？）
+
+資訊系統開發流程與模式：漸增模式（Incremental Model）的定義、核心概念、流程、優缺點和適用情況；雛形模式的定義、流程、優缺點和適用情況；螺旋模式的定義、流程、優缺點和適用情況；敏捷開發的定義、核心價值、優缺點、常見的框架（Scrum、Kanban、Extreme Programming）
+
+ESG：定義、三個指標（環境、社會、治理）
+
+資訊系統倫理與新興法規：資訊倫理的定義、四大議題（PAPA，Privacy、Accuracy、Property、Accessibility）；零方數據（Zero Party Data）vs 第一方數據 vs 第二方數據 vs 第三方數據；隱私悖論（定義、成因、範例）；個人資料保護法；GDPR（General Data Protection Regulation）的定義、適用何種資訊、適用的對象
+複試
